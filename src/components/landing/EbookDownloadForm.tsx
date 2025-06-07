@@ -1,8 +1,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useActionState } from 'react';
+import { useState, useEffect, useActionState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { EbookFormSchema, type EbookFormData } from '@/types';
@@ -23,7 +22,8 @@ import dynamic from 'next/dynamic';
 const PdfDocument = dynamic(() => 
   import('react-pdf').then(mod => {
     // Configure pdfjs worker source when the module is loaded on the client
-    mod.pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${mod.pdfjs.version}/build/pdf.worker.min.js`;
+    // Use a pinned version from cdnjs, corresponding to react-pdf's dependency on pdfjs-dist ~4.0.379
+    mod.pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.worker.min.js`;
     return mod.Document;
   }), 
   {
@@ -61,7 +61,7 @@ const EbookDownloadForm = () => {
   useEffect(() => {
     if (formState.message) {
       toast({
-        title: formState.success ? "Success!" : "Error",
+        title: formState.success ? "Sucesso!" : "Erro",
         description: formState.message,
         variant: formState.success ? "default" : "destructive",
       });
@@ -94,7 +94,20 @@ const EbookDownloadForm = () => {
             <p className="text-lg md:text-xl text-foreground/80">
               Aprenda os segredos da IA para advogados e transforme sua carreira.
             </p>
-            <form action={formAction} className="space-y-4">
+            <form
+              // @ts-ignore TODO: investigate why this is not working with useActionState
+              action={handleSubmit(async (data) => {
+                const formData = new FormData();
+                (Object.keys(data) as Array<keyof EbookFormData>).forEach((key) => {
+                  const value = data[key];
+                  if (value !== undefined) {
+                    formData.append(key, String(value));
+                  }
+                });
+                formAction(formData);
+              })}
+              className="space-y-4"
+            >
               <Input 
                 {...register("name")} 
                 type="text" 
@@ -122,7 +135,7 @@ const EbookDownloadForm = () => {
                 name="areaOfLaw"
                 control={control}
                 render={({ field }) => (
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={field.onChange} value={field.value || ""} >
                     <SelectTrigger aria-invalid={errors.areaOfLaw ? "true" : "false"}>
                       <SelectValue placeholder="Ramo de Atuação (Opcional)" />
                     </SelectTrigger>
@@ -147,9 +160,9 @@ const EbookDownloadForm = () => {
                 file="/ebook-maestria-jurisp-pdf.pdf" // Ensure this PDF is in your /public folder
                 onLoadSuccess={onDocumentLoadSuccess}
                 className="flex justify-center"
-                onLoadError={(error) => console.error('Failed to load PDF:', error)}
+                onLoadError={(error) => console.error('Failed to load PDF:', error.message)}
               >
-                <PdfPage pageNumber={1} width={300} />
+                {numPages && <PdfPage pageNumber={1} width={300} />}
               </PdfDocument>
             </div>
           </div>
