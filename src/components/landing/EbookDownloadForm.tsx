@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, useActionState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { EbookFormSchema, type EbookFormData } from '@/types';
@@ -12,31 +12,41 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 
-// Import pdfjs directly and configure workerSrc at the module level for client components
-import { pdfjs } from 'react-pdf';
+// CSS imports for react-pdf styling (these are fine at the top level)
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
 
-// Configure workerSrc at the module level.
-// This requires "pdfjs-dist": "4.0.379" (or compatible) in package.json
-// and ensures Next.js serves the worker file from node_modules.
-pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-  'pdfjs-dist/build/pdf.worker.min.js',
-  import.meta.url,
-).toString();
-
 import dynamic from 'next/dynamic';
 
-// Dynamically import components
-const PdfDocument = dynamic(() => import('react-pdf').then(mod => mod.Document), {
-  ssr: false,
-  loading: () => (
-    <div className="flex justify-center items-center w-full max-w-sm h-[424px] bg-muted rounded-lg shadow-inner">
-      <p className="text-sm text-muted-foreground">Loading PDF preview...</p>
-    </div>
-  ),
-});
+// Dynamically import PdfDocument and configure pdfjs worker source client-side
+const PdfDocument = dynamic(
+  async () => {
+    // Dynamically import react-pdf and its pdfjs object
+    // This ensures pdfjs is only accessed after 'react-pdf' is loaded client-side
+    const { pdfjs, Document } = await import('react-pdf');
+    
+    // Configure workerSrc here, strictly on the client-side.
+    // Using .mjs version as recommended for modern bundlers with ESM and Next.js App Router.
+    // This path should be correctly handled by Next.js to serve the worker from node_modules.
+    pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+      'pdfjs-dist/build/pdf.worker.min.mjs',
+      import.meta.url
+    ).toString();
+    
+    return Document; // Return the Document component
+  },
+  {
+    ssr: false, // Ensure this component is not server-side rendered
+    loading: () => (
+      <div className="flex justify-center items-center w-full max-w-sm h-[424px] bg-muted rounded-lg shadow-inner">
+        <p className="text-sm text-muted-foreground">Loading PDF preview...</p>
+      </div>
+    ),
+  }
+);
 
+// Dynamically import PdfPage. It will use the worker configured by PdfDocument's dynamic import
+// if it's loaded subsequently and shares the same pdfjs instance.
 const PdfPage = dynamic(() => import('react-pdf').then(mod => mod.Page), {
   ssr: false,
 });
@@ -47,8 +57,7 @@ const EbookDownloadForm = () => {
   const { toast } = useToast();
 
   const initialFormState: FormState = { message: "", success: false };
-  // Correctly use React.useActionState
-  const [formState, formAction] = useActionState(submitEbookForm, initialFormState);
+  const [formState, formAction] = React.useActionState(submitEbookForm, initialFormState);
 
   const { register, handleSubmit, formState: { errors }, reset, control } = useForm<EbookFormData>({
     resolver: zodResolver(EbookFormSchema),
@@ -72,7 +81,7 @@ const EbookDownloadForm = () => {
       }
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formState]);
+  }, [formState, reset]);
 
 
   const onDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
@@ -85,20 +94,15 @@ const EbookDownloadForm = () => {
     "Promotoria", "Sucessões", "Trabalhista", "Tributário"
   ].sort();
 
-  // Wrapper for react-hook-form's handleSubmit to be used with useActionState
   const handleFormSubmit = (data: EbookFormData) => {
     const formData = new FormData();
     (Object.keys(data) as Array<keyof EbookFormData>).forEach((key) => {
       const value = data[key];
-      // Ensure optional fields that are empty/undefined are not appended or handled as per schema logic
       if (value !== undefined && value !== null && value !== '') {
         formData.append(key, String(value));
       } else if (key === 'phone' || key === 'areaOfLaw') {
-        // Explicitly don't append if optional and empty/undefined,
-        // or if you need to send an empty string, append it.
-        // formData.append(key, ''); // if backend expects empty string for optional
+        // Optional fields, do not append if empty/undefined
       } else {
-         // For other fields, if they are not optional but can be empty
          formData.append(key, String(value || ''));
       }
     });
@@ -117,7 +121,7 @@ const EbookDownloadForm = () => {
               Aprenda os segredos da IA para advogados e transforme sua carreira.
             </p>
             <form
-              onSubmit={handleSubmit(handleFormSubmit)} // Use the wrapper here
+              onSubmit={handleSubmit(handleFormSubmit)}
               className="space-y-4"
             >
               <Input 
@@ -191,3 +195,5 @@ const EbookDownloadForm = () => {
 };
 
 export default EbookDownloadForm;
+
+    
