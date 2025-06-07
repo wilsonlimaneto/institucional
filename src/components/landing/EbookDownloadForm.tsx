@@ -6,28 +6,29 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { EbookFormSchema, type EbookFormData } from '@/types';
 import { submitEbookForm, type FormState } from '@/lib/actions';
+import { useFormState } from 'react-dom';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 
-// CSS imports for react-pdf styling (these are fine at the top level)
+// CSS imports for react-pdf styling
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
 
 import dynamic from 'next/dynamic';
 
-// Dynamically import PdfDocument and configure pdfjs worker source client-side
+// Dynamically import react-pdf and configure pdfjs worker source client-side
 const PdfDocument = dynamic(
   async () => {
     // Dynamically import react-pdf and its pdfjs object
-    // This ensures pdfjs is only accessed after 'react-pdf' is loaded client-side
     const { pdfjs, Document } = await import('react-pdf');
     
     // Configure workerSrc here, strictly on the client-side.
     // Using .mjs version as recommended for modern bundlers with ESM and Next.js App Router.
     // This path should be correctly handled by Next.js to serve the worker from node_modules.
+    // This requires "pdfjs-dist": "4.0.379" (or compatible) in package.json
     pdfjs.GlobalWorkerOptions.workerSrc = new URL(
       'pdfjs-dist/build/pdf.worker.min.mjs',
       import.meta.url
@@ -46,7 +47,6 @@ const PdfDocument = dynamic(
 );
 
 // Dynamically import PdfPage. It will use the worker configured by PdfDocument's dynamic import
-// if it's loaded subsequently and shares the same pdfjs instance.
 const PdfPage = dynamic(() => import('react-pdf').then(mod => mod.Page), {
   ssr: false,
 });
@@ -57,7 +57,7 @@ const EbookDownloadForm = () => {
   const { toast } = useToast();
 
   const initialFormState: FormState = { message: "", success: false };
-  const [formState, formAction] = React.useActionState(submitEbookForm, initialFormState);
+  const [formState, formAction] = useFormState(submitEbookForm, initialFormState);
 
   const { register, handleSubmit, formState: { errors }, reset, control } = useForm<EbookFormData>({
     resolver: zodResolver(EbookFormSchema),
@@ -195,5 +195,4 @@ const EbookDownloadForm = () => {
 };
 
 export default EbookDownloadForm;
-
     
