@@ -28,7 +28,7 @@ const PdfDocument = dynamic(
     // Configure workerSrc here, strictly on the client-side.
     // Using .mjs version as recommended for modern bundlers with ESM and Next.js App Router.
     // This path should be correctly handled by Next.js to serve the worker from node_modules.
-    // This requires "pdfjs-dist": "4.0.379" (or compatible) in package.json
+    // This requires "pdfjs-dist": "VERSION_MATCHING_API" (e.g. ^4.8.69 if API is 4.8.69) in package.json
     pdfjs.GlobalWorkerOptions.workerSrc = new URL(
       'pdfjs-dist/build/pdf.worker.min.mjs',
       import.meta.url
@@ -64,8 +64,8 @@ const EbookDownloadForm = () => {
     defaultValues: {
       name: "",
       email: "",
-      phone: undefined, // Match Zod schema (optional string)
-      areaOfLaw: undefined // Match Zod schema (optional string)
+      phone: undefined,
+      areaOfLaw: undefined
     }
   });
 
