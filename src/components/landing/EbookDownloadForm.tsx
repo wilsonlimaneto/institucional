@@ -12,19 +12,23 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 
+// Import pdfjs directly and configure workerSrc at the module level for client components
+import { pdfjs } from 'react-pdf';
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
 
+// Configure workerSrc at the module level.
+// This requires "pdfjs-dist": "4.0.379" (or compatible) in package.json
+// and ensures Next.js serves the worker file from node_modules.
+pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+  'pdfjs-dist/build/pdf.worker.min.js',
+  import.meta.url,
+).toString();
+
 import dynamic from 'next/dynamic';
 
-const PdfDocument = dynamic(async () => {
-  const { Document, pdfjs } = await import('react-pdf');
-  pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-    'pdfjs-dist/build/pdf.worker.min.js',
-    import.meta.url,
-  ).toString();
-  return Document;
-}, {
+// Dynamically import components
+const PdfDocument = dynamic(() => import('react-pdf').then(mod => mod.Document), {
   ssr: false,
   loading: () => (
     <div className="flex justify-center items-center w-full max-w-sm h-[424px] bg-muted rounded-lg shadow-inner">
@@ -43,6 +47,7 @@ const EbookDownloadForm = () => {
   const { toast } = useToast();
 
   const initialFormState: FormState = { message: "", success: false };
+  // Correctly use React.useActionState
   const [formState, formAction] = useActionState(submitEbookForm, initialFormState);
 
   const { register, handleSubmit, formState: { errors }, reset, control } = useForm<EbookFormData>({
@@ -80,16 +85,21 @@ const EbookDownloadForm = () => {
     "Promotoria", "Sucessões", "Trabalhista", "Tributário"
   ].sort();
 
-  const onSubmit = (data: EbookFormData) => {
+  // Wrapper for react-hook-form's handleSubmit to be used with useActionState
+  const handleFormSubmit = (data: EbookFormData) => {
     const formData = new FormData();
     (Object.keys(data) as Array<keyof EbookFormData>).forEach((key) => {
       const value = data[key];
+      // Ensure optional fields that are empty/undefined are not appended or handled as per schema logic
       if (value !== undefined && value !== null && value !== '') {
         formData.append(key, String(value));
       } else if (key === 'phone' || key === 'areaOfLaw') {
-        // Explicitly don't append if optional and empty/undefined
+        // Explicitly don't append if optional and empty/undefined,
+        // or if you need to send an empty string, append it.
+        // formData.append(key, ''); // if backend expects empty string for optional
       } else {
-        formData.append(key, ''); // Append empty for other potentially non-optional but empty fields if necessary
+         // For other fields, if they are not optional but can be empty
+         formData.append(key, String(value || ''));
       }
     });
     formAction(formData);
@@ -107,8 +117,7 @@ const EbookDownloadForm = () => {
               Aprenda os segredos da IA para advogados e transforme sua carreira.
             </p>
             <form
-              action={formAction}
-              onSubmit={handleSubmit(onSubmit)}
+              onSubmit={handleSubmit(handleFormSubmit)} // Use the wrapper here
               className="space-y-4"
             >
               <Input 
@@ -165,7 +174,7 @@ const EbookDownloadForm = () => {
           <div className="flex justify-center items-center">
             <div className="w-full max-w-sm rounded-lg overflow-hidden shadow-2xl">
               <PdfDocument
-                file="/ebook-maestria-jurisp-pdf.pdf"
+                file="/ebook-maestria-jurisp-pdf.pdf" // Ensure this PDF is in your /public folder
                 onLoadSuccess={onDocumentLoadSuccess}
                 className="flex justify-center"
                 onLoadError={(error) => console.error('Failed to load PDF:', error.message)}
@@ -182,4 +191,3 @@ const EbookDownloadForm = () => {
 };
 
 export default EbookDownloadForm;
-
