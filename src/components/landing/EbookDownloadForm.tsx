@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useRef } from 'react';
-import { useFormState, useFormStatus } from 'react-dom';
+import { useActionState } from 'react'; // Changed from react-dom
+import { useFormStatus } from 'react-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Image from 'next/image';
@@ -30,7 +31,7 @@ const EbookDownloadForm = () => {
   const formRef = useRef<HTMLFormElement>(null);
 
   const initialFormState: FormState = { message: "", success: false };
-  const [formState, formAction] = useFormState(submitEbookForm, initialFormState);
+  const [formState, formAction] = useActionState(submitEbookForm, initialFormState); // Changed from useFormState
 
   const { register, handleSubmit, formState: { errors }, reset } = useForm<EbookFormData>({
     resolver: zodResolver(EbookFormSchema),
