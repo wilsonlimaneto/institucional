@@ -12,29 +12,26 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 
-// Import react-pdf CSS files
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
 
 import dynamic from 'next/dynamic';
 
-// Dynamically import react-pdf components to run only on the client-side
-const PdfDocument = dynamic(() => 
-  import('react-pdf').then(mod => {
-    // Configure pdfjs worker source when the module is loaded on the client
-    // Use a pinned version from cdnjs, corresponding to react-pdf's dependency on pdfjs-dist ~4.0.379
-    mod.pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.worker.min.js`;
-    return mod.Document;
-  }), 
-  {
-    ssr: false,
-    loading: () => (
-      <div className="flex justify-center items-center w-full max-w-sm h-[424px] bg-muted rounded-lg shadow-inner">
-        <p className="text-sm text-muted-foreground">Loading PDF preview...</p>
-      </div>
-    ),
-  }
-);
+const PdfDocument = dynamic(async () => {
+  const { Document, pdfjs } = await import('react-pdf');
+  pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+    'pdfjs-dist/build/pdf.worker.min.js',
+    import.meta.url,
+  ).toString();
+  return Document;
+}, {
+  ssr: false,
+  loading: () => (
+    <div className="flex justify-center items-center w-full max-w-sm h-[424px] bg-muted rounded-lg shadow-inner">
+      <p className="text-sm text-muted-foreground">Loading PDF preview...</p>
+    </div>
+  ),
+});
 
 const PdfPage = dynamic(() => import('react-pdf').then(mod => mod.Page), {
   ssr: false,
@@ -66,7 +63,7 @@ const EbookDownloadForm = () => {
         variant: formState.success ? "default" : "destructive",
       });
       if (formState.success) {
-        reset(); // Reset form on successful submission
+        reset(); 
       }
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -83,6 +80,21 @@ const EbookDownloadForm = () => {
     "Promotoria", "Sucessões", "Trabalhista", "Tributário"
   ].sort();
 
+  const onSubmit = (data: EbookFormData) => {
+    const formData = new FormData();
+    (Object.keys(data) as Array<keyof EbookFormData>).forEach((key) => {
+      const value = data[key];
+      if (value !== undefined && value !== null && value !== '') {
+        formData.append(key, String(value));
+      } else if (key === 'phone' || key === 'areaOfLaw') {
+        // Explicitly don't append if optional and empty/undefined
+      } else {
+        formData.append(key, ''); // Append empty for other potentially non-optional but empty fields if necessary
+      }
+    });
+    formAction(formData);
+  };
+
   return (
     <section id="ebook" className="py-16 md:py-24 lg:py-32 bg-secondary/30">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -95,17 +107,8 @@ const EbookDownloadForm = () => {
               Aprenda os segredos da IA para advogados e transforme sua carreira.
             </p>
             <form
-              // @ts-ignore TODO: investigate why this is not working with useActionState
-              action={handleSubmit(async (data) => {
-                const formData = new FormData();
-                (Object.keys(data) as Array<keyof EbookFormData>).forEach((key) => {
-                  const value = data[key];
-                  if (value !== undefined) {
-                    formData.append(key, String(value));
-                  }
-                });
-                formAction(formData);
-              })}
+              action={formAction}
+              onSubmit={handleSubmit(onSubmit)}
               className="space-y-4"
             >
               <Input 
@@ -135,11 +138,16 @@ const EbookDownloadForm = () => {
                 name="areaOfLaw"
                 control={control}
                 render={({ field }) => (
-                  <Select onValueChange={field.onChange} value={field.value || ""} >
+                  <Select 
+                    onValueChange={field.onChange} 
+                    value={field.value || ""}
+                    defaultValue=""
+                  >
                     <SelectTrigger aria-invalid={errors.areaOfLaw ? "true" : "false"}>
                       <SelectValue placeholder="Ramo de Atuação (Opcional)" />
                     </SelectTrigger>
                     <SelectContent>
+                      <SelectItem value="" disabled>Selecione uma área (Opcional)</SelectItem>
                       {ramosDeAtuacao.map(ramo => (
                         <SelectItem key={ramo} value={ramo}>{ramo}</SelectItem>
                       ))}
@@ -157,10 +165,11 @@ const EbookDownloadForm = () => {
           <div className="flex justify-center items-center">
             <div className="w-full max-w-sm rounded-lg overflow-hidden shadow-2xl">
               <PdfDocument
-                file="/ebook-maestria-jurisp-pdf.pdf" // Ensure this PDF is in your /public folder
+                file="/ebook-maestria-jurisp-pdf.pdf"
                 onLoadSuccess={onDocumentLoadSuccess}
                 className="flex justify-center"
                 onLoadError={(error) => console.error('Failed to load PDF:', error.message)}
+                onSourceError={(error) => console.error('Failed to load PDF source:', error.message)}
               >
                 {numPages && <PdfPage pageNumber={1} width={300} />}
               </PdfDocument>
@@ -173,3 +182,4 @@ const EbookDownloadForm = () => {
 };
 
 export default EbookDownloadForm;
+
