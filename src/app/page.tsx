@@ -1,5 +1,7 @@
+
 import Header from '@/components/landing/Header';
 import HeroSection from '@/components/landing/HeroSection';
+import ReasonsToChooseUsSection from '@/components/landing/ReasonsToChooseUsSection';
 import FeaturesSection from '@/components/landing/FeaturesSection';
 import MaestriaFlixSection from '@/components/landing/MaestriaFlixSection';
 import BlogReferralSection from '@/components/landing/BlogReferralSection';
@@ -13,6 +15,7 @@ export default function LandingPage() {
       <Header />
       <main className="flex-grow">
         <HeroSection />
+        <ReasonsToChooseUsSection />
         <FeaturesSection />
         <TestimonialsSection />
         <MaestriaFlixSection />
