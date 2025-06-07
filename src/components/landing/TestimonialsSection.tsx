@@ -46,7 +46,7 @@ const TestimonialsSection = () => {
         </div>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {testimonials.map((testimonial, index) => (
-            <Card key={index} className="flex flex-col shadow-lg hover:shadow-xl transition-shadow duration-300 ease-in-out">
+            <Card key={index} className="flex flex-col shadow-lg hover:shadow-xl transition-shadow duration-300 ease-in-out bg-card">
               <CardHeader className="flex flex-row items-center gap-4 p-6">
                 <div className="relative w-16 h-16 rounded-full overflow-hidden">
                   <Image
@@ -58,8 +58,8 @@ const TestimonialsSection = () => {
                   />
                 </div>
                 <div>
-                  <h3 className="font-headline text-lg font-semibold">{testimonial.name}</h3>
-                  <p className="text-sm text-foreground/70">{testimonial.title}</p>
+                  <h3 className="font-headline text-lg font-semibold text-card-foreground">{testimonial.name}</h3>
+                  <p className="text-sm text-card-foreground/70">{testimonial.title}</p>
                 </div>
               </CardHeader>
               <CardContent className="flex-grow p-6 pt-0">
@@ -71,12 +71,12 @@ const TestimonialsSection = () => {
                     />
                   ))}
                 </div>
-                <blockquote className="italic text-foreground/80">
+                <blockquote className="italic text-card-foreground/80">
                   "{testimonial.quote}"
                 </blockquote>
               </CardContent>
               <CardFooter className="p-6">
-                <Button asChild variant="ghost" className="text-accent hover:text-accent/90">
+                <Button asChild variant="ghost" className="text-primary hover:text-primary/90">
                   <Link href={testimonial.videoUrl} target="_blank" rel="noopener noreferrer">
                     <PlayCircle className="mr-2 h-5 w-5" /> Watch Video Testimonial
                   </Link>

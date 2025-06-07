@@ -3,32 +3,32 @@ import { Award, BarChart3, DownloadCloud, Rocket, ShieldCheck, Users } from 'luc
 
 const features = [
   {
-    icon: <Rocket className="h-10 w-10 text-accent" />,
+    icon: <Rocket className="h-10 w-10 text-primary" />,
     title: 'Blazing Fast Load Speeds',
     description: 'Optimized for performance, ensuring your visitors have a seamless experience.',
   },
   {
-    icon: <ShieldCheck className="h-10 w-10 text-accent" />,
+    icon: <ShieldCheck className="h-10 w-10 text-primary" />,
     title: 'Secure & Reliable',
     description: 'Built with top-notch security features to protect your data and build trust.',
   },
   {
-    icon: <Award className="h-10 w-10 text-accent" />,
+    icon: <Award className="h-10 w-10 text-primary" />,
     title: 'High Conversion Design',
     description: 'Modern, aesthetically pleasing designs focused on maximizing user engagement.',
   },
   {
-    icon: <Users className="h-10 w-10 text-accent" />,
+    icon: <Users className="h-10 w-10 text-primary" />,
     title: 'Community & Support',
     description: 'Access to a supportive community and resources to help you succeed.',
   },
   {
-    icon: <BarChart3 className="h-10 w-10 text-accent" />,
+    icon: <BarChart3 className="h-10 w-10 text-primary" />,
     title: 'Analytics Integration',
     description: 'Easily track your performance and make data-driven decisions.',
   },
   {
-    icon: <DownloadCloud className="h-10 w-10 text-accent" />,
+    icon: <DownloadCloud className="h-10 w-10 text-primary" />,
     title: 'Valuable Resources',
     description: 'Get access to exclusive content like ebooks and guides to grow your business.',
   },
@@ -46,13 +46,13 @@ const FeaturesSection = () => {
         </div>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {features.map((feature, index) => (
-            <Card key={index} className="shadow-lg hover:shadow-xl transition-shadow duration-300 ease-in-out">
+            <Card key={index} className="shadow-lg hover:shadow-xl transition-shadow duration-300 ease-in-out bg-card">
               <CardHeader className="items-center text-center">
                 {feature.icon}
-                <CardTitle className="mt-4 font-headline text-xl">{feature.title}</CardTitle>
+                <CardTitle className="mt-4 font-headline text-xl text-card-foreground">{feature.title}</CardTitle>
               </CardHeader>
               <CardContent className="text-center">
-                <p className="text-foreground/70">{feature.description}</p>
+                <p className="text-card-foreground/80">{feature.description}</p>
               </CardContent>
             </Card>
           ))}

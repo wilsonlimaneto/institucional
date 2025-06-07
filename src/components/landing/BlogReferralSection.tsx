@@ -30,7 +30,7 @@ const blogPosts = [
 
 const BlogReferralSection = () => {
   return (
-    <section id="blog" className="py-16 md:py-24 lg:py-32 bg-secondary/30">
+    <section id="blog" className="py-16 md:py-24 lg:py-32 bg-secondary/10">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12 md:mb-16">
           <h2 className="text-3xl sm:text-4xl font-bold text-primary">Valuable Insights from Our Blog</h2>
@@ -40,7 +40,7 @@ const BlogReferralSection = () => {
         </div>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {blogPosts.map((post, index) => (
-            <Card key={index} className="flex flex-col shadow-lg hover:shadow-xl transition-shadow duration-300 ease-in-out overflow-hidden">
+            <Card key={index} className="flex flex-col shadow-lg hover:shadow-xl transition-shadow duration-300 ease-in-out overflow-hidden bg-card">
               <CardHeader className="p-0">
                 <div className="relative aspect-video w-full">
                   <Image
@@ -53,11 +53,11 @@ const BlogReferralSection = () => {
                 </div>
               </CardHeader>
               <CardContent className="flex-grow p-6 space-y-3">
-                <CardTitle className="font-headline text-xl">{post.title}</CardTitle>
-                <p className="text-foreground/70 text-sm line-clamp-3">{post.description}</p>
+                <CardTitle className="font-headline text-xl text-card-foreground">{post.title}</CardTitle>
+                <p className="text-card-foreground/70 text-sm line-clamp-3">{post.description}</p>
               </CardContent>
               <CardFooter className="p-6 pt-0">
-                <Button asChild variant="link" className="p-0 h-auto text-accent font-semibold">
+                <Button asChild variant="link" className="p-0 h-auto text-primary font-semibold">
                   <Link href={post.link} target="_blank" rel="noopener noreferrer">
                     Read More <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
