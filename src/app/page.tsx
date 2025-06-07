@@ -1,6 +1,7 @@
 import Header from '@/components/landing/Header';
 import HeroSection from '@/components/landing/HeroSection';
 import FeaturesSection from '@/components/landing/FeaturesSection';
+import MaestriaFlixSection from '@/components/landing/MaestriaFlixSection';
 import BlogReferralSection from '@/components/landing/BlogReferralSection';
 import EbookDownloadForm from '@/components/landing/EbookDownloadForm';
 import TestimonialsSection from '@/components/landing/TestimonialsSection';
@@ -14,6 +15,7 @@ export default function LandingPage() {
         <HeroSection />
         <FeaturesSection />
         <TestimonialsSection />
+        <MaestriaFlixSection />
         <BlogReferralSection />
         <EbookDownloadForm />
       </main>

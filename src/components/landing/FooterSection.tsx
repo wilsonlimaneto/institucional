@@ -1,5 +1,6 @@
 import Link from 'next/link';
-import { Facebook, Linkedin, Twitter, Star } from 'lucide-react';
+import Image from 'next/image';
+import { Facebook, Linkedin, Twitter, MessageSquare } from 'lucide-react';
 
 const FooterSection = () => {
   const currentYear = new Date().getFullYear();
@@ -30,14 +31,21 @@ const FooterSection = () => {
                 <Linkedin className="h-6 w-6" />
               </Link>
             </div>
+            <Link href="mailto:feedback@maestria.ai" className="flex items-center gap-2 mt-4 text-sm text-foreground/70 hover:text-primary transition-colors">
+              <MessageSquare className="h-5 w-5" />
+              Send Feedback
+            </Link>
           </div>
 
           <div className="flex flex-col items-center md:items-end">
-            <h3 className="font-headline text-lg font-semibold mb-3 text-foreground">Proudly Supported By</h3>
-            <div className="flex items-center gap-2 text-foreground/70">
-              {/* For a more accurate representation, this could be the Google for Startups logo image */}
-              <svg className="h-6 w-6 text-primary" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"></path></svg>
-              <span className="font-semibold">Google for Startups</span>
+            <h3 className="font-headline text-lg font-semibold mb-3 text-foreground">Apoiado por</h3>
+            <div className="relative h-12 w-48">
+              <Image
+                src="/gfs_h.png"
+                alt="Google for Startups Logo"
+                layout="fill"
+                objectFit="contain"
+              />
             </div>
           </div>
         </div>

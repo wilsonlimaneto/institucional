@@ -1,31 +1,94 @@
+'use client';
+
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
+import { Sheet, SheetContent, SheetTrigger, SheetClose } from '@/components/ui/sheet';
+import { Menu } from 'lucide-react';
 
 const Header = () => {
   return (
     <header className="sticky top-0 z-50 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
       <div className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
-        <Link href="/" className="flex items-center" prefetch={false}>
-          <Image
-            src="/maestria-logo.png"
-            alt="maestria. logo"
-            width={150}
-            height={31}
-            priority
-          />
+        <Link href="/" className="flex flex-shrink-0 items-center" prefetch={false}>
+          <div className="relative w-[120px] h-[25px] md:w-[150px] md:h-[31px]">
+            <Image
+                src="/maestrialogo.png"
+                alt="maestria. logo"
+                layout="fill"
+                objectFit="contain"
+                priority
+            />
+          </div>
         </Link>
-        <nav className="flex items-center gap-4 md:gap-6">
-          <Link href="#funcionalidades" className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors" prefetch={false}>
+        
+        {/* Desktop Navigation */}
+        <nav className="hidden lg:flex items-center gap-4">
+          <Link href="#funcionalidades" className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors whitespace-nowrap" prefetch={false}>
             Funcionalidades
           </Link>
-          <Link href="#tecnologia" className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors" prefetch={false}>
+          <Link href="#tecnologia" className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors whitespace-nowrap" prefetch={false}>
             Tecnologia
           </Link>
+          <Link href="#depoimentos" className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors whitespace-nowrap" prefetch={false}>
+            Depoimentos
+          </Link>
+          <Link href="#ebook" className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors whitespace-nowrap" prefetch={false}>
+            E-Book
+          </Link>
+          <Link href="#blog" className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors whitespace-nowrap" prefetch={false}>
+            Blog
+          </Link>
           <Button asChild size="sm">
-            <Link href="#use-gratuitamente">Use Gratuitamente</Link>
+            <Link href="#use-gratuitamente" className="whitespace-nowrap">Use Gratuitamente</Link>
           </Button>
         </nav>
+
+        {/* Mobile Navigation */}
+        <div className="lg:hidden">
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="outline" size="icon">
+                <Menu className="h-6 w-6" />
+                <span className="sr-only">Toggle navigation menu</span>
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right">
+              <div className="grid gap-4 py-6">
+                <SheetClose asChild>
+                  <Link href="#funcionalidades" className="text-lg font-medium hover:text-primary transition-colors" prefetch={false}>
+                    Funcionalidades
+                  </Link>
+                </SheetClose>
+                <SheetClose asChild>
+                  <Link href="#tecnologia" className="text-lg font-medium hover:text-primary transition-colors" prefetch={false}>
+                    Tecnologia
+                  </Link>
+                </SheetClose>
+                <SheetClose asChild>
+                  <Link href="#depoimentos" className="text-lg font-medium hover:text-primary transition-colors" prefetch={false}>
+                    Depoimentos
+                  </Link>
+                </SheetClose>
+                <SheetClose asChild>
+                  <Link href="#ebook" className="text-lg font-medium hover:text-primary transition-colors" prefetch={false}>
+                    E-Book
+                  </Link>
+                </SheetClose>
+                <SheetClose asChild>
+                  <Link href="#blog" className="text-lg font-medium hover:text-primary transition-colors" prefetch={false}>
+                    Blog
+                  </Link>
+                </SheetClose>
+                <SheetClose asChild>
+                    <Button asChild className="w-full mt-4">
+                        <Link href="#use-gratuitamente">Use Gratuitamente</Link>
+                    </Button>
+                </SheetClose>
+              </div>
+            </SheetContent>
+          </Sheet>
+        </div>
       </div>
     </header>
   );
