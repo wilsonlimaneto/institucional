@@ -24,7 +24,7 @@ const PdfDocument = dynamic(
   async () => {
     // Dynamically import react-pdf and its pdfjs object
     const { pdfjs, Document } = await import('react-pdf');
-    
+
     // Configure workerSrc here, strictly on the client-side.
     // Using .mjs version as recommended for modern bundlers with ESM and Next.js App Router.
     // This path should be correctly handled by Next.js to serve the worker from node_modules.
@@ -33,7 +33,7 @@ const PdfDocument = dynamic(
       'pdfjs-dist/build/pdf.worker.min.mjs',
       import.meta.url
     ).toString();
-    
+
     return Document; // Return the Document component
   },
   {
@@ -64,8 +64,8 @@ const EbookDownloadForm = () => {
     defaultValues: {
       name: "",
       email: "",
-      phone: "",
-      areaOfLaw: ""
+      phone: undefined, // Match Zod schema (optional string)
+      areaOfLaw: undefined // Match Zod schema (optional string)
     }
   });
 
@@ -77,7 +77,7 @@ const EbookDownloadForm = () => {
         variant: formState.success ? "default" : "destructive",
       });
       if (formState.success) {
-        reset(); 
+        reset();
       }
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -124,26 +124,26 @@ const EbookDownloadForm = () => {
               onSubmit={handleSubmit(handleFormSubmit)}
               className="space-y-4"
             >
-              <Input 
-                {...register("name")} 
-                type="text" 
-                placeholder="Nome" 
+              <Input
+                {...register("name")}
+                type="text"
+                placeholder="Nome"
                 aria-invalid={errors.name ? "true" : "false"}
               />
               {errors.name && <p className="text-sm text-destructive">{errors.name.message}</p>}
-              
-              <Input 
-                {...register("email")} 
-                type="email" 
-                placeholder="E-mail" 
+
+              <Input
+                {...register("email")}
+                type="email"
+                placeholder="E-mail"
                 aria-invalid={errors.email ? "true" : "false"}
               />
               {errors.email && <p className="text-sm text-destructive">{errors.email.message}</p>}
 
-              <Input 
-                {...register("phone")} 
-                type="tel" 
-                placeholder="Celular (Opcional)" 
+              <Input
+                {...register("phone")}
+                type="tel"
+                placeholder="Celular (Opcional)"
               />
                {errors.phone && <p className="text-sm text-destructive">{errors.phone.message}</p>}
 
@@ -151,16 +151,14 @@ const EbookDownloadForm = () => {
                 name="areaOfLaw"
                 control={control}
                 render={({ field }) => (
-                  <Select 
-                    onValueChange={field.onChange} 
+                  <Select
+                    onValueChange={field.onChange}
                     value={field.value || ""}
-                    defaultValue=""
                   >
                     <SelectTrigger aria-invalid={errors.areaOfLaw ? "true" : "false"}>
                       <SelectValue placeholder="Ramo de Atuação (Opcional)" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="" disabled>Selecione uma área (Opcional)</SelectItem>
                       {ramosDeAtuacao.map(ramo => (
                         <SelectItem key={ramo} value={ramo}>{ramo}</SelectItem>
                       ))}
@@ -169,7 +167,7 @@ const EbookDownloadForm = () => {
                 )}
               />
               {errors.areaOfLaw && <p className="text-sm text-destructive">{errors.areaOfLaw.message}</p>}
-              
+
               <Button type="submit" size="lg" className="w-full font-semibold">
                 Download Gratuito
               </Button>
@@ -177,15 +175,17 @@ const EbookDownloadForm = () => {
           </div>
           <div className="flex justify-center items-center">
             <div className="w-full max-w-sm rounded-lg overflow-hidden shadow-2xl">
-              <PdfDocument
-                file="/ebook-maestria-jurisp-pdf.pdf" // Ensure this PDF is in your /public folder
-                onLoadSuccess={onDocumentLoadSuccess}
-                className="flex justify-center"
-                onLoadError={(error) => console.error('Failed to load PDF:', error.message)}
-                onSourceError={(error) => console.error('Failed to load PDF source:', error.message)}
-              >
-                {numPages && <PdfPage pageNumber={1} width={300} />}
-              </PdfDocument>
+              {typeof window !== 'undefined' && (
+                <PdfDocument
+                  file="/ebook-maestria-jurisp-pdf.pdf" // Ensure this PDF is in your /public folder
+                  onLoadSuccess={onDocumentLoadSuccess}
+                  className="flex justify-center"
+                  onLoadError={(error) => console.error('Failed to load PDF:', error.message)}
+                  onSourceError={(error) => console.error('Failed to load PDF source:', error.message)}
+                >
+                  {numPages && <PdfPage pageNumber={1} width={300} />}
+                </PdfDocument>
+              )}
             </div>
           </div>
         </div>
@@ -195,4 +195,3 @@ const EbookDownloadForm = () => {
 };
 
 export default EbookDownloadForm;
-    
