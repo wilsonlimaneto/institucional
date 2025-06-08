@@ -3,10 +3,11 @@ import Header from '@/components/landing/Header';
 import HeroSection from '@/components/landing/HeroSection';
 import ReasonsToChooseUsSection from '@/components/landing/ReasonsToChooseUsSection';
 import FeaturesSection from '@/components/landing/FeaturesSection';
+import TestimonialsSection from '@/components/landing/TestimonialsSection';
+import GoogleCloudSuccessSection from '@/components/landing/GoogleCloudSuccessSection';
 import MaestriaFlixSection from '@/components/landing/MaestriaFlixSection';
 import BlogReferralSection from '@/components/landing/BlogReferralSection';
 import EbookDownloadForm from '@/components/landing/EbookDownloadForm';
-import TestimonialsSection from '@/components/landing/TestimonialsSection';
 import FooterSection from '@/components/landing/FooterSection';
 
 export default function LandingPage() {
@@ -18,6 +19,7 @@ export default function LandingPage() {
         <ReasonsToChooseUsSection />
         <FeaturesSection />
         <TestimonialsSection />
+        <GoogleCloudSuccessSection />
         <MaestriaFlixSection />
         <BlogReferralSection />
         <EbookDownloadForm />
