@@ -200,10 +200,10 @@ const EbookDownloadForm = () => {
   }, [pdfContainerWidth, firstPageAspectRatio, zoomLevel]);
 
 
-  const onDocumentLoadSuccess = async ({ numPages: nextNumPages, getPage }: PDFDocumentProxy) => {
-    setNumPages(nextNumPages);
-    if (nextNumPages > 0 && pdfParentContainerRef.current) {
-      const page1 = await getPage(1); // Use the passed getPage function
+  const onDocumentLoadSuccess = async (pdf: PDFDocumentProxy) => {
+    setNumPages(pdf.numPages);
+    if (pdf.numPages > 0 && pdfParentContainerRef.current) {
+      const page1 = await pdf.getPage(1); 
       const viewport = page1.getViewport({ scale: 1 });
       const aspectRatio = viewport.height / viewport.width;
       setFirstPageAspectRatio(aspectRatio);
