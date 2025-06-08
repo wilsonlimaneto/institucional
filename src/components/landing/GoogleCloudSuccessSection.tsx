@@ -31,7 +31,7 @@ const GoogleCloudSuccessSection = () => {
               height={130}
               objectFit="contain"
               data-ai-hint="google cloud logo"
-              className="max-w-full h-auto"
+              className="h-auto w-auto max-w-[280px] sm:max-w-[320px] md:max-w-[390px] mx-auto"
             />
           </div>
         </div>
