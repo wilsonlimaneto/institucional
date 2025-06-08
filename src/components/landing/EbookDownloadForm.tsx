@@ -1,11 +1,12 @@
 
 'use client';
 
-import React, { useState, useEffect, useActionState } from 'react';
-import { useForm } from 'react-hook-form';
+import React, { useEffect } from 'react';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { EbookFormSchema, type EbookFormData } from '@/types';
 import { submitEbookForm, type FormState } from '@/lib/actions';
+import { useActionState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,45 +14,59 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
 
-// Import pdfjs from react-pdf to configure it
-import { pdfjs } from 'react-pdf';
-
-// CSS imports for react-pdf styling
+// CSS imports for react-pdf styling (these are fine at the top level)
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
-
-// Configure workerSrc globally on the client-side
-if (typeof window !== 'undefined') {
-  const pdfjsVersion = pdfjs.version;
-  // Using unpkg CDN to get the .mjs worker file directly
-  pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjsVersion}/build/pdf.worker.min.mjs`;
-}
 
 import type { DocumentProps, PageProps } from 'react-pdf';
 import dynamic from 'next/dynamic';
 
-const PdfDocument = dynamic<DocumentProps>(() => import('react-pdf').then(mod => mod.Document), {
-  ssr: false,
-  loading: () => (
-    <div className="flex justify-center items-center w-full max-w-sm h-[424px] bg-muted rounded-lg shadow-inner">
-      <p className="text-sm text-muted-foreground">Carregando prévia do PDF...</p>
-    </div>
-  ),
-});
+// Dynamically import react-pdf components and configure worker inside the factory
+const PdfDocument = dynamic<DocumentProps>(
+  () =>
+    import('react-pdf').then((mod) => {
+      // Configure pdfjs worker here, only on the client
+      if (typeof window !== 'undefined') {
+        const pdfjsVersion = mod.pdfjs.version;
+        mod.pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjsVersion}/build/pdf.worker.min.mjs`;
+      }
+      return mod.Document; // Return the component
+    }),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex justify-center items-center w-full max-w-sm h-[424px] bg-muted rounded-lg shadow-inner">
+        <p className="text-sm text-muted-foreground">Carregando prévia do PDF...</p>
+      </div>
+    ),
+  }
+);
 
-const PdfPage = dynamic<PageProps>(() => import('react-pdf').then(mod => mod.Page), {
-  ssr: false,
-});
+const PdfPage = dynamic<PageProps>(
+  () =>
+    import('react-pdf').then((mod) => {
+      // Fallback configuration if not already set by PdfDocument, though ideally one set is enough
+      if (typeof window !== 'undefined' && !mod.pdfjs.GlobalWorkerOptions.workerSrc) {
+         const pdfjsVersion = mod.pdfjs.version;
+         mod.pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjsVersion}/build/pdf.worker.min.mjs`;
+      }
+      return mod.Page;
+    }),
+  {
+    ssr: false,
+    // PdfPage typically doesn't need its own loading spinner if rendered within a PdfDocument
+  }
+);
 
 
 const EbookDownloadForm = () => {
-  const [numPages, setNumPages] = useState<number | null>(null);
+  const [numPages, setNumPages] = React.useState<number | null>(null);
   const { toast } = useToast();
 
   const initialFormState: FormState = { message: "", success: false, issues: [] };
   const [formState, formAction] = useActionState(submitEbookForm, initialFormState);
 
-  const { register, handleSubmit, formState: { errors }, reset, control, setValue } = useForm<EbookFormData>({
+  const { register, handleSubmit, formState: { errors: formErrors }, reset, control, setValue, watch } = useForm<EbookFormData>({
     resolver: zodResolver(EbookFormSchema),
     defaultValues: {
       name: "",
@@ -60,6 +75,8 @@ const EbookDownloadForm = () => {
       areaOfLaw: "",
     }
   });
+
+  const currentPhoneValue = watch("phone");
 
   useEffect(() => {
     if (formState.message && formState.message !== "") {
@@ -90,35 +107,36 @@ const EbookDownloadForm = () => {
     const formData = new FormData();
     (Object.keys(data) as Array<keyof EbookFormData>).forEach((key) => {
       const value = data[key];
-      if (value !== undefined && value !== null && value !== '') {
-        formData.append(key, String(value));
-      }
+      // Ensure all fields are appended, even if empty, to let server-side validation handle them
+      formData.append(key, String(value ?? ''));
     });
     formAction(formData);
   };
-
+  
   const applyPhoneMask = (value: string): string => {
-    if (!value && value !== '+') return ""; 
-    if (value === "+") return "+";
-
+    if (!value && value !== '+') return "";
+    
     let digits = value.replace(/\D/g, "");
 
-    if (digits.length > 0 && !value.startsWith('+') && !digits.startsWith(value.replace(/\D/g,''))) {
-       digits = digits;
+    if (digits.length === 0 && value === "+") return "+";
+    if (digits.length === 0 && value !== "+") return "";
+
+
+    if (digits.length > 0 && !value.startsWith('+') ) {
+        digits = '55' + digits; // Default to Brazil DDI if not starting with +
     }
     
-    digits = digits.slice(0, 14); 
-
+    digits = digits.slice(0, 13); // Max length for DDI + DDD + Number (e.g., 55XX9XXXXXXXX)
+    
     let masked = "+";
     const len = digits.length;
 
     if (len === 0) return "+";
 
-
     let ddiEnd = 0;
     if (digits.startsWith('55')) ddiEnd = 2;
     else if (digits.startsWith('1')) ddiEnd = 1;
-    else if (len <=3 ) ddiEnd = len; // Allow up to 3 digits for DDI if not 1 or 55
+    else if (len <=3 ) ddiEnd = len; 
     else ddiEnd = Math.min(len, 3);
 
     masked += digits.substring(0, ddiEnd);
@@ -155,44 +173,58 @@ const EbookDownloadForm = () => {
                 {...register("name")}
                 type="text"
                 placeholder="Nome Completo"
-                aria-invalid={errors.name ? "true" : "false"}
+                aria-invalid={formErrors.name ? "true" : "false"}
               />
-              {errors.name && <p className="text-sm text-destructive">{errors.name.message}</p>}
+              {formErrors.name && <p className="text-sm text-destructive">{formErrors.name.message}</p>}
 
               <Input
                 {...register("email")}
                 type="email"
                 placeholder="Seu Melhor E-mail"
-                aria-invalid={errors.email ? "true" : "false"}
+                aria-invalid={formErrors.email ? "true" : "false"}
               />
-              {errors.email && <p className="text-sm text-destructive">{errors.email.message}</p>}
-
-              <Input
-                {...register("phone")}
-                type="tel"
-                placeholder="+XX (XX) XXXXX-XXXX"
-                onChange={(e) => {
-                  const maskedValue = applyPhoneMask(e.target.value);
-                  setValue("phone", maskedValue, { shouldValidate: true });
-                }}
-                aria-invalid={errors.phone ? "true" : "false"}
+              {formErrors.email && <p className="text-sm text-destructive">{formErrors.email.message}</p>}
+              
+              <Controller
+                name="phone"
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    type="tel"
+                    placeholder="+55 (XX) XXXXX-XXXX"
+                    onChange={(e) => {
+                      const maskedValue = applyPhoneMask(e.target.value);
+                      setValue("phone", maskedValue, { shouldValidate: true });
+                      field.onChange(maskedValue); // Ensure Controller's field.onChange is also called
+                    }}
+                    value={currentPhoneValue || ""} // Use watched value for direct control
+                    aria-invalid={formErrors.phone ? "true" : "false"}
+                  />
+                )}
               />
-               {errors.phone && <p className="text-sm text-destructive">{errors.phone.message}</p>}
+               {formErrors.phone && <p className="text-sm text-destructive">{formErrors.phone.message}</p>}
 
-              <Select
-                onValueChange={(value) => setValue("areaOfLaw", value, { shouldValidate: true })}
-                value={control._formValues.areaOfLaw || ""}
-              >
-                <SelectTrigger aria-invalid={errors.areaOfLaw ? "true" : "false"}>
-                  <SelectValue placeholder="Selecione seu principal ramo de atuação..." />
-                </SelectTrigger>
-                <SelectContent>
-                  {ramosDeAtuacao.map(ramo => (
-                    <SelectItem key={ramo} value={ramo}>{ramo}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {errors.areaOfLaw && <p className="text-sm text-destructive">{errors.areaOfLaw.message}</p>}
+              <Controller
+                name="areaOfLaw"
+                control={control}
+                render={({ field }) => (
+                    <Select
+                        onValueChange={(value) => field.onChange(value)}
+                        value={field.value}
+                    >
+                        <SelectTrigger aria-invalid={formErrors.areaOfLaw ? "true" : "false"}>
+                        <SelectValue placeholder="Selecione seu principal ramo de atuação..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                        {ramosDeAtuacao.map(ramo => (
+                            <SelectItem key={ramo} value={ramo}>{ramo}</SelectItem>
+                        ))}
+                        </SelectContent>
+                    </Select>
+                )}
+              />
+              {formErrors.areaOfLaw && <p className="text-sm text-destructive">{formErrors.areaOfLaw.message}</p>}
               
               {formState.issues && formState.issues.length > 0 && !formState.success && (
                 <p className="text-sm text-destructive text-center py-2">
@@ -237,3 +269,4 @@ const EbookDownloadForm = () => {
 };
 
 export default EbookDownloadForm;
+
