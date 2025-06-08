@@ -12,9 +12,9 @@ const HeroSection = () => {
         <div className="grid md:grid-cols-5 gap-12 md:gap-12 items-start"> {/* Changed md:grid-cols-2 to md:grid-cols-5 */}
           <div className="space-y-8 text-center md:text-left md:col-span-2"> {/* Added md:col-span-2 */}
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-foreground">
-              Gere minutas de <span className="text-primary">documentos jurídicos</span> com <span className="text-primary">Jurisprudência Real</span> usando o modelo de IA mais assertivo do mercado.
+              Gere minutas de <span className="text-primary">documentos jurídicos</span> com <span className="text-primary">Jurisprudência real</span> usando o modelo de IA mais assertivo do mercado.
             </h1>
-            <p className="text-lg md:text-xl text-foreground/80">
+            <p className="text-lg md:text-xl text-foreground/80 mb-4">
               <span style={{ fontSize: '115%' }}>Automatize GRATUITAMENTE a sua rotina de edição de documentos, resumos de processos e pesquisa de jurisprudência.</span>
             </p>
             
@@ -75,4 +75,3 @@ const HeroSection = () => {
 };
 
 export default HeroSection;
-
