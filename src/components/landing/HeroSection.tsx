@@ -8,7 +8,7 @@ const HeroSection = () => {
     <section className="py-16 md:py-24 lg:py-32">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Main content: Text on left, Image + Buttons on right */}
-        <div className="grid md:grid-cols-5 gap-12 md:gap-12 items-start mb-12 md:mb-16">
+        <div className="grid md:grid-cols-5 gap-12 md:gap-12 items-center mb-12 md:mb-16">
           {/* Left Column: Text content */}
           <div className="space-y-8 text-center md:text-left md:col-span-2">
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-foreground">
