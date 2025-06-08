@@ -19,8 +19,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        body: ['Noto Sans', 'sans-serif'],
-        headline: ['Noto Sans', 'sans-serif'],
+        sans: ['var(--font-noto-sans)', 'sans-serif'], // Updated to use CSS variable
+        headline: ['var(--font-noto-sans)', 'sans-serif'], // Updated to use CSS variable
         code: ['monospace'],
       },
       colors: {

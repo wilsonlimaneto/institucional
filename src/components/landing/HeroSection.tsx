@@ -1,18 +1,11 @@
 
 'use client';
 
-import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 
 const HeroSection = () => {
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
   return (
     <section className="py-16 md:py-24 lg:py-32">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -21,7 +14,7 @@ const HeroSection = () => {
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-foreground">
               Gere <span className="text-primary">quaisquer documentos jurídicos</span> e inclua também <span className="text-primary">Jurisprudência Real e Verificada</span> da forma mais assertiva do mercado.
             </h1>
-            <p className={`text-lg md:text-xl text-foreground/80 ${isMounted ? 'animate-fade-in' : 'opacity-0'}`}>
+            <p className="text-lg md:text-xl text-foreground/80">
               Automatize, de forma GRATUITA, a sua rotina de edição de documentos e pesquisa de jurisprudência.
             </p>
             <p className="text-sm md:text-base text-foreground/80">
@@ -55,6 +48,7 @@ const HeroSection = () => {
               alt="Maestria logo"
               layout="fill"
               objectFit="cover"
+              data-ai-hint="legal tech logo"
             />
           </div>
         </div>
