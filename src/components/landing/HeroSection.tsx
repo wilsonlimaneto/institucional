@@ -11,7 +11,7 @@ const HeroSection = () => {
           {/* Left Column: Text content */}
           <div className="space-y-8 text-center md:text-left md:col-span-2">
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-foreground">
-              Gere minutas de <span className="text-primary">documentos jurídicos</span> com <span className="text-primary">Jurisprudência real</span> usando o modelo de IA mais assertivo do mercado.
+              Gere minutas de <span className="text-primary">documentos jurídicos</span> com <span className="text-primary">Jurisprudência real</span> com qualidade insuperável.
             </h1>
             
             <div>
@@ -45,7 +45,7 @@ const HeroSection = () => {
               </div>
             </div>
 
-            {/* Bullets Section - Moved Here */}
+            {/* Bullets Section */}
             <div className="text-center md:text-left">
               <p className="text-sm md:text-base text-foreground/80 font-medium">
                 A única ferramenta que entrega:
@@ -60,8 +60,8 @@ const HeroSection = () => {
             </div>
           </div>
 
-          {/* Right Column: Image only */}
-          <div className="md:col-span-3">
+          {/* Right Column: Image and then bullets below it */}
+          <div className="md:col-span-3 space-y-8">
             <div className="relative rounded-lg overflow-hidden shadow-2xl">
               <Image
                 src="/fast_demo_maestria.webp"
