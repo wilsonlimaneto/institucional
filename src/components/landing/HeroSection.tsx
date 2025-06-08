@@ -19,8 +19,8 @@ const HeroSection = () => {
                 <span style={{ fontSize: '115%' }}>Automatize GRATUITAMENTE a sua rotina de edição de documentos, resumos de processos e pesquisa de jurisprudência.</span>
               </p>
             </div>
-
-            {/* Action Buttons moved here */}
+            
+            {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
               <Button asChild size="lg" className="font-semibold">
                 <Link href="#use-agora">Use agora mesmo</Link>
@@ -44,9 +44,23 @@ const HeroSection = () => {
                   />
               </div>
             </div>
+
+            {/* Bullets Section - Moved Here */}
+            <div className="text-center md:text-left">
+              <p className="text-sm md:text-base text-foreground/80 font-medium">
+                A única ferramenta que entrega:
+              </p>
+              <ul className="mt-2 ml-0 md:ml-4 list-disc list-inside text-sm md:text-base text-foreground/70 space-y-1.5" data-ai-hint="List of features including semantic search for real jurisprudence">
+                <li>Jurisprudência real, já verificada por meio de <em className="italic text-foreground/80">busca semântica</em>®</li>
+                <li>Editor de documentos embutido <span style={{ fontSize: '0.8em' }}>(2o Sem 2025)</span></li>
+                <li>Integração Google Docs e MS Office</li>
+                <li>Resuma dados de longos documentos <span style={{ fontSize: '0.8em' }}>(Ago 2025)</span></li>
+                <li>Parceria com empresas e tecnologias reconhecidas internacionalmente</li>
+              </ul>
+            </div>
           </div>
 
-          {/* Right Column: Image, then bullets */}
+          {/* Right Column: Image only */}
           <div className="md:col-span-3">
             <div className="relative rounded-lg overflow-hidden shadow-2xl">
               <Image
@@ -63,19 +77,6 @@ const HeroSection = () => {
                 data-ai-hint="legal tech demo"
                 priority
               />
-            </div>
-
-            <div className="mt-8 text-center md:text-left">
-              <p className="text-sm md:text-base text-foreground/80 font-medium">
-                A única ferramenta que entrega:
-              </p>
-              <ul className="mt-2 ml-0 md:ml-4 list-disc list-inside text-sm md:text-base text-foreground/70 space-y-1.5" data-ai-hint="List of features including semantic search for real jurisprudence">
-                <li>Jurisprudência real, já verificada por meio de <em className="italic text-foreground/80">busca semântica</em>®</li>
-                <li>Editor de documentos embutido <span style={{ fontSize: '0.8em' }}>(2o Sem 2025)</span></li>
-                <li>Integração Google Docs e MS Office</li>
-                <li>Resuma dados de longos documentos <span style={{ fontSize: '0.8em' }}>(Ago 2025)</span></li>
-                <li>Parceria com empresas e tecnologias reconhecidas internacionalmente</li>
-              </ul>
             </div>
           </div>
         </div>
