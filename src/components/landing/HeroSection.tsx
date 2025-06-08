@@ -14,11 +14,9 @@ const HeroSection = () => {
               Gere minutas de <span className="text-primary">documentos jurídicos</span> com <span className="text-primary">Jurisprudência real</span> com qualidade insuperável.
             </h1>
             
-            <div>
-              <p className="text-lg md:text-xl text-foreground/80">
-                <span style={{ fontSize: '115%' }}>Automatize GRATUITAMENTE a sua rotina de edição de documentos, resumos de processos e pesquisa de jurisprudência.</span>
-              </p>
-            </div>
+            <p className="text-lg md:text-xl text-foreground/80">
+              <span style={{ fontSize: '115%' }}>Automatize GRATUITAMENTE a sua rotina de edição de documentos, resumos de processos e pesquisa de jurisprudência.</span>
+            </p>
             
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
@@ -35,7 +33,7 @@ const HeroSection = () => {
               <p className="text-sm text-foreground/80 mb-1">
                 Startup apoiada pelo
               </p>
-              <div className="relative h-[5.6rem] w-full max-w-[22.4rem] inline-block -ml-[10px] -mt-[20px]">
+              <div className="relative h-[5.6rem] w-full max-w-[22.4rem] mx-auto md:ml-0 -mt-[20px]">
                  <Image
                     src="/gfs_h.png"
                     alt="Google for Startups Logo"
@@ -44,9 +42,8 @@ const HeroSection = () => {
                   />
               </div>
             </div>
-
-            {/* Bullets Section */}
-            <div className="text-center md:text-left">
+             {/* Bullets Section - Moved to be below GFS logo in the left column */}
+             <div className="text-center md:text-left">
               <p className="text-sm md:text-base text-foreground/80 font-medium">
                 A única ferramenta que entrega:
               </p>
