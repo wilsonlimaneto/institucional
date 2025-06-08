@@ -4,7 +4,7 @@ import { CheckCircle } from 'lucide-react';
 const diferenciais = [
   { text: 'Parceria com empresas de tecnologia renomadas' },
   { text: 'Facilidade e intuitividade no uso (sem precisar de prompts milagrosos)' },
-  { text: 'Pesquisa jurisprudencial verificada e com tecnologia Semântica®' },
+  { text: 'Pesquisa jurisprudencial verificada e mais assertiva por usar tecnologia Semântica®' },
   { text: 'Editor de documentos nativo: você não precisa copiar os textos para um editor' },
   { text: 'Integração Google Docs e MS Office (2o Sem 2025)' },
   { text: 'Integração ao Google Drive e Dropbox (2o Sem 2025)' },
