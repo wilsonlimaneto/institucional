@@ -125,11 +125,19 @@ const TestimonialsSection = () => {
                       data-ai-hint={testimonial.aiHint}
                       className="transition-transform duration-300 group-hover:scale-105"
                     />
-                    <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
                       <PlayCircle className="h-16 w-16 text-white/90 drop-shadow-lg" />
                     </div>
+                    <div className="absolute bottom-2 left-2 z-10 pointer-events-none">
+                      <Image
+                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/YouTube_full-color_icon_%282017%29.svg/64px-YouTube_full-color_icon_%282017%29.svg.png"
+                        alt="YouTube Logo"
+                        width={28}
+                        height={20}
+                        className="opacity-90"
+                      />
+                    </div>
                   </div>
-                  {/* Name and title removed from here */}
                 </Card>
               );
             })}
