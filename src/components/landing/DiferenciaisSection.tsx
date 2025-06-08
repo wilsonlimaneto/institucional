@@ -20,7 +20,7 @@ const DiferenciaisSection = () => {
             Para advogados e escritórios que demandam mais que soluções genéricas, nossa plataforma entrega uma Inteligência Artificial de nível profissional, com modelos jurídicos específicos projetados para transformar expertise em resultados de máxima precisão.
           </p>
         </div>
-        <div className="max-w-2xl mx-auto bg-card p-8 rounded-lg shadow-xl">
+        <div className="max-w-3xl mx-auto bg-card p-8 rounded-lg shadow-xl">
           <h3 className="text-xl font-semibold text-card-foreground mb-6 text-center">
             A única ferramenta que entrega:
           </h3>
