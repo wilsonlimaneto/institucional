@@ -6,7 +6,7 @@ const features = [
   {
     icon: <Rocket className="h-8 w-8 text-primary" />, 
     title: 'Busca de Jurisprudência Real com tecnologia Semântica®',
-    description: 'Chega de garimpar ementas com palavras-chave. Nossa busca semântica encontra os julgados decisivos para sua causa, permitindo que você construa teses irrefutáveis e aumente sua taxa de vitórias.',
+    description: 'Chega de garimpar ementas com palavras-chave. Nossa busca semântica encontra os julgados decisivos para sua causa, permitindo que você construa teses irrefutáveis e aumente sua taxa de vitórias. Além disto, pergunte diretamente ao inteiro teor, receba julgados de todo o Brasil, bem como os precedentes qualificados do CPC.',
   },
   {
     icon: <FileText className="h-8 w-8 text-primary" />,
