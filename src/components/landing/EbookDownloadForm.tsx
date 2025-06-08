@@ -109,8 +109,8 @@ const EbookDownloadForm = () => {
 
   const handleDirectDownload = () => {
     const link = document.createElement('a');
-    link.href = 'https://www.dropbox.com/scl/fi/3gb8yyk8gxrsdpjmyfcc8/ebook-maestria-jurisp.pptx?rlkey=ldr2ufxr7b34tmkbjgn0k8ydo&dl=1';
-    link.setAttribute('download', 'ebook-maestria-jurisp.pptx');
+    link.href = 'https://www.dropbox.com/scl/fi/2332tgss2fp87nxepw86m/ebook-maestria-jurisp-pdf.pdf?rlkey=w7s28864lw8omiolua5l61f3b&dl=1';
+    link.setAttribute('download', 'ebook-maestria-jurisp-pdf.pdf');
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -220,13 +220,13 @@ const EbookDownloadForm = () => {
           <AlertDialogHeader>
             <AlertDialogTitle>Download Pronto!</AlertDialogTitle>
             <AlertDialogDescription>
-              Seu e-book está pronto. Clique no botão abaixo para baixar o arquivo (.pptx).
+              Seu e-book está pronto. Clique no botão abaixo para baixar o arquivo (.pdf).
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogAction onClick={handleDirectDownload} className="flex items-center">
               <FileText className="mr-2 h-5 w-5" />
-              Baixar E-book (.pptx)
+              Baixar E-book (.pdf)
             </AlertDialogAction>
             <AlertDialogCancel onClick={() => {
               setShowDownloadDialog(false);
