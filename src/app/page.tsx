@@ -1,9 +1,10 @@
 
 import Header from '@/components/landing/Header';
 import HeroSection from '@/components/landing/HeroSection';
+import DiferenciaisSection from '@/components/landing/DiferenciaisSection';
 import ReasonsToChooseUsSection from '@/components/landing/ReasonsToChooseUsSection';
-import FeaturesSection from '@/components/landing/FeaturesSection';
 import TestimonialsSection from '@/components/landing/TestimonialsSection';
+import FeaturesSection from '@/components/landing/FeaturesSection';
 import GoogleCloudSuccessSection from '@/components/landing/GoogleCloudSuccessSection';
 import MaestriaFlixSection from '@/components/landing/MaestriaFlixSection';
 import BlogReferralSection from '@/components/landing/BlogReferralSection';
@@ -16,6 +17,7 @@ export default function LandingPage() {
       <Header />
       <main className="flex-grow">
         <HeroSection />
+        <DiferenciaisSection />
         <ReasonsToChooseUsSection />
         <TestimonialsSection />
         <FeaturesSection />

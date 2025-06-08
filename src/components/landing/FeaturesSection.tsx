@@ -1,5 +1,5 @@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Award, BarChart3, DownloadCloud, Rocket, ShieldCheck, Users } from 'lucide-react';
+import { Award, BarChart3, DownloadCloud, Brain, Rocket, ShieldCheck, Users } from 'lucide-react';
 
 const features = [
   {
@@ -47,8 +47,12 @@ const FeaturesSection = () => {
         <div className="max-w-3xl mx-auto">
           <Accordion type="single" collapsible className="w-full space-y-2">
             {features.map((feature, index) => (
-              <AccordionItem value={`item-${index}`} key={index} className="bg-card border-border/50 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 ease-in-out">
-                <AccordionTrigger className="px-6 py-4 text-left hover:no-underline group">
+              <AccordionItem
+                value={`item-${index}`}
+                key={index}
+                className="bg-card border-border/50 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 ease-in-out"
+              >
+                <AccordionTrigger className="px-6 py-4 text-left hover:no-underline group font-headline text-lg text-card-foreground">
                   <div className="flex items-center gap-4">
                     <span className="flex-shrink-0 text-primary group-hover:text-primary/90 transition-colors">
                       {feature.icon}
@@ -64,6 +68,22 @@ const FeaturesSection = () => {
               </AccordionItem>
             ))}
           </Accordion>
+          {/* Nossos Diferenciais - Visually Distinct Subsection */}
+          <div className="mt-10 p-6 bg-primary/10 border border-primary/20 rounded-lg shadow-inner">
+            <Accordion type="single" collapsible className="w-full">
+              <AccordionItem value="nossos-diferenciais">
+                <AccordionTrigger className="px-0 py-0 text-left hover:no-underline group font-headline text-lg text-primary">
+                  <div className="flex items-center gap-4">
+                    <span className="flex-shrink-0 text-primary group-hover:text-primary/90 transition-colors">
+                      <Brain className="h-8 w-8" />
+                    </span>
+                    <span>Nossos Diferenciais</span>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="px-0 pb-0 pt-2 text-primary/80 text-base">IA jurídica especializada em nível profissional para advogados que demandam maior qualidade.</AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </div>
         </div>
       </div>
     </section>

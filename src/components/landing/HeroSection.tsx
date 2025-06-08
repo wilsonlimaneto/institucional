@@ -42,22 +42,9 @@ const HeroSection = () => {
                   />
               </div>
             </div>
-             {/* Bullets Section - Moved to be below GFS logo in the left column */}
-             <div className="text-center md:text-left">
-              <p className="text-sm md:text-base text-foreground/80 font-medium">
-                A única ferramenta que entrega:
-              </p>
-              <ul className="mt-2 ml-0 md:ml-4 list-disc list-inside text-sm md:text-base text-foreground/70 space-y-1.5" data-ai-hint="List of features including semantic search for real jurisprudence">
-                <li>Jurisprudência real, já verificada por meio de <em className="italic text-foreground/80">busca semântica</em>®</li>
-                <li>Editor de documentos embutido <span style={{ fontSize: '0.8em' }}>(2o Sem 2025)</span></li>
-                <li>Integração Google Docs e MS Office</li>
-                <li>Resuma dados de longos documentos <span style={{ fontSize: '0.8em' }}>(Ago 2025)</span></li>
-                <li>Parceria com empresas e tecnologias reconhecidas internacionalmente</li>
-              </ul>
-            </div>
           </div>
 
-          {/* Right Column: Image and then bullets below it */}
+          {/* Right Column: Image */}
           <div className="md:col-span-3 space-y-8">
             <div className="relative rounded-lg overflow-hidden shadow-2xl">
               <Image
