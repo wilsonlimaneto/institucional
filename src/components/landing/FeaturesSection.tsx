@@ -1,6 +1,6 @@
 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Award, BarChart3, DownloadCloud, Brain, Rocket, ShieldCheck, Users, FileText } from 'lucide-react';
+import { Award, BarChart3, DownloadCloud, Rocket, Users, FileText, Link2 } from 'lucide-react';
 
 const features = [
   {
@@ -9,14 +9,14 @@ const features = [
     description: 'Chega de garimpar ementas com palavras-chave. Nossa busca semântica encontra os julgados decisivos para sua causa, permitindo que você construa teses irrefutáveis e aumente sua taxa de vitórias.',
   },
   {
-    icon: <FileText className="h-8 w-8 text-primary" />, // Changed icon
+    icon: <FileText className="h-8 w-8 text-primary" />,
     title: 'Gerador nativo de minutas jurídicas',
     description: 'Nossa plataforma lê e interpreta os documentos do processo, garantindo que cada petição seja contextualmente informada e estrategicamente superior. Incorporamos seu ativo mais valioso: um estilo de escrita e persuasão único, forjado em anos de prática.\n\nPare de apenas gerar texto. Comece a construir teses vitoriosas com um clique.',
   },
   {
-    icon: <Award className="h-8 w-8 text-primary" />,
-    title: 'High Conversion Design',
-    description: 'Modern, aesthetically pleasing designs focused on maximizing user engagement.',
+    icon: <Link2 className="h-8 w-8 text-primary" />,
+    title: 'Integração Google Docs e MS Office',
+    description: 'No 2o semestre de 2025 seus documentos poderão ser gerados dentro do seu editor de texto de preferência, mediante integração entre nossa tecnologia e a dos principais players de mercado.',
   },
   {
     icon: <Users className="h-8 w-8 text-primary" />,
