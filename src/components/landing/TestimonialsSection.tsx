@@ -95,7 +95,7 @@ const TestimonialsSection = () => {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12 md:mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold text-primary">Loved by Our Customers</h2>
-            <p className="mt-4 text-lg text-foreground/80 max-w-2xl mx-auto">
+            <p className="mt-4 text-xl text-foreground/80 max-w-2xl mx-auto">
               Hear what our satisfied users have to say about their experience with LandingVerse.
             </p>
           </div>
