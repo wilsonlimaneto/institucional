@@ -10,7 +10,7 @@ const HeroSection = () => {
         {/* Main content: Text on left, Image + Buttons on right */}
         <div className="grid md:grid-cols-5 gap-12 md:gap-12 items-center mb-12 md:mb-16">
           {/* Left Column: Text content */}
-          <div className="space-y-8 text-center md:text-left md:col-span-2">
+          <div className="space-y-8 text-center md:text-left md:col-span-2 md:-translate-y-8">
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-foreground">
               Alavanque sua produtividade criando <span className="text-primary">minutas</span> automáticas com <span className="text-primary">jurisprudência real</span> que o <span className="text-primary">ChatGPT</span> não consegue encontrar.
             </h1>
