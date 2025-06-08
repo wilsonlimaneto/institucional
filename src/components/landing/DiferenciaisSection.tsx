@@ -3,7 +3,7 @@ import { CheckCircle } from 'lucide-react';
 
 const diferenciais = [
   { text: 'Jurisprudência real, já verificada por meio de busca semântica®' },
-  { text: 'Editor de documentos embutido' },
+  { text: 'Editor de documentos nativo: você não precisa copiar os textos para um editor' },
   { text: 'Integração Google Docs e MS Office' },
   { text: 'Resuma dados de longos documentos (Ago 2025)' },
   { text: 'Parceria com empresas e tecnologias reconhecidas internacionalmente' },
