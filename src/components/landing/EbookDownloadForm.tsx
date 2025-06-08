@@ -1,16 +1,27 @@
 
 'use client';
 
-import React, { useEffect } from 'react';
+import React,
+{
+  useEffect,
+  useState,
+} from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { EbookFormSchema, type EbookFormData } from '@/types';
 import { submitEbookForm, type FormState } from '@/lib/actions';
-import { useActionState } from 'react'; // Corrected from useFormState
+import { useActionState }
+  from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
 
@@ -21,44 +32,32 @@ import 'react-pdf/dist/esm/Page/TextLayer.css';
 import type { DocumentProps, PageProps } from 'react-pdf';
 import dynamic from 'next/dynamic';
 
-// Dynamically import react-pdf components and configure worker inside the factory
-const PdfDocument = dynamic<DocumentProps>(
-  () =>
-    import('react-pdf').then((mod) => {
-      // Configure pdfjs worker here, only on the client
-      if (typeof window !== 'undefined') {
-        // Use the hardcoded version matching your package.json for pdfjs-dist
-        mod.pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@4.8.69/build/pdf.worker.min.mjs`;
-      }
-      return mod.Document; // Return the component
-    }),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="flex justify-center items-center w-full max-w-sm h-[424px] bg-muted rounded-lg shadow-inner">
-        <p className="text-sm text-muted-foreground">Carregando prévia do PDF...</p>
-      </div>
-    ),
-  }
-);
+// Simplified PDF worker setup
+const PDFDocument = dynamic(() => import('react-pdf').then(mod => mod.Document), {
+  ssr: false,
+  loading: () => (
+    <div className="flex justify-center items-center w-full max-w-sm h-[424px] bg-muted rounded-lg shadow-inner">
+      <p className="text-sm text-muted-foreground">Carregando prévia do PDF...</p>
+    </div>
+  ),
+});
 
-const PdfPage = dynamic<PageProps>(
-  () =>
-    import('react-pdf').then((mod) => {
-      // Fallback configuration if not already set by PdfDocument, though ideally one set is enough
-      if (typeof window !== 'undefined' && !mod.pdfjs.GlobalWorkerOptions.workerSrc) {
-         mod.pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@4.8.69/build/pdf.worker.min.mjs`;
-      }
-      return mod.Page;
-    }),
-  {
-    ssr: false,
-  }
+const PDFPage = dynamic(() => import('react-pdf').then(mod => mod.Page), {
+  ssr: false,
+});
+
+
+const BrazilFlagIcon = () => (
+    <svg width="28" height="20" viewBox="0 0 28 20" fill="none" xmlns="http://www.w3.org/2000/svg" className="rounded-sm">
+        <rect width="28" height="20" fill="#009B3A"/>
+        <path d="M13.9999 3.5L4.08325 10L13.9999 16.5L23.9166 10L13.9999 3.5Z" fill="#FEDF00"/>
+        <circle cx="13.9999" cy="10.0001" r="3.66667" fill="#002776"/>
+    </svg>
 );
 
 
 const EbookDownloadForm = () => {
-  const [numPages, setNumPages] = React.useState<number | null>(null);
+  const [numPages, setNumPages] = useState<number | null>(null);
   const { toast } = useToast();
 
   const initialFormState: FormState = { message: "", success: false, issues: [] };
@@ -69,12 +68,10 @@ const EbookDownloadForm = () => {
     defaultValues: {
       name: "",
       email: "",
-      phone: "",
+      phone: "", // Default to empty, the flag will imply +55
       areaOfLaw: "",
     }
   });
-
-  const currentPhoneValue = watch("phone");
 
   useEffect(() => {
     if (formState.message && formState.message !== "") {
@@ -109,43 +106,30 @@ const EbookDownloadForm = () => {
     });
     formAction(formData);
   };
-  
-  const applyPhoneMask = (value: string): string => {
-    if (!value && value !== '+') return "";
-    
-    let digits = value.replace(/\D/g, "");
 
-    if (digits.length === 0 && value === "+") return "+";
-    if (digits.length === 0 && value !== "+") return "";
+  const applyPhoneMask = (digitsOnlyWithDDI: string): string => { // Expects digits like "5511999998888"
+    if (!digitsOnlyWithDDI) return "";
 
+    const ddi = digitsOnlyWithDDI.substring(0, 2); // Should be "55"
+    let nationalNum = digitsOnlyWithDDI.substring(2);
 
-    if (digits.length > 0 && !value.startsWith('+') ) {
-        digits = '55' + digits; 
+    if (nationalNum.length === 0) {
+        // If only DDI was effectively provided (e.g., user cleared national part)
+        // return "+55 " to indicate the DDI is set, or empty if we want to clear fully.
+        // For now, if national part is empty, we set field value to "" in onChange.
+        // So this path might only be hit if initial value somehow is just "55".
+        return `+${ddi} `;
     }
-    
-    digits = digits.slice(0, 13); 
-    
-    let masked = "+";
-    const len = digits.length;
 
-    if (len === 0) return "+";
+    nationalNum = nationalNum.slice(0, 11); // Limit to 11 national digits (DDD + Number)
 
-    let ddiEnd = 0;
-    if (digits.startsWith('55')) ddiEnd = 2;
-    else if (digits.startsWith('1')) ddiEnd = 1;
-    else if (len <=3 ) ddiEnd = len; 
-    else ddiEnd = Math.min(len, 3);
-
-    masked += digits.substring(0, ddiEnd);
-
-    if (len > ddiEnd) {
-      masked += ` (${digits.substring(ddiEnd, Math.min(ddiEnd + 2, len))}`;
+    let masked = `+${ddi}`;
+    masked += ` (${nationalNum.substring(0, Math.min(2, nationalNum.length))}`; // DDD
+    if (nationalNum.length > 2) {
+      masked += `) ${nationalNum.substring(2, Math.min(2 + 5, nationalNum.length))}`;
     }
-    if (len > ddiEnd + 2) {
-      masked += `) ${digits.substring(ddiEnd + 2, Math.min(ddiEnd + 2 + 5, len))}`;
-    }
-    if (len > ddiEnd + 2 + 5) {
-      masked += `-${digits.substring(ddiEnd + 2 + 5, Math.min(ddiEnd + 2 + 5 + 4, len))}`;
+    if (nationalNum.length > 7) { // 2 for DDD + 5 for first part
+      masked += `-${nationalNum.substring(7, Math.min(7 + 4, nationalNum.length))}`;
     }
     return masked;
   };
@@ -181,25 +165,38 @@ const EbookDownloadForm = () => {
                 aria-invalid={formErrors.email ? "true" : "false"}
               />
               {formErrors.email && <p className="text-sm text-destructive">{formErrors.email.message}</p>}
-              
-              <Controller
-                name="phone"
-                control={control}
-                render={({ field }) => (
-                  <Input
-                    {...field}
-                    type="tel"
-                    placeholder="+XX (XX) XXXXX-XXXX"
-                    onChange={(e) => {
-                      const maskedValue = applyPhoneMask(e.target.value);
-                      setValue("phone", maskedValue, { shouldValidate: true });
-                      field.onChange(maskedValue); 
-                    }}
-                    value={currentPhoneValue || ""} 
-                    aria-invalid={formErrors.phone ? "true" : "false"}
-                  />
-                )}
-              />
+
+              <div className="relative flex items-center">
+                <div className="absolute left-3 top-1/2 -translate-y-1/2 z-10 pointer-events-none">
+                  <BrazilFlagIcon />
+                </div>
+                <Controller
+                  name="phone"
+                  control={control}
+                  render={({ field }) => (
+                    <Input
+                      {...field}
+                      type="tel"
+                      placeholder="(XX) XXXXX-XXXX"
+                      className="pl-12 pr-3 py-2 w-full" // Padding left for flag
+                      onChange={(e) => {
+                        const userInput = e.target.value; // This is the (XX) XXXXX-XXXX part
+                        const nationalDigits = userInput.replace(/\D/g, '');
+
+                        if (nationalDigits === "") {
+                            field.onChange(""); // Clear field value if national part is empty
+                        } else {
+                            const fullDigitsToMask = `55${nationalDigits}`; // Always prepend 55 for Brazil
+                            const maskedValue = applyPhoneMask(fullDigitsToMask);
+                            field.onChange(maskedValue);
+                        }
+                      }}
+                      value={field.value ? field.value.replace(/^\+55\s*/, '').trimStart() : ""}
+                      aria-invalid={formErrors.phone ? "true" : "false"}
+                    />
+                  )}
+                />
+              </div>
                {formErrors.phone && <p className="text-sm text-destructive">{formErrors.phone.message}</p>}
 
               <Controller
@@ -222,7 +219,7 @@ const EbookDownloadForm = () => {
                 )}
               />
               {formErrors.areaOfLaw && <p className="text-sm text-destructive">{formErrors.areaOfLaw.message}</p>}
-              
+
               {formState.issues && formState.issues.length > 0 && !formState.success && (
                 <p className="text-sm text-destructive text-center py-2">
                   Por favor, preencha todos os campos obrigatórios corretamente.
@@ -237,7 +234,7 @@ const EbookDownloadForm = () => {
           <div className="flex justify-center items-center">
             <div className="w-full max-w-sm rounded-lg shadow-2xl">
               <ScrollArea className="h-[424px] rounded-lg border bg-muted">
-                <PdfDocument
+                <PDFDocument
                   file="/ebook-maestria-jurisp-pdf.pdf" 
                   onLoadSuccess={onDocumentLoadSuccess}
                   className="flex flex-col items-center py-2"
@@ -246,7 +243,7 @@ const EbookDownloadForm = () => {
                 >
                   {numPages &&
                     Array.from(new Array(Math.min(numPages, 3)), (el, index) => (
-                      <PdfPage
+                      <PDFPage
                         key={`page_${index + 1}`}
                         pageNumber={index + 1}
                         width={300}
@@ -255,7 +252,7 @@ const EbookDownloadForm = () => {
                         renderTextLayer={false}
                       />
                     ))}
-                </PdfDocument>
+                </PDFDocument>
               </ScrollArea>
             </div>
           </div>
