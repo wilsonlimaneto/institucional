@@ -23,7 +23,8 @@ const GoogleCloudSuccessSection = () => {
               </Button>
             </div>
           </div>
-          <div className="relative hidden md:flex justify-center items-center md:justify-end">
+          {/* The md:justify-end class was removed here to allow justify-center to take effect on md screens and up */}
+          <div className="relative hidden md:flex justify-center items-center">
             <Image
               src="https://placehold.co/300x100.png" 
               alt="Google Cloud Logo"
