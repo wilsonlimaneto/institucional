@@ -6,7 +6,7 @@ import React, { useState, useCallback, useEffect } from 'react';
 import Image from 'next/image';
 import { Card } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
-import { PlayCircle, ArrowLeft } from 'lucide-react'; // Changed ArrowUp to ArrowLeft
+import { PlayCircle, ArrowLeft } from 'lucide-react';
 
 const testimonials = [
   {
@@ -158,8 +158,8 @@ const TestimonialsSection = () => {
             )}
 
             {showVolumeAlert && (
-              <div className="animate-alert-slide-in-bottom-left absolute bottom-4 left-[46px] p-3 bg-black/70 text-white rounded-md shadow-lg flex items-center space-x-2 text-xs z-[60]"> {/* Changed left-4 to left-[46px] */}
-                <ArrowLeft className="h-5 w-5 animate-arrow-vibrate text-primary" /> {/* Changed ArrowUp to ArrowLeft */}
+              <div className="animate-alert-slide-in-bottom-left absolute bottom-4 left-[146px] p-3 bg-black/70 text-white rounded-md shadow-lg flex items-center space-x-2 text-xs z-[60]">
+                <ArrowLeft className="h-5 w-5 animate-arrow-vibrate text-primary" />
                 <span>O vídeo iniciará sem som. Aumente o volume para ouvir.</span>
               </div>
             )}
