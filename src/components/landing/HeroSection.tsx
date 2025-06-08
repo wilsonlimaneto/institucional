@@ -12,19 +12,20 @@ const HeroSection = () => {
         <div className="grid md:grid-cols-2 gap-12 md:gap-16 items-center">
           <div className="space-y-8 text-center md:text-left">
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-foreground">
-              Gere minutas de <span className="text-primary">quaisquer documentos jurídicos</span> e inclua também <span className="text-primary">Jurisprudência Real e Verificada</span> com o modelo de IA mais assertivo do mercado.
+              Gere minutas de <span className="text-primary">documentos jurídicos</span> com <span className="text-primary">Jurisprudência Real</span> usando o modelo de IA mais assertivo do mercado.
             </h1>
             <p className="text-lg md:text-xl text-foreground/80">
-              <span style={{ fontSize: '115%' }}>Automatize GRATUITAMENMTE a sua rotina de edição de documentos, resumos de processos e pesquisa de jurisprudência.</span>
+              <span style={{ fontSize: '115%' }}>Automatize GRATUITAMENTE a sua rotina de edição de documentos, resumos de processos e pesquisa de jurisprudência.</span>
             </p>
             
             <div>
               <p className="text-sm md:text-base text-foreground/80 font-medium">
                 A única ferramenta que entrega:
               </p>
-              <ul className="mt-2 ml-0 md:ml-4 list-disc list-inside text-sm md:text-base text-foreground/70 space-y-1.5">
-                <li>Resultados de Jurisprudência reais e com <em className="italic text-foreground/80">busca semântica</em></li>
+              <ul className="mt-2 ml-0 md:ml-4 list-disc list-inside text-sm md:text-base text-foreground/70 space-y-1.5" data-ai-hint="List of features including semantic search for real jurisprudence">
+                <li>Jurisprudência reais, já verificadas e com <em className="italic text-foreground/80">busca semântica</em></li>
                 <li>Editor de documentos com o DNA do seu escritório</li>
+                <li>Resuma dados de longos documentos</li>
                 <li>Parceria com empresas e tecnologias reconhecidas internacionalmente</li>
               </ul>
             </div>
@@ -53,7 +54,7 @@ const HeroSection = () => {
           </div>
           <div className="relative aspect-[4/3] rounded-lg overflow-hidden shadow-2xl">
             <Image
-              src="/maestrialogo.png"
+              src="/fast_demo_maestria.webp"
               alt="Maestria logo"
               layout="fill"
               objectFit="cover"
@@ -67,3 +68,4 @@ const HeroSection = () => {
 };
 
 export default HeroSection;
+
