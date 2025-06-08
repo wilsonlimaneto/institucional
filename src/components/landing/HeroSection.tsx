@@ -21,10 +21,12 @@ const HeroSection = () => {
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
               <Button asChild size="lg" className="font-semibold">
-                <Link href="#use-agora">Use agora mesmo</Link>
+                <Link href="https://www.maestrialaw.com.br" target="_blank" rel="noopener noreferrer">
+                  Cadastre-se Grátis
+                </Link>
               </Button>
               <Button asChild size="lg" variant="outline" className="font-semibold">
-                <Link href="#saiba-mais">Saiba Mais</Link>
+                <Link href="#ebook">Saiba Mais</Link>
               </Button>
             </div>
             
