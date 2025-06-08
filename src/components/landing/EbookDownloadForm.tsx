@@ -32,9 +32,7 @@ import {
 
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
-// import "pdfjs-dist/web/pdf_viewer.css"; // Removed as it might not be necessary for basic rendering
 
-import dynamic from 'next/dynamic';
 import type { PDFDocumentProxy } from 'pdfjs-dist/types/src/display/api';
 
 const BrazilFlagIcon = () => (
@@ -50,24 +48,23 @@ const applyPhoneMask = (digits: string): string => {
 
   const len = digits.length;
 
-  if (len <= 2) { // (XX
+  if (len <= 2) { 
     return `(${digits}`;
   }
-  // (XX) XXXXX-XXXX (for 11 digits) or (XX) XXXX-XXXX (for 10 digits)
+  
   const ddd = digits.substring(0, 2);
   let mainPart;
   let lastFour;
 
-  if (len <= 7) { // (XX) XXXXX
+  if (len <= 7) { 
     mainPart = digits.substring(2);
     return `(${ddd}) ${mainPart}`;
   }
   
-  // Handles 10 or 11 digits for the rest
-  if (len === 11) { // Celular com 9º dígito: (XX) 9XXXX-XXXX
+  if (len === 11) { 
     mainPart = digits.substring(2, 7);
     lastFour = digits.substring(7);
-  } else { // Telefone com 8 dígitos: (XX) XXXX-XXXX
+  } else { 
     mainPart = digits.substring(2, 6);
     lastFour = digits.substring(6);
   }
@@ -87,7 +84,7 @@ const EbookDownloadForm = () => {
   const pdfParentContainerRef = useRef<HTMLDivElement | null>(null);
   const [pdfContainerWidth, setPdfContainerWidth] = useState<number | undefined>();
   const [firstPageAspectRatio, setFirstPageAspectRatio] = useState<number | null>(null);
-  const [calculatedPdfHeight, setCalculatedPdfHeight] = useState<string | number>('488px'); // Initial fixed height
+  const [calculatedPdfHeight, setCalculatedPdfHeight] = useState<string | number>('488px'); 
   const [showDownloadDialog, setShowDownloadDialog] = useState(false);
   const [downloadUrl, setDownloadUrl] = useState<string | undefined>(undefined);
 
@@ -104,29 +101,31 @@ const EbookDownloadForm = () => {
     }
   });
   
-  // Define PdfComponents inside the component to access `calculatedPdfHeight` for its loading placeholder
-  const PdfComponents = dynamic(
-    async () => {
-      const { pdfjs, Document, Page } = await import('react-pdf');
-      if (typeof window !== 'undefined') {
-        // Ensure this path correctly points to the worker file in your /public directory
-        pdfjs.GlobalWorkerOptions.workerSrc = `/pdf.worker.min.mjs`;
+  const [reactPdfModule, setReactPdfModule] = useState<{ Document: any; Page: any; pdfjs: any } | null>(null);
+  const [isLoadingPdfModule, setIsLoadingPdfModule] = useState(true);
+
+  useEffect(() => {
+    const loadPdfDependencies = async () => {
+      try {
+        const RPDF = await import('react-pdf');
+        if (typeof window !== 'undefined') {
+          RPDF.pdfjs.GlobalWorkerOptions.workerSrc = `/pdf.worker.min.mjs`;
+        }
+        setReactPdfModule(RPDF);
+      } catch (error) {
+        console.error("Failed to load react-pdf module:", error);
+        toast({
+          title: "Erro ao Carregar PDF",
+          description: "Não foi possível inicializar o visualizador de PDF.",
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoadingPdfModule(false);
       }
-      return { Document, Page };
-    },
-    {
-      ssr: false,
-      loading: () => (
-        <div 
-          className="flex justify-center items-center w-full bg-muted rounded-lg shadow-inner"
-          // Use calculatedPdfHeight for the loading placeholder's height to minimize layout shift
-          style={{ height: typeof calculatedPdfHeight === 'string' ? calculatedPdfHeight : `${calculatedPdfHeight}px` }}
-        >
-          <p className="text-sm text-muted-foreground">Carregando visualizador de PDF...</p>
-        </div>
-      ),
-    }
-  );
+    };
+    loadPdfDependencies();
+  }, [toast]);
+
 
   useEffect(() => {
     if (formState.message && formState.message !== "") {
@@ -141,7 +140,6 @@ const EbookDownloadForm = () => {
         reset(); 
       }
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formState, reset, toast]);
 
 
@@ -151,7 +149,6 @@ const EbookDownloadForm = () => {
         const newWidth = pdfParentContainerRef.current.clientWidth;
         setPdfContainerWidth(newWidth);
         if (firstPageAspectRatio) {
-          // Recalculate height based on new width and aspect ratio, maintaining current zoom
           setCalculatedPdfHeight(newWidth * firstPageAspectRatio * zoomLevel);
         }
       }
@@ -232,6 +229,24 @@ const EbookDownloadForm = () => {
       setShowDownloadDialog(false); 
     }
   };
+
+  const PdfLoadingPlaceholder = () => (
+    <div 
+      className="flex justify-center items-center w-full bg-muted rounded-lg shadow-inner"
+      style={{ height: typeof calculatedPdfHeight === 'string' ? calculatedPdfHeight : `${calculatedPdfHeight}px` }}
+    >
+      <p className="text-sm text-muted-foreground">Carregando visualizador de PDF...</p>
+    </div>
+  );
+
+  const PdfErrorPlaceholder = () => (
+     <div 
+      className="flex justify-center items-center w-full bg-muted rounded-lg shadow-inner"
+      style={{ height: typeof calculatedPdfHeight === 'string' ? calculatedPdfHeight : `${calculatedPdfHeight}px` }}
+    >
+      <p className="text-sm text-muted-foreground">Falha ao carregar o PDF.</p>
+    </div>
+  );
 
 
   return (
@@ -332,10 +347,10 @@ const EbookDownloadForm = () => {
             <div className="flex flex-col justify-center items-center">
               <h3 className="text-lg font-semibold text-foreground mb-2">Amostra</h3>
               <div className="flex justify-center space-x-2 my-4">
-                <Button onClick={handleZoomIn} variant="outline" size="icon" aria-label="Aumentar zoom" disabled={!firstPageAspectRatio}>
+                <Button onClick={handleZoomIn} variant="outline" size="icon" aria-label="Aumentar zoom" disabled={!firstPageAspectRatio || isLoadingPdfModule || !reactPdfModule}>
                   <ZoomIn className="h-5 w-5" />
                 </Button>
-                <Button onClick={handleZoomOut} variant="outline" size="icon" aria-label="Diminuir zoom" disabled={!firstPageAspectRatio}>
+                <Button onClick={handleZoomOut} variant="outline" size="icon" aria-label="Diminuir zoom" disabled={!firstPageAspectRatio || isLoadingPdfModule || !reactPdfModule}>
                   <ZoomOut className="h-5 w-5" />
                 </Button>
               </div>
@@ -344,38 +359,42 @@ const EbookDownloadForm = () => {
                   className="rounded-lg border bg-muted pdf-scroll-area"
                   style={{ height: typeof calculatedPdfHeight === 'string' ? calculatedPdfHeight : `${calculatedPdfHeight}px` }} 
                 >
-                  {pdfContainerWidth && PdfComponents && ( // Check if PdfComponents is loaded
-                    <PdfComponents.Document
+                  {isLoadingPdfModule ? (
+                    <PdfLoadingPlaceholder />
+                  ) : reactPdfModule && pdfContainerWidth ? (
+                    <reactPdfModule.Document
                       file="/ebook-maestria-jurisp-pdf.pdf"
                       onLoadSuccess={onDocumentLoadSuccess}
                       className="flex flex-col items-center py-2"
-                      onLoadError={(error) => {
+                      onLoadError={(error: any) => {
                         console.error('Failed to load PDF:', error.message);
                         toast({ title: "Erro ao Carregar PDF", description: "Não foi possível carregar a amostra do PDF. Tente recarregar a página.", variant: "destructive" });
                       }}
-                      onSourceError={(error) => {
+                      onSourceError={(error: any) => {
                          console.error('Failed to load PDF source:', error.message);
                          toast({ title: "Erro na Fonte do PDF", description: "Não foi possível encontrar o arquivo PDF. Verifique o caminho.", variant: "destructive" });
                       }}
-                      loading={ // This loading is for the Document itself, distinct from dynamic import loading
+                      loading={ 
                         <div className="flex justify-center items-center w-full" style={{ height: typeof calculatedPdfHeight === 'string' ? calculatedPdfHeight : `${calculatedPdfHeight}px` }}>
                             <p className="text-sm text-muted-foreground">Carregando PDF...</p>
                         </div>
                       }
                     >
                       {Array.from(new Array(numPages ? Math.min(numPages, 3) : 0), (el, index) => (
-                        <PdfComponents.Page // Use PdfComponents.Page
+                        <reactPdfModule.Page
                           key={`page_${index + 1}`}
                           pageNumber={index + 1}
                           scale={pdfContainerWidth && firstPageAspectRatio ? zoomLevel : 1} 
                           className="mb-2 shadow-md"
                           renderAnnotationLayer={false}
                           renderTextLayer={false}
-                          loading="" // react-pdf Page specific loading
+                          loading="" 
                           width={pdfContainerWidth} 
                         />
                       ))}
-                    </PdfComponents.Document>
+                    </reactPdfModule.Document>
+                  ) : (
+                     <PdfErrorPlaceholder />
                   )}
                 </ScrollArea>
               </div>
