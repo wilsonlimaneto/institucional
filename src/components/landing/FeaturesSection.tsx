@@ -68,22 +68,6 @@ const FeaturesSection = () => {
               </AccordionItem>
             ))}
           </Accordion>
-          {/* Nossos Diferenciais - Visually Distinct Subsection */}
-          <div className="mt-10 p-6 bg-primary/10 border border-primary/20 rounded-lg shadow-inner">
-            <Accordion type="single" collapsible className="w-full">
-              <AccordionItem value="nossos-diferenciais">
-                <AccordionTrigger className="px-0 py-0 text-left hover:no-underline group font-headline text-lg text-primary">
-                  <div className="flex items-center gap-4">
-                    <span className="flex-shrink-0 text-primary group-hover:text-primary/90 transition-colors">
-                      <Brain className="h-8 w-8" />
-                    </span>
-                    <span>Nossos Diferenciais</span>
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent className="px-0 pb-0 pt-2 text-primary/80 text-base">IA jurídica especializada em nível profissional para advogados que demandam maior qualidade.</AccordionContent>
-              </AccordionItem>
-            </Accordion>
-          </div>
         </div>
       </div>
     </section>
