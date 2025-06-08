@@ -3,20 +3,13 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import WhatsAppButton from '@/components/landing/WhatsAppButton';
-import { Poppins, PT_Sans } from 'next/font/google';
+import { Noto_Sans } from 'next/font/google';
 
-const poppins = Poppins({
+const notoSans = Noto_Sans({
   subsets: ['latin'],
-  weight: ['400', '500', '600', '700', '800', '900'],
+  weight: ['300', '400', '500', '700'],
   display: 'swap',
-  variable: '--font-poppins',
-});
-
-const pt_sans = PT_Sans({
-  subsets: ['latin'],
-  weight: ['400', '700'],
-  display: 'swap',
-  variable: '--font-pt-sans',
+  variable: '--font-noto-sans',
 });
 
 export const metadata: Metadata = {
@@ -30,7 +23,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR" className={`${poppins.variable} ${pt_sans.variable}`}>
+    <html lang="pt-BR" className={`${notoSans.variable}`}>
       <body className="font-sans antialiased">
         {children}
         <Toaster />
