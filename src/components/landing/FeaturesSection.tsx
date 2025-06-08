@@ -59,7 +59,7 @@ const FeaturesSection = () => {
                   </div>
                 </AccordionTrigger>
                 <AccordionContent className="px-6 pb-4 pt-0">
-                  <p className="text-card-foreground/80 text-sm">{feature.description}</p>
+                  <p className="text-card-foreground/80 text-base">{feature.description}</p>
                 </AccordionContent>
               </AccordionItem>
             ))}

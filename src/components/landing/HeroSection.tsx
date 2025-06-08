@@ -12,10 +12,10 @@ const HeroSection = () => {
         <div className="grid md:grid-cols-2 gap-12 md:gap-16 items-center">
           <div className="space-y-8 text-center md:text-left">
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-foreground">
-              Gere <span className="text-primary">quaisquer documentos jurídicos</span> e inclua também <span className="text-primary">Jurisprudência Real e Verificada</span> da forma mais assertiva do mercado.
+              Gere minutas de <span className="text-primary">quaisquer documentos jurídicos</span> e inclua também <span className="text-primary">Jurisprudência Real e Verificada</span> com o modelo de IA mais assertivo do mercado.
             </h1>
             <p className="text-lg md:text-xl text-foreground/80">
-              Automatize, de forma GRATUITA, a sua rotina de edição de documentos e pesquisa de jurisprudência.
+              <span style={{ fontSize: '115%' }}>Automatize GRATUITAMENMTE a sua rotina de edição de documentos, resumos de processos e pesquisa de jurisprudência.</span>
             </p>
             <p className="text-sm md:text-base text-foreground/80">
               Suporte via WhatsApp

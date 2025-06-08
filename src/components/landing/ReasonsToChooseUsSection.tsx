@@ -41,7 +41,7 @@ const ReasonsToChooseUsSection = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12 md:mb-16">
           <h2 className="text-3xl sm:text-4xl font-bold text-primary">Motivos para nos Escolher</h2>
-          <p className="mt-4 text-lg text-foreground/80 max-w-2xl mx-auto">
+          <p className="mt-4 text-xl text-foreground/80 max-w-2xl mx-auto">
             Descubra por que advogados de todo o Brasil confiam na maestria. para otimizar seu trabalho.
           </p>
         </div>

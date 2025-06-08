@@ -10,7 +10,7 @@ const GoogleCloudSuccessSection = () => {
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight">
               Impulsionados pela Google Cloud
             </h2>
-            <p className="text-base md:text-lg text-primary-foreground/90">
+            <p className="text-base md:text-lg text-primary-foreground/90 text-[1.15em]">
               Na maestria., utilizamos o poder da Google Cloud Platform para oferecer uma plataforma robusta, escalável e inteligente, processando dados jurídicos com velocidade e segurança, e usando IA avançada para pesquisa de jurisprudência.
             </p>
             <ul className="space-y-1.5 text-left list-disc list-inside text-primary-foreground/80 text-sm md:text-base"> {/* Reduced space-y */}

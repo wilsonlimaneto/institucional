@@ -35,7 +35,7 @@ const BlogReferralSection = () => {
         <div className="text-center mb-12 md:mb-16">
           <h2 className="text-3xl sm:text-4xl font-bold text-primary">Valuable Insights from Our Blog</h2>
           <p className="mt-4 text-lg text-foreground/80 max-w-2xl mx-auto">
-            Explore our latest articles and guides to help you build better online experiences.
+            Explore our latest articles and guides to help you build better online experiences. 
           </p>
         </div>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
