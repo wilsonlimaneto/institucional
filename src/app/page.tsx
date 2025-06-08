@@ -18,10 +18,10 @@ export default function LandingPage() {
       <main className="flex-grow">
         <HeroSection />
         <DiferenciaisSection />
+        <GoogleCloudSuccessSection />
         <ReasonsToChooseUsSection />
         <TestimonialsSection />
         <FeaturesSection />
-        <GoogleCloudSuccessSection />
         <MaestriaFlixSection />
         <BlogReferralSection />
         <EbookDownloadForm />
