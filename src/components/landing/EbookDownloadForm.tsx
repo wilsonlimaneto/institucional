@@ -1,12 +1,11 @@
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useActionState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { EbookFormSchema, type EbookFormData } from '@/types';
 import { submitEbookForm, type FormState } from '@/lib/actions';
-import { useFormState } from 'react-dom';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -27,7 +26,6 @@ const PdfDocument = dynamic(
 
     // Configure workerSrc here, strictly on the client-side.
     // Use a CDN link that matches the version of pdfjs-dist specified in package.json (^4.8.69)
-    // This ensures API and Worker versions match.
     if (typeof window !== 'undefined') {
       pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@4.8.69/build/pdf.worker.min.mjs`;
     }
@@ -55,7 +53,7 @@ const EbookDownloadForm = () => {
   const { toast } = useToast();
 
   const initialFormState: FormState = { message: "", success: false };
-  const [formState, formAction] = useFormState(submitEbookForm, initialFormState);
+  const [formState, formAction] = useActionState(submitEbookForm, initialFormState);
 
   const { register, handleSubmit, formState: { errors }, reset, control } = useForm<EbookFormData>({
     resolver: zodResolver(EbookFormSchema),
@@ -151,7 +149,7 @@ const EbookDownloadForm = () => {
                 render={({ field }) => (
                   <Select
                     onValueChange={field.onChange}
-                    value={field.value || ""} // Ensure value is an empty string for placeholder to work
+                    value={field.value || ""}
                   >
                     <SelectTrigger aria-invalid={errors.areaOfLaw ? "true" : "false"}>
                       <SelectValue placeholder="Ramo de Atuação (Opcional)" />
