@@ -9,8 +9,8 @@ const HeroSection = () => {
   return (
     <section className="py-16 md:py-24 lg:py-32">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid md:grid-cols-2 gap-12 md:gap-12 items-start"> {/* Changed md:gap-16 to md:gap-12 and items-center to items-start */}
-          <div className="space-y-8 text-center md:text-left">
+        <div className="grid md:grid-cols-5 gap-12 md:gap-12 items-start"> {/* Changed md:grid-cols-2 to md:grid-cols-5 */}
+          <div className="space-y-8 text-center md:text-left md:col-span-2"> {/* Added md:col-span-2 */}
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-foreground">
               Gere minutas de <span className="text-primary">documentos jurídicos</span> com <span className="text-primary">Jurisprudência Real</span> usando o modelo de IA mais assertivo do mercado.
             </h1>
@@ -52,13 +52,13 @@ const HeroSection = () => {
               </div>
             </div>
           </div>
-          <div className="relative rounded-lg overflow-hidden shadow-2xl">
+          <div className="relative rounded-lg overflow-hidden shadow-2xl md:col-span-3"> {/* Added md:col-span-3 */}
             <Image
               src="/fast_demo_maestria.webp"
               alt="Maestria logo"
               width={1280} 
               height={720}
-              sizes="(min-width: 768px) 50vw, 100vw"
+              sizes="(min-width: 768px) 60vw, 100vw" /* Changed 50vw to 60vw */
               style={{
                 width: '100%',
                 height: 'auto',
@@ -75,3 +75,4 @@ const HeroSection = () => {
 };
 
 export default HeroSection;
+
