@@ -127,7 +127,7 @@ const EbookDownloadForm = () => {
               <h3 className="text-2xl font-bold tracking-tight text-foreground text-center">
                 Amostra do E-Book
  </h3>
-              <div className="w-[420px] h-[594px] border-2 border-gray-300 overflow-y-scroll shadow-lg">
+              <div className="w-full max-w-[420px] h-[594px] border-2 border-gray-300 overflow-y-scroll shadow-lg">
                 <img src="/Slide1.PNG" alt="Slide 1" className="w-full h-auto" />
                 <img src="/Slide2.PNG" alt="Slide 2" className="w-full h-auto" />
                 <img src="/Slide3.PNG" alt="Slide 3" className="w-full h-auto" />
