@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, startTransition } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { EbookFormSchema, type EbookFormData } from '@/types';
@@ -76,24 +76,22 @@ const EbookDownloadForm = () => {
     defaultValues: { name: "", email: "", phone: "", areaOfLaw: "" }
   });
 
-  const onClientValid = async (data: EbookFormData) => {
-    setShowDownloadDialog(true); // Open the modal immediately on client-side success
+  const onClientValid = (data: EbookFormData) => {
+    setShowDownloadDialog(true); 
 
-    // Trigger server action for logging/backend processing
-    setIsSubmittingToServer(true);
-    const formData = new FormData();
+    const formDataForAction = new FormData();
     (Object.keys(data) as Array<keyof EbookFormData>).forEach((key) => {
-      formData.append(key, data[key]);
+      formDataForAction.append(key, data[key]);
     });
     
-    // We don't need to await this for the modal to show, 
-    // but handling its completion might be useful for UI feedback.
-    await formAction(formData); 
-    setIsSubmittingToServer(false);
+    setIsSubmittingToServer(true);
+    startTransition(async () => {
+      await formAction(formDataForAction); 
+      setIsSubmittingToServer(false);
+    });
   };
 
   useEffect(() => {
-    // This effect handles toasts from the server action's response
     if (serverFormState.message && serverFormState.message !== "" && !isSubmittingToServer) {
       toast({
         title: serverFormState.success ? "Submissão Registrada!" : "Erro no Servidor",
@@ -117,7 +115,7 @@ const EbookDownloadForm = () => {
     link.click();
     document.body.removeChild(link);
     setShowDownloadDialog(false);
-    reset(); // Reset form after download is initiated
+    reset(); 
   };
   
   return (
@@ -232,8 +230,6 @@ const EbookDownloadForm = () => {
             </AlertDialogAction>
             <AlertDialogCancel onClick={() => {
               setShowDownloadDialog(false);
-              // Optionally reset form if modal is cancelled without downloading
-              // reset(); 
             }}>Fechar</AlertDialogCancel>
           </AlertDialogFooter>
         </AlertDialogContent>
