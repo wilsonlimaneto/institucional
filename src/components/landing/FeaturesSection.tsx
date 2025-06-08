@@ -1,17 +1,17 @@
 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Award, BarChart3, DownloadCloud, Brain, Rocket, ShieldCheck, Users } from 'lucide-react';
+import { Award, BarChart3, DownloadCloud, Brain, Rocket, ShieldCheck, Users, FileText } from 'lucide-react';
 
 const features = [
   {
-    icon: <Rocket className="h-8 w-8 text-primary" />, // Adjusted icon size for accordion trigger
+    icon: <Rocket className="h-8 w-8 text-primary" />, 
     title: 'Busca de Jurisprudência Real com tecnologia Semântica®',
     description: 'Chega de garimpar ementas com palavras-chave. Nossa busca semântica encontra os julgados decisivos para sua causa, permitindo que você construa teses irrefutáveis e aumente sua taxa de vitórias.',
   },
   {
-    icon: <ShieldCheck className="h-8 w-8 text-primary" />,
-    title: 'Secure & Reliable',
-    description: 'Built with top-notch security features to protect your data and build trust.',
+    icon: <FileText className="h-8 w-8 text-primary" />, // Changed icon
+    title: 'Gerador nativo de minutas jurídicas',
+    description: 'Nossa plataforma lê e interpreta os documentos do processo, garantindo que cada petição seja contextualmente informada e estrategicamente superior. Incorporamos seu ativo mais valioso: um estilo de escrita e persuasão único, forjado em anos de prática.\n\nPare de apenas gerar texto. Comece a construir teses vitoriosas com um clique.',
   },
   {
     icon: <Award className="h-8 w-8 text-primary" />,
@@ -64,7 +64,7 @@ const FeaturesSection = () => {
                   </div>
                 </AccordionTrigger>
                 <AccordionContent className="px-6 pb-4 pt-0">
-                  <p className="text-card-foreground/80 text-base">{feature.description}</p>
+                  <p className="text-card-foreground/80 text-base whitespace-pre-line">{feature.description}</p>
                 </AccordionContent>
               </AccordionItem>
             ))}
