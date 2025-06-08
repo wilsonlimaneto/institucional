@@ -5,7 +5,7 @@ const diferenciais = [
   { text: 'Jurisprudência real, já verificada por meio de busca semântica®' },
   { text: 'Editor de documentos nativo: você não precisa copiar os textos para um editor' },
   { text: 'Integração Google Docs e MS Office ' }, // Note: trailing space here is important for the split
-  { text: 'Integração ao Google Docs e Dropbox' },
+  { text: 'Integração ao Google Drive e Dropbox' }, // Atualizado aqui
   { text: 'Resuma dados de longos documentos (Ago 2025)' },
   { text: 'Parceria com empresas e tecnologias reconhecidas internacionalmente' },
 ];
@@ -27,19 +27,19 @@ const DiferenciaisSection = () => {
           <ul className="space-y-3">
             {diferenciais.map((item, index) => {
               let itemContent;
-              if (item.text.includes('Integração ao Google Docs e Dropbox')) {
-                const parts = item.text.split('Integração ao Google Docs e Dropbox');
+              if (item.text.includes('Integração ao Google Drive e Dropbox')) { // Atualizado aqui
+                const parts = item.text.split('Integração ao Google Drive e Dropbox');
                 itemContent = (
                   <>
                     {parts[0]}
-                    {'Integração ao Google Docs e Dropbox'}
-                    <img src="/google_docs.png" alt="Google Docs logo" className="inline-block h-5 w-auto mx-1 align-middle" style={{ height: '20px' }} />
+                    {'Integração ao Google Drive e Dropbox'}
+                    <img src="/google_drive.png" alt="Google Drive logo" className="inline-block h-5 w-auto mx-1 align-middle" style={{ height: '20px' }} /> {/* Atualizado src e alt */}
                     {' e '}
                     <img src="/dropbox.png" alt="Dropbox logo" className="inline-block h-5 w-auto mx-1 align-middle" style={{ height: '20px' }} />
                     {parts[1]}
                   </>
                 );
-              } else if (item.text.includes('Integração Google Docs e MS Office ')) { // Check for the version with a trailing space
+              } else if (item.text.includes('Integração Google Docs e MS Office ')) { 
                 const parts = item.text.split('Integração Google Docs e MS Office ');
                 itemContent = (
                   <>
