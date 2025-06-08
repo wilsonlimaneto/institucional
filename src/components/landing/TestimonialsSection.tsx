@@ -4,7 +4,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import Image from 'next/image';
 import { Card } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'; // Added DialogTitle
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { PlayCircle, ArrowUp } from 'lucide-react';
 
 const testimonials = [
@@ -61,12 +61,13 @@ const TestimonialsSection = () => {
     setSelectedVideoUrl(videoUrl);
     setSelectedVideoName(name);
     setIsModalOpen(true);
-    setShowVolumeAlert(true); 
+    setShowVolumeAlert(true);
   }, []);
 
   const closeModal = useCallback(() => {
     setIsModalOpen(false);
-    // setShowVolumeAlert(false); // Alert will hide on its own timeout
+    // Alert will hide on its own timeout, but ensure it's reset if modal is closed early by other means
+    setShowVolumeAlert(false);
     setTimeout(() => {
       setSelectedVideoUrl(null);
       setSelectedVideoName(null);
@@ -78,7 +79,7 @@ const TestimonialsSection = () => {
     if (showVolumeAlert) {
       timer = setTimeout(() => {
         setShowVolumeAlert(false);
-      }, 5000); // Show alert for 5 seconds
+      }, 1000); // Show alert for 1 second
     }
     return () => clearTimeout(timer);
   }, [showVolumeAlert]);
@@ -98,8 +99,8 @@ const TestimonialsSection = () => {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {testimonials.map((testimonial, index) => {
               const videoId = extractYouTubeVideoId(testimonial.videoUrl);
-              const thumbnailUrl = videoId 
-                ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` 
+              const thumbnailUrl = videoId
+                ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`
                 : 'https://placehold.co/600x400.png';
 
               return (
@@ -137,9 +138,8 @@ const TestimonialsSection = () => {
       </section>
 
       <Dialog open={isModalOpen} onOpenChange={(open) => { if (!open) closeModal(); else setIsModalOpen(true); }}>
-        <DialogContent className="sm:max-w-2xl md:max-w-3xl lg:max-w-4xl !p-0 overflow-hidden border-0 bg-transparent shadow-none relative">
-          <DialogTitle className="sr-only">{selectedVideoName || "Video Testimonial"}</DialogTitle>
-          
+        <DialogContent className="sm:max-w-2xl md:max-w-3xl lg:max-w-4xl !p-0 overflow-hidden border-0 bg-transparent shadow-none relative flex items-center justify-center">
+           {selectedVideoName && <DialogTitle className="sr-only">{selectedVideoName || "Video Testimonial"}</DialogTitle>}
           {currentVideoIdForModal ? (
             <div className="aspect-video w-full bg-black rounded-lg overflow-hidden relative">
               <iframe
