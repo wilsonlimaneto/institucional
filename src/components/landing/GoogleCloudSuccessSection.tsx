@@ -7,7 +7,7 @@ const GoogleCloudSuccessSection = () => {
   return (
     <section id="google-cloud-success" className="py-9 md:py-12 lg:py-14 text-primary-foreground bg-[hsl(217,90%,32%)]">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid md:grid-cols-2 gap-12 items-center">
+        <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
           <div className="space-y-6 text-center md:text-left">
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight">
               Somos Caso de Sucesso Google Cloud
