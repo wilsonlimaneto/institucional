@@ -33,7 +33,9 @@ const PDFDocument = dynamic(
     // Configure workerSrc here, using the imported pdfjs object from react-pdf
     // and the specific version from package.json
     if (typeof window !== 'undefined') {
-      mod.pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.8.69/pdf.worker.min.mjs`;
+      // Using the specific version from package.json (pdfjs-dist: "^4.8.69")
+      // and a reliable CDN (unpkg) for the .mjs worker.
+      mod.pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@4.8.69/build/pdf.worker.min.mjs`;
     }
     return mod.Document;
   },
@@ -107,7 +109,12 @@ const EbookDownloadForm = () => {
     const formData = new FormData();
     (Object.keys(data) as Array<keyof EbookFormData>).forEach((key) => {
       const value = data[key];
-      formData.append(key, String(value ?? ''));
+      // Ensure phone includes the +55 prefix for submission if it was stripped for display
+      if (key === 'phone' && value && !value.startsWith('+55')) {
+        formData.append(key, `+55${value}`);
+      } else {
+        formData.append(key, String(value ?? ''));
+      }
     });
     formAction(formData);
   };
@@ -119,13 +126,12 @@ const EbookDownloadForm = () => {
     let nationalNum = digitsOnlyWithDDI.substring(2);
 
     if (nationalNum.length === 0) {
-        return `+${ddi} `;
+        return ""; // Return empty if only DDI is present after stripping +55
     }
 
     nationalNum = nationalNum.slice(0, 11); // Limit to 11 national digits (DDD + Number)
 
-    let masked = `+${ddi}`;
-    masked += ` (${nationalNum.substring(0, Math.min(2, nationalNum.length))}`; // DDD
+    let masked = `(${nationalNum.substring(0, Math.min(2, nationalNum.length))}`; // DDD
     if (nationalNum.length > 2) {
       masked += `) ${nationalNum.substring(2, Math.min(2 + 5, nationalNum.length))}`;
     }
@@ -179,17 +185,35 @@ const EbookDownloadForm = () => {
                       {...field}
                       type="tel"
                       placeholder="(XX) XXXXX-XXXX"
-                      className="pl-12 pr-3 py-2 w-full"
+                      className="pl-12 pr-3 py-2 w-full" // Increased paddingLeft for the flag
                       onChange={(e) => {
                         const userInput = e.target.value;
-                        const nationalDigits = userInput.replace(/\D/g, '');
+                        // Remove non-digits, but keep '+' if it's at the beginning for DDI
+                        let digitsOnly = userInput.replace(/[^\d+]/g, '');
+                        
+                        // Prepend +55 if not already there and if there are other digits
+                        if (!digitsOnly.startsWith('+55') && digitsOnly.length > 0) {
+                            if (digitsOnly.startsWith('+')) { // User might be typing a different DDI
+                                digitsOnly = digitsOnly.substring(1); // Remove the '+' to replace with +55
+                            }
+                            // Remove any existing DDI if it's not 55 before prepending
+                            if (digitsOnly.length > 2 && (digitsOnly.startsWith('55') || digitsOnly.startsWith('055'))) {
+                                // Handle cases where user might have typed 55 already
+                            } else {
+                                digitsOnly = '55' + digitsOnly.replace(/^0+/, ''); // Prepend 55 and remove leading zeros
+                            }
+                        } else if (digitsOnly.startsWith('+55')) {
+                            digitsOnly = digitsOnly.substring(1); // Keep 55 but remove + for masking logic
+                        }
 
-                        if (nationalDigits === "") {
-                            field.onChange("");
+
+                        if (digitsOnly === "55" || digitsOnly === "") {
+                            field.onChange(""); // If only "+55" or empty, show placeholder
                         } else {
-                            const fullDigitsToMask = `55${nationalDigits}`;
-                            const maskedValue = applyPhoneMask(fullDigitsToMask);
-                            field.onChange(maskedValue);
+                            const maskedValue = applyPhoneMask(digitsOnly);
+                            // Store the value without +55 for display, but the Zod schema expects +55
+                            // The handleFormSubmit will re-add +55 if needed.
+                            field.onChange(maskedValue); 
                         }
                       }}
                       value={field.value ? field.value.replace(/^\+55\s*/, '').trimStart() : ""}
@@ -228,15 +252,16 @@ const EbookDownloadForm = () => {
               )}
 
               <Button type="submit" size="lg" className="w-full font-semibold">
-                Download Gratuito
+                Clique para receber GRATUITAMENTE o E-Book
               </Button>
             </form>
           </div>
-          <div className="flex justify-center items-center">
+          <div className="flex flex-col justify-center items-center">
+            <h3 className="text-lg font-semibold text-foreground mb-2">Amostra</h3>
             <div className="w-full max-w-sm rounded-lg shadow-2xl">
-              <ScrollArea className="h-[488px] rounded-lg border bg-muted">
+              <ScrollArea className="h-[488px] rounded-lg border bg-muted pdf-scroll-area">
                 <PDFDocument
-                  file="/ebook-maestria-jurisp-pdf.pdf"
+                  file="/ebook-maestria-jurisp-pdf.pdf" 
                   onLoadSuccess={onDocumentLoadSuccess}
                   className="flex flex-col items-center py-2"
                   onLoadError={(error) => console.error('Failed to load PDF:', error.message)}
@@ -266,5 +291,3 @@ const EbookDownloadForm = () => {
 };
 
 export default EbookDownloadForm;
-
-    

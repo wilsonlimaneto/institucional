@@ -103,4 +103,29 @@
   .animate-fade-in {
     animation: fadeIn 1s ease-in-out;
   }
+
+  /* Custom scrollbar for PDF preview */
+  .pdf-scroll-area > div > [data-orientation="vertical"] {
+    opacity: 1 !important;
+    background-color: hsl(var(--muted) / 0.5) !important; /* Track color */
+  }
+  .pdf-scroll-area > div > [data-orientation="vertical"] > div[data-radix-scroll-area-thumb] {
+    background-color: hsl(var(--foreground) / 0.4) !important; /* Thumb color */
+    @apply rounded-full; /* Ensure thumb is rounded */
+  }
+  .pdf-scroll-area > div > [data-orientation="vertical"]:hover > div[data-radix-scroll-area-thumb] {
+    background-color: hsl(var(--foreground) / 0.6) !important; /* Thumb color on hover */
+  }
+
+  .pdf-scroll-area > div > [data-orientation="horizontal"] {
+    opacity: 1 !important;
+    background-color: hsl(var(--muted) / 0.5) !important; /* Track color */
+  }
+  .pdf-scroll-area > div > [data-orientation="horizontal"] > div[data-radix-scroll-area-thumb] {
+    background-color: hsl(var(--foreground) / 0.4) !important; /* Thumb color */
+    @apply rounded-full; /* Ensure thumb is rounded */
+  }
+  .pdf-scroll-area > div > [data-orientation="horizontal"]:hover > div[data-radix-scroll-area-thumb] {
+    background-color: hsl(var(--foreground) / 0.6) !important; /* Thumb color on hover */
+  }
 }
