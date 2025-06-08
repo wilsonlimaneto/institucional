@@ -46,7 +46,7 @@ const MaestriaFlixSection = () => {
             reel.isEmbedded && reel.embedUrl ? (
               <div
                 key={reel.id}
-                className="bg-black rounded-xl shadow-lg w-full aspect-[9/16] overflow-hidden border border-border transition-all duration-300 ease-in-out hover:shadow-primary/10 hover:border-primary/30 hover:scale-[1.02]"
+                className="bg-black rounded-xl shadow-lg w-full aspect-[24/43] overflow-hidden border border-border transition-all duration-300 ease-in-out hover:shadow-primary/10 hover:border-primary/30 hover:scale-[1.02]"
               >
                 <iframe
                   src={reel.embedUrl}
@@ -66,7 +66,7 @@ const MaestriaFlixSection = () => {
                 aria-label={`Assistir ${reel.title} no Instagram`}
               >
                 <div
-                  className="bg-card rounded-xl shadow-lg w-full aspect-[9/16] flex flex-col items-center justify-center p-6 border border-border group-hover:shadow-primary/10 group-hover:border-primary/30 transition-all duration-300 ease-in-out group-hover:scale-[1.02]"
+                  className="bg-card rounded-xl shadow-lg w-full aspect-[24/43] flex flex-col items-center justify-center p-6 border border-border group-hover:shadow-primary/10 group-hover:border-primary/30 transition-all duration-300 ease-in-out group-hover:scale-[1.02]"
                   data-ai-hint={reel.aiHint}
                 >
                   <Instagram className="w-16 h-16 text-primary group-hover:text-primary/90 transition-colors duration-300 mb-6" />
