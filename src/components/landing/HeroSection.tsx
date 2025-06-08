@@ -23,13 +23,13 @@ const HeroSection = () => {
           {/* Right Column: Image, then Buttons */}
           <div className="md:col-span-3 flex flex-col items-center space-y-8">
             {/* Image */}
-            <div className="relative rounded-lg overflow-hidden shadow-2xl w-full">
+            <div className="relative rounded-lg overflow-hidden shadow-2xl w-full md:w-5/6 md:mx-auto">
               <Image
                 src="/fast_demo_maestria.webp"
                 alt="Maestria logo"
                 width={1280} 
                 height={720}
-                sizes="(min-width: 768px) 60vw, 100vw"
+                sizes="(min-width: 768px) 50vw, 100vw"
                 style={{
                   width: '100%',
                   height: 'auto',
