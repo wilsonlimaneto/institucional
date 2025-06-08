@@ -9,7 +9,7 @@ const HeroSection = () => {
   return (
     <section className="py-16 md:py-24 lg:py-32">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid md:grid-cols-2 gap-12 md:gap-16 items-center">
+        <div className="grid md:grid-cols-2 gap-12 md:gap-12 items-start"> {/* Changed md:gap-16 to md:gap-12 and items-center to items-start */}
           <div className="space-y-8 text-center md:text-left">
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-foreground">
               Gere minutas de <span className="text-primary">documentos jurídicos</span> com <span className="text-primary">Jurisprudência Real</span> usando o modelo de IA mais assertivo do mercado.
@@ -42,7 +42,7 @@ const HeroSection = () => {
               <p className="text-sm text-foreground/80 mb-1">
                 Startup apoiada pelo
               </p>
-              <div className="relative h-[5.6rem] w-[22.4rem] inline-block -ml-[10px] -mt-[20px]"> {/* Adjusted margin-top */}
+              <div className="relative h-[5.6rem] w-[22.4rem] inline-block -ml-[10px] -mt-[20px]">
                  <Image
                     src="/gfs_h.png"
                     alt="Google for Startups Logo"
@@ -58,7 +58,7 @@ const HeroSection = () => {
               alt="Maestria logo"
               layout="fill"
               objectFit="cover"
-              data-ai-hint="legal tech logo"
+              data-ai-hint="legal tech demo"
             />
           </div>
         </div>
@@ -68,4 +68,3 @@ const HeroSection = () => {
 };
 
 export default HeroSection;
-
