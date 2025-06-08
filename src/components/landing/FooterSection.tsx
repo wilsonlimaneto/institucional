@@ -12,7 +12,15 @@ const FooterSection = () => {
         <div className="grid md:grid-cols-3 gap-8 items-center">
           <div className="flex flex-col items-center md:items-start">
             <Link href="/" className="flex items-center gap-2 mb-4" prefetch={false}>
-              <span className="font-headline text-2xl font-bold text-foreground">maestria.</span>
+              <div className="relative w-[120px] h-[25px] md:w-[150px] md:h-[31px]">
+                <Image
+                    src="/maestrialogo.png"
+                    alt="maestria. logo"
+                    layout="fill"
+                    objectFit="contain"
+                    priority
+                />
+              </div>
             </Link>
             <p className="text-sm text-foreground/70 text-center md:text-left">
               Crafting exceptional digital experiences.
@@ -51,7 +59,7 @@ const FooterSection = () => {
           </div>
         </div>
         <div className="mt-12 border-t border-border/40 pt-8 text-center text-sm text-foreground/60">
-          <p>&copy; {currentYear} maestria. All rights reserved.</p>
+          <p>&copy; {currentYear} Maestria. Direitos Reservados</p>
         </div>
       </div>
     </footer>
