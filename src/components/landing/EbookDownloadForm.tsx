@@ -33,9 +33,10 @@ import type { DocumentProps, PageProps } from 'react-pdf';
 import dynamic from 'next/dynamic';
 import { pdfjs } from 'react-pdf';
 
-// Explicitly set the workerSrc for pdfjs to a CDN version matching the installed pdfjs-dist
+// Configure the workerSrc to point to the local file in the public directory.
+// This needs to be done once and on the client side.
 if (typeof window !== 'undefined') {
-  pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+  pdfjs.GlobalWorkerOptions.workerSrc = `/pdf.worker.min.js`;
 }
 
 const PDFDocument = dynamic(() => import('react-pdf').then(mod => mod.Document), {
@@ -196,6 +197,7 @@ const EbookDownloadForm = () => {
                             field.onChange(maskedValue);
                         }
                       }}
+                      // Display only the national part after "+55 "
                       value={field.value ? field.value.replace(/^\+55\s*/, '').trimStart() : ""}
                       aria-invalid={formErrors.phone ? "true" : "false"}
                     />
