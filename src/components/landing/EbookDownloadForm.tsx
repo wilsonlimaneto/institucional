@@ -29,8 +29,10 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-import type { PDFDocumentProxy, DocumentProps as ReactPdfDocumentProps, PageProps as ReactPdfPageProps } from 'react-pdf';
+// Import types from react-pdf
+import type { DocumentProps as ReactPdfDocumentProps, PageProps as ReactPdfPageProps, PDFDocumentProxy } from 'react-pdf';
 
+// Import CSS for react-pdf
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
 
@@ -88,7 +90,7 @@ const EbookDownloadForm = () => {
   
   const pdfParentContainerRef = useRef<HTMLDivElement>(null);
   const [pdfContainerWidth, setPdfContainerWidth] = useState<number | null>(null);
-  const [calculatedPdfHeight, setCalculatedPdfHeight] = useState<string>("550px");
+  const [calculatedPdfHeight, setCalculatedPdfHeight] = useState<string>("550px"); // Default height
   const [currentZoomLevel, setCurrentZoomLevel] = useState(1.0);
   const [originalPdfPageSize, setOriginalPdfPageSize] = useState<{width: number, height: number} | null>(null);
 
@@ -99,24 +101,29 @@ const EbookDownloadForm = () => {
       setPdfLoadError(null);
       try {
         console.log("Attempting to load react-pdf module...");
+        // Dynamically import react-pdf
         const RPDF = await import('react-pdf');
         console.log("react-pdf module loaded.", RPDF);
 
-        // We will let pdfjs-dist handle worker loading, assuming Webpack config is correct
-        if (RPDF.pdfjs) {
-           console.log("PDF.js object found. Worker path will be determined by pdfjs-dist and Webpack.");
-        } else {
-          console.error("RPDF.pdfjs is undefined after import.");
+        // DO NOT set RPDF.pdfjs.GlobalWorkerOptions.workerSrc here.
+        // Let pdfjs-dist handle worker loading with Webpack's help (from next.config.js).
+        // Webpack is configured to place pdf.worker.min.mjs in static/chunks/
+        // pdfjs-dist should try to load it relative to its own path.
+
+        if (!RPDF.pdfjs) {
+          console.error("RPDF.pdfjs is undefined after import. This is unexpected.");
           throw new Error("pdfjs object not found in react-pdf module.");
         }
         
         setPdfModule({ 
           Document: RPDF.Document, 
           Page: RPDF.Page,
-          pdfjs: RPDF.pdfjs
+          pdfjs: RPDF.pdfjs // Store pdfjs for potential direct use if needed
         });
+        console.log("PDF module and components set.");
+
       } catch (error) {
-        console.error("Failed to load react-pdf module:", error);
+        console.error("Failed to load react-pdf module or worker issue:", error);
         const errorMessage = error instanceof Error ? error.message : "Unknown error loading PDF module.";
         setPdfLoadError(`Não foi possível inicializar o visualizador de PDF: ${errorMessage}`);
         toast({
@@ -131,6 +138,7 @@ const EbookDownloadForm = () => {
     loadPdfDependencies();
   }, [toast]);
 
+
   useEffect(() => {
     const currentRef = pdfParentContainerRef.current;
     if (!currentRef) return;
@@ -142,6 +150,7 @@ const EbookDownloadForm = () => {
     });
 
     resizeObserver.observe(currentRef);
+    // Set initial width
     setPdfContainerWidth(currentRef.offsetWidth); 
 
     return () => {
@@ -152,13 +161,19 @@ const EbookDownloadForm = () => {
     };
   }, []);
 
+  // Effect to calculate PDF scale and height based on container width and original PDF page size
   useEffect(() => {
     if (pdfContainerWidth && originalPdfPageSize && originalPdfPageSize.width > 0) {
       const scale = pdfContainerWidth / originalPdfPageSize.width;
       setCurrentZoomLevel(scale);
       
+      // Calculate height to fit one page perfectly based on aspect ratio
       const calculatedHeight = originalPdfPageSize.height * scale;
       setCalculatedPdfHeight(`${calculatedHeight}px`);
+      console.log(`PDF container width: ${pdfContainerWidth}, Original page: ${originalPdfPageSize.width}x${originalPdfPageSize.height}, Calculated scale: ${scale}, Calculated height: ${calculatedHeight}px`);
+    } else if (pdfContainerWidth && !originalPdfPageSize) {
+      // If we have container width but no PDF size yet, maintain a default reasonable height
+      setCalculatedPdfHeight("550px"); // Or another suitable default
     }
   }, [pdfContainerWidth, originalPdfPageSize]);
 
@@ -180,15 +195,18 @@ const EbookDownloadForm = () => {
 
   const onDocumentLoadSuccess = useCallback((pdf: PDFDocumentProxy) => {
     console.log("PDF Document loaded successfully. Pages:", pdf.numPages);
-    setPdfLoadError(null);
+    setPdfLoadError(null); // Clear any previous load errors
     setNumPages(pdf.numPages);
     if (pdf.numPages > 0) {
       pdf.getPage(1).then(page => {
+        // Store original page dimensions at scale 1
         const viewport = page.getViewport({ scale: 1 }); 
         setOriginalPdfPageSize({ width: viewport.width, height: viewport.height });
+        console.log(`Original PDF page 1 dimensions: ${viewport.width}x${viewport.height}`);
       }).catch(pageLoadError => {
         console.error('Failed to load page 1 for dimensions:', pageLoadError);
-        setPdfLoadError(`Erro ao carregar informações da página 1 do PDF: ${pageLoadError instanceof Error ? pageLoadError.message : String(pageLoadError)}`);
+        const errorMsg = pageLoadError instanceof Error ? pageLoadError.message : String(pageLoadError);
+        setPdfLoadError(`Erro ao carregar informações da página 1 do PDF: ${errorMsg}`);
       });
     }
   }, []);
@@ -203,18 +221,21 @@ const EbookDownloadForm = () => {
         friendlyMessage += " O arquivo PDF pode estar corrompido ou não ser um PDF válido.";
     } else if (error.message?.toLowerCase().includes('network') || error.message?.toLowerCase().includes('http')) {
         friendlyMessage += " Problema de rede ao tentar carregar o PDF. Verifique sua conexão ou o caminho do arquivo.";
-    } else if (error.message?.toLowerCase().includes('worker') || error.message?.toLowerCase().includes('fakeworker') || error.message?.includes("especificador")) {
+    } else if (error.message?.toLowerCase().includes('worker') || error.message?.toLowerCase().includes('fakeworker') || error.message?.toLowerCase().includes('especificador')) {
         friendlyMessage = `Erro com o processador de PDF (worker): ${error.message}. Isso pode ser um problema de configuração do Webpack, da rede ou do ambiente. Verifique o console para mais detalhes. Tente reiniciar o servidor de desenvolvimento e atualizar a página.`;
     }
+
 
     setPdfLoadError(friendlyMessage);
     toast({ title: "Erro ao Carregar PDF", description: friendlyMessage, variant: "destructive" });
   };
 
+  // Handler for errors during page rendering (though we mostly care about document load)
   const onPageLoadError = (error: Error) => {
     console.error('Failed to load PDF Page:', error);
     const pageLoadErrorMessage = `Erro ao carregar página do PDF: ${error.message || 'desconhecido'}`;
-    setPdfLoadError(pageLoadErrorMessage); 
+    // Optionally, update pdfLoadError state here if it's critical
+    // setPdfLoadError(pageLoadErrorMessage); 
     toast({ title: `Erro Página PDF`, description: pageLoadErrorMessage, variant: "destructive" });
   };
 
@@ -237,10 +258,11 @@ const EbookDownloadForm = () => {
     }
   };
   
+  // Simple placeholder component for loading/error states
   const SimplePlaceholder = ({text, height = '400px'}: {text: string, height?: string}) => (
     <div
       className="flex justify-center items-center w-full bg-muted rounded-lg shadow-inner"
-      style={{ height }}
+      style={{ height }} // Use dynamic height
     >
       <p className="text-sm text-muted-foreground p-4 text-center">{text}</p>
     </div>
@@ -340,6 +362,7 @@ const EbookDownloadForm = () => {
                 </Button>
               </form>
             </div>
+            {/* PDF Preview Area */}
             <div ref={pdfParentContainerRef} className="flex flex-col justify-center items-center">
               <h3 className="text-lg font-semibold text-foreground mb-2">Amostra do E-book</h3>
               <div className="w-full max-w-xl rounded-lg shadow-2xl mt-4 border bg-muted">
@@ -350,27 +373,30 @@ const EbookDownloadForm = () => {
                     <SimplePlaceholder text={pdfLoadError} height={calculatedPdfHeight} />
                   ) : pdfModule && pdfContainerWidth ? (
                     <pdfModule.Document
-                      file="/ebook-maestria-jurisp-pdf.pdf"
+                      file="/ebook-maestria-jurisp-pdf.pdf" // Path relative to /public
                       onLoadSuccess={onDocumentLoadSuccess}
                       onLoadError={onDocumentLoadError}
-                      className="flex flex-col items-center py-2"
+                      className="flex flex-col items-center py-2" // Centering the page within the Document
                       loading={<SimplePlaceholder text="Carregando PDF..." height={calculatedPdfHeight}/>}
                     >
+                      {/* Render page only if numPages, originalPdfPageSize, and currentZoomLevel are valid */}
                       {numPages && numPages > 0 && originalPdfPageSize && currentZoomLevel > 0 ? (
                         <pdfModule.Page
-                          pageNumber={1} 
+                          pageNumber={1} // Show first page as preview
                           scale={currentZoomLevel}
-                          className="mb-2 shadow-md"
-                          onLoadError={onPageLoadError}
-                          loading={<SimplePlaceholder text="Carregando página..." height={calculatedPdfHeight}/>}
-                          renderAnnotationLayer={false} 
-                          renderTextLayer={false} 
+                          className="mb-2 shadow-md" // Optional: for styling the page
+                          onLoadError={onPageLoadError} // Error during page rendering
+                          loading={<SimplePlaceholder text="Carregando página..." height={calculatedPdfHeight}/>} // Placeholder for page loading
+                          renderAnnotationLayer={false} // Disable annotation layer for preview
+                          renderTextLayer={false} // Disable text layer for preview for simplicity
                         />
                       ) : !pdfLoadError ? ( 
+                        // This case might occur if document loaded but page 1 info is still pending or numPages is 0
                         <SimplePlaceholder text="Nenhuma página para exibir ou PDF ainda carregando." height={calculatedPdfHeight}/>
-                      ) : null}
+                      ) : null /* If pdfLoadError is set, the main error placeholder is already shown */}
                     </pdfModule.Document>
                   ) : (
+                     // Fallback if pdfModule or pdfContainerWidth is not yet ready
                      <SimplePlaceholder text="Preparando visualizador de PDF..." height={calculatedPdfHeight}/>
                   )}
                 </ScrollArea>
