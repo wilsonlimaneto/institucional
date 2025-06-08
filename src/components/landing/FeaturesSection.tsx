@@ -41,7 +41,7 @@ const FeaturesSection = () => {
         <div className="text-center mb-12 md:mb-16">
           <h2 className="text-3xl sm:text-4xl font-bold text-primary">Funcionalidades</h2>
           <p className="mt-4 text-xl text-foreground/80 max-w-2xl mx-auto">
-            Deixe os prompts para os engenheiros. Nossas funcionalidades entregam IA de ponta para advogados, projetada para maximizar a produtividade e o sucesso em suas causas.
+            Deixe os prompts para os engenheiros. Nossas funcionalidades entregam IA de forma natural para os advogados, projetada para maximizar a produtividade e o sucesso em suas causas.
           </p>
         </div>
         <div className="max-w-3xl mx-auto">
