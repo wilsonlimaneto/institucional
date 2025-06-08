@@ -15,7 +15,7 @@ const DiferenciaisSection = () => {
     <section id="diferenciais" className="py-8 md:py-12 lg:py-16 bg-secondary/10">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12 md:mb-16">
-          <h2 className="text-3xl sm:text-4xl font-bold text-primary">Nossos Diferenciais</h2>
+          <h2 className="text-3xl sm:text-4xl font-bold text-primary">Diferenciais Exclusivos</h2>
           <p className="mt-4 text-xl text-foreground/80 max-w-3xl mx-auto">
             Para advogados e escritórios que demandam mais que soluções genéricas, nossa plataforma entrega uma Inteligência Artificial de nível profissional, com modelos jurídicos específicos projetados para transformar expertise em resultados de máxima precisão.
           </p>
