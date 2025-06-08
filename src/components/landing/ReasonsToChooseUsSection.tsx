@@ -11,7 +11,7 @@ const reasons = [
   {
     icon: <Bot className="h-10 w-10 text-primary" />,
     title: 'IA Especializada para Advogados',
-    description: 'Nossa Inteligência Artificial é treinada especificamente para o contexto jurídico brasileiro, garantindo precisão e relevância incomparáveis.',
+    description: 'Nossa IA especializada substitui o ChatGPT em contextos jurídicos, entregando resultados extremamente mais precisos e relevantes para o Brasil.',
   },
   {
     icon: <BadgeCheck className="h-10 w-10 text-primary" />,
@@ -64,3 +64,4 @@ const ReasonsToChooseUsSection = () => {
 };
 
 export default ReasonsToChooseUsSection;
+
