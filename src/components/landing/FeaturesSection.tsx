@@ -1,11 +1,12 @@
+
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Award, BarChart3, DownloadCloud, Brain, Rocket, ShieldCheck, Users } from 'lucide-react';
 
 const features = [
   {
     icon: <Rocket className="h-8 w-8 text-primary" />, // Adjusted icon size for accordion trigger
-    title: 'Blazing Fast Load Speeds',
-    description: 'Optimized for performance, ensuring your visitors have a seamless experience.',
+    title: 'Busca de Jurisprudência Real com tecnologia Semântica®',
+    description: 'Chega de garimpar ementas com palavras-chave. Nossa busca semântica encontra os julgados decisivos para sua causa, permitindo que você construa teses irrefutáveis e aumente sua taxa de vitórias.',
   },
   {
     icon: <ShieldCheck className="h-8 w-8 text-primary" />,
