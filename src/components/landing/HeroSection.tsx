@@ -16,36 +16,15 @@ const HeroSection = () => {
               Gere minutas de <span className="text-primary">documentos jurídicos</span> com <span className="text-primary">Jurisprudência real</span> usando o modelo de IA mais assertivo do mercado.
             </h1>
             
-            <div className="mb-4"> {/* Container for bullets */}
-              <p className="text-sm md:text-base text-foreground/80 font-medium">
-                A única ferramenta que entrega:
-              </p>
-              <ul className="mt-2 ml-0 md:ml-4 list-disc list-inside text-sm md:text-base text-foreground/70 space-y-1.5" data-ai-hint="List of features including semantic search for real jurisprudence">
-                <li>Jurisprudência real, já verificada por meio de <em className="italic text-foreground/80">busca semântica</em>®</li>
-                <li>Editor de documentos embutido <span style={{ fontSize: '0.8em' }}>(2o Sem 2025)</span></li>
-                <li>Integração Google Docs e MS Office</li>
-                <li>Resuma dados de longos documentos <span style={{ fontSize: '0.8em' }}>(Ago 2025)</span></li>
-                <li>Parceria com empresas e tecnologias reconhecidas internacionalmente</li>
-              </ul>
-            </div>
-
-            {/* Moved Paragraph */}
+            {/* "Automatize GRATUITAMENTE..." Paragraph moved here */}
             <div>
-              <p className="text-lg md:text-xl text-foreground/80 text-center md:text-left">
+              <p className="text-lg md:text-xl text-foreground/80">
                 <span style={{ fontSize: '115%' }}>Automatize GRATUITAMENTE a sua rotina de edição de documentos, resumos de processos e pesquisa de jurisprudência.</span>
               </p>
             </div>
             
-            <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-              <Button asChild size="lg" className="font-semibold">
-                <Link href="#use-agora">Use agora mesmo</Link>
-              </Button>
-              <Button asChild size="lg" variant="outline" className="font-semibold">
-                <Link href="#saiba-mais">Saiba Mais</Link>
-              </Button>
-            </div>
-
-            <div className="mt-8 text-center md:text-left">
+            {/* Google for Startups Logo */}
+            <div className="text-center md:text-left"> {/* Removed mt-8 as space-y-8 on parent handles it */}
               <p className="text-sm text-foreground/80 mb-1">
                 Startup apoiada pelo
               </p>
@@ -60,24 +39,49 @@ const HeroSection = () => {
             </div>
           </div>
 
-          {/* Right Column: Image */}
-          <div className="relative rounded-lg overflow-hidden shadow-2xl md:col-span-3">
-            <Image
-              src="/fast_demo_maestria.webp"
-              alt="Maestria logo"
-              width={1280} 
-              height={720}
-              sizes="(min-width: 768px) 60vw, 100vw"
-              style={{
-                width: '100%',
-                height: 'auto',
-                objectFit: 'contain',
-              }}
-              data-ai-hint="legal tech demo"
-              priority
-            />
+          {/* Right Column: Image, then bullets and buttons */}
+          <div className="md:col-span-3">
+            <div className="relative rounded-lg overflow-hidden shadow-2xl">
+              <Image
+                src="/fast_demo_maestria.webp"
+                alt="Maestria logo"
+                width={1280} 
+                height={720}
+                sizes="(min-width: 768px) 60vw, 100vw"
+                style={{
+                  width: '100%',
+                  height: 'auto',
+                  objectFit: 'contain',
+                }}
+                data-ai-hint="legal tech demo"
+                priority
+              />
+            </div>
+
+            {/* "A única ferramenta que entrega:" and Bullet list moved here */}
+            <div className="mt-8 text-center md:text-left">
+              <p className="text-sm md:text-base text-foreground/80 font-medium">
+                A única ferramenta que entrega:
+              </p>
+              <ul className="mt-2 ml-0 md:ml-4 list-disc list-inside text-sm md:text-base text-foreground/70 space-y-1.5" data-ai-hint="List of features including semantic search for real jurisprudence">
+                <li>Jurisprudência real, já verificada por meio de <em className="italic text-foreground/80">busca semântica</em>®</li>
+                <li>Editor de documentos embutido <span style={{ fontSize: '0.8em' }}>(2o Sem 2025)</span></li>
+                <li>Integração Google Docs e MS Office</li>
+                <li>Resuma dados de longos documentos <span style={{ fontSize: '0.8em' }}>(Ago 2025)</span></li>
+                <li>Parceria com empresas e tecnologias reconhecidas internacionalmente</li>
+              </ul>
+            </div>
+
+            {/* Action Buttons moved here */}
+            <div className="mt-6 flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+              <Button asChild size="lg" className="font-semibold">
+                <Link href="#use-agora">Use agora mesmo</Link>
+              </Button>
+              <Button asChild size="lg" variant="outline" className="font-semibold">
+                <Link href="#saiba-mais">Saiba Mais</Link>
+              </Button>
+            </div>
           </div>
-          {/* Spacer and old paragraph container previously here are now removed */}
         </div>
       </div>
     </section>
