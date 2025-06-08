@@ -2,12 +2,12 @@
 import { CheckCircle } from 'lucide-react';
 
 const diferenciais = [
+  { text: 'Parceria com empresas e tecnologias reconhecidas internacionalmente' },
   { text: 'Jurisprudência real, já verificada por meio de busca semântica®' },
   { text: 'Editor de documentos nativo: você não precisa copiar os textos para um editor' },
   { text: 'Integração Google Docs e MS Office (2o Sem 2025)' },
   { text: 'Integração ao Google Drive e Dropbox (2o Sem 2025)' },
   { text: 'Resuma dados de longos documentos (Ago 2025)' },
-  { text: 'Parceria com empresas e tecnologias reconhecidas internacionalmente' },
 ];
 
 const DiferenciaisSection = () => {
