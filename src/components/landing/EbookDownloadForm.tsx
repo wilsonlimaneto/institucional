@@ -27,6 +27,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { FileText } from 'lucide-react';
 
 const BrazilFlagIcon = () => (
     <svg width="28" height="20" viewBox="0 0 28 20" fill="none" xmlns="http://www.w3.org/2000/svg" className="rounded-sm">
@@ -59,30 +60,48 @@ const EbookDownloadForm = () => {
   const { toast } = useToast();
   
   const [showDownloadDialog, setShowDownloadDialog] = useState(false);
-  const [downloadUrl, setDownloadUrl] = useState<string | undefined>(undefined);
+  const [isSubmittingToServer, setIsSubmittingToServer] = useState(false);
 
-  const initialFormState: FormState = { message: "", success: false, issues: [] };
-  const [formState, formAction] = React.useActionState(submitEbookForm, initialFormState);
+  const initialServerFormState: FormState = { message: "", success: false, issues: [] };
+  const [serverFormState, formAction] = React.useActionState(submitEbookForm, initialServerFormState);
 
-  const { register, formState: { errors: formErrors, isSubmitting }, reset, control } = useForm<EbookFormData>({
+  const { 
+    register, 
+    handleSubmit, 
+    formState: { errors: formErrors, isSubmitting: isFormProcessing }, 
+    reset, 
+    control 
+  } = useForm<EbookFormData>({
     resolver: zodResolver(EbookFormSchema),
     defaultValues: { name: "", email: "", phone: "", areaOfLaw: "" }
   });
 
+  const onClientValid = async (data: EbookFormData) => {
+    setShowDownloadDialog(true); // Open the modal immediately on client-side success
+
+    // Trigger server action for logging/backend processing
+    setIsSubmittingToServer(true);
+    const formData = new FormData();
+    (Object.keys(data) as Array<keyof EbookFormData>).forEach((key) => {
+      formData.append(key, data[key]);
+    });
+    
+    // We don't need to await this for the modal to show, 
+    // but handling its completion might be useful for UI feedback.
+    await formAction(formData); 
+    setIsSubmittingToServer(false);
+  };
+
   useEffect(() => {
-    if (formState.message && formState.message !== "") {
+    // This effect handles toasts from the server action's response
+    if (serverFormState.message && serverFormState.message !== "" && !isSubmittingToServer) {
       toast({
-        title: formState.success ? "Sucesso!" : "Erro na Submissão",
-        description: formState.message,
-        variant: formState.success ? "default" : "destructive",
+        title: serverFormState.success ? "Submissão Registrada!" : "Erro no Servidor",
+        description: serverFormState.message,
+        variant: serverFormState.success ? "default" : "destructive",
       });
-      if (formState.success && formState.downloadUrl) {
-        setDownloadUrl(formState.downloadUrl);
-        setShowDownloadDialog(true);
-        reset();
-      }
     }
-  }, [formState, reset, toast]);
+  }, [serverFormState, toast, isSubmittingToServer]);
 
   const ramosDeAtuacao = [
     "Administrativo", "Adv. Pública", "Civil", "Digital", "Empresarial", "Família",
@@ -90,16 +109,15 @@ const EbookDownloadForm = () => {
     "Promotoria", "Sucessões", "Trabalhista", "Tributário"
   ].sort();
 
-  const handleDownloadPdf = () => {
-    if (downloadUrl) {
-      const link = document.createElement('a');
-      link.href = downloadUrl;
-      link.setAttribute('download', 'ebook-maestria-jurisprudencia.pdf');
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      setShowDownloadDialog(false);
-    }
+  const handleDirectDownload = () => {
+    const link = document.createElement('a');
+    link.href = 'https://www.dropbox.com/scl/fi/3gb8yyk8gxrsdpjmyfcc8/ebook-maestria-jurisp.pptx?rlkey=ldr2ufxr7b34tmkbjgn0k8ydo&dl=1';
+    link.setAttribute('download', 'ebook-maestria-jurisp.pptx');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    setShowDownloadDialog(false);
+    reset(); // Reset form after download is initiated
   };
   
   return (
@@ -115,7 +133,7 @@ const EbookDownloadForm = () => {
                 Aprenda os segredos da IA para advogados e transforme sua carreira.
               </p>
               <form
-                action={formAction}
+                onSubmit={handleSubmit(onClientValid)}
                 className="space-y-4"
               >
                 <Input
@@ -184,14 +202,14 @@ const EbookDownloadForm = () => {
                 />
                 {formErrors.areaOfLaw && <p className="text-sm text-destructive">{formErrors.areaOfLaw.message}</p>}
 
-                {formState.issues && formState.issues.length > 0 && !formState.success && (
+                {serverFormState.issues && serverFormState.issues.length > 0 && !serverFormState.success && (
                   <p className="text-sm text-destructive text-center py-2">
-                    Por favor, preencha todos os campos obrigatórios corretamente.
+                    Erro no servidor: {serverFormState.message}
                   </p>
                 )}
 
-                <Button type="submit" size="lg" className="w-full font-semibold" disabled={isSubmitting}>
-                  {isSubmitting ? "Enviando..." : "Clique para receber GRATUITAMENTE o E-Book"}
+                <Button type="submit" size="lg" className="w-full font-semibold" disabled={isFormProcessing || isSubmittingToServer}>
+                  {isFormProcessing || isSubmittingToServer ? "Processando..." : "Clique para receber GRATUITAMENTE o E-Book"}
                 </Button>
               </form>
             </div>
@@ -202,16 +220,21 @@ const EbookDownloadForm = () => {
       <AlertDialog open={showDownloadDialog} onOpenChange={setShowDownloadDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Download Liberado</AlertDialogTitle>
+            <AlertDialogTitle>Download Pronto!</AlertDialogTitle>
             <AlertDialogDescription>
-              Seu e-book está pronto! Clique no botão abaixo para iniciar o download.
+              Seu e-book está pronto. Clique no botão abaixo para baixar o arquivo (.pptx).
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogAction onClick={handleDownloadPdf}>
-              Baixar E-book
+            <AlertDialogAction onClick={handleDirectDownload} className="flex items-center">
+              <FileText className="mr-2 h-5 w-5" />
+              Baixar E-book (.pptx)
             </AlertDialogAction>
-            <AlertDialogCancel onClick={() => setShowDownloadDialog(false)}>Fechar</AlertDialogCancel>
+            <AlertDialogCancel onClick={() => {
+              setShowDownloadDialog(false);
+              // Optionally reset form if modal is cancelled without downloading
+              // reset(); 
+            }}>Fechar</AlertDialogCancel>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

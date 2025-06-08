@@ -8,7 +8,7 @@ export interface FormState {
   fields?: Record<string, string>;
   issues?: string[];
   success: boolean;
-  downloadUrl?: string; 
+  // downloadUrl is no longer needed here as download is client-side
 }
 
 export async function submitEbookForm(
@@ -21,31 +21,27 @@ export async function submitEbookForm(
   const parsed = EbookFormSchema.safeParse(formData);
 
   if (!parsed.success) {
-    // Log detailed validation errors for debugging
-    console.error("Validation errors:", parsed.error.flatten().fieldErrors);
+    console.error("Server-side validation errors:", parsed.error.flatten().fieldErrors);
     return {
-      message: "Dados inválidos. Por favor, verifique os campos.",
+      message: "Dados inválidos. Por favor, verifique os campos (validação do servidor).",
       fields: formData as Record<string, string>,
       issues: parsed.error.issues.map((issue) => `${issue.path.join('.')}: ${issue.message}`),
       success: false,
     };
   }
 
-  // At this point, parsed.data.phone contains the national number (e.g., "11987654321")
   const validatedData: EbookFormData = parsed.data;
   
-  // Add country code for storage/processing
   const phoneWithCountryCode = `+55${validatedData.phone}`;
 
-  // Simulate saving data with the full number
-  console.log("Ebook form submitted. Data to be saved:", {
+  console.log("Ebook form submitted to server for logging. Data:", {
     ...validatedData,
-    phone: phoneWithCountryCode, // Use the number with country code for backend operations
+    phone: phoneWithCountryCode,
   });
   
+  // This message will be shown in a toast
   return {
-    message: `Obrigado, ${validatedData.name}! Seu e-book está pronto para download.`,
+    message: `Obrigado, ${validatedData.name}! Seus dados foram registrados. Seu download deve iniciar em breve.`,
     success: true,
-    downloadUrl: "/ebook-maestria-jurisp-pdf.pdf"
   };
 }
