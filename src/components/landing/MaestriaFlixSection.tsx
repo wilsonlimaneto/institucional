@@ -1,105 +1,65 @@
+
 'use client'
 
-import React, { useCallback, useEffect, useState } from 'react'
-import useEmblaCarousel from 'embla-carousel-react'
-import Autoplay from 'embla-carousel-autoplay'
-import Image from 'next/image'
-import Link from 'next/link'
+import { Instagram } from 'lucide-react';
+import Link from 'next/link';
 
 const MaestriaFlixSection = () => {
-  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, align: 'center' }, [
-    Autoplay({ delay: 5000, stopOnInteraction: false }),
-  ])
-
-  const [visibleSlides, setVisibleSlides] = useState<number[]>([])
-
-  const updateVisibleSlides = useCallback((api: any) => {
-    if (!api) return
-    setVisibleSlides(api.slidesInView(true))
-  }, [])
-
-  useEffect(() => {
-    if (!emblaApi) return
-    updateVisibleSlides(emblaApi)
-    emblaApi.on('select', updateVisibleSlides)
-    emblaApi.on('reInit', updateVisibleSlides)
-
-    return () => {
-      emblaApi.off('select', updateVisibleSlides)
-      emblaApi.off('reInit', updateVisibleSlides)
-    }
-  }, [emblaApi, updateVisibleSlides])
-
-  const isSlideCentered = (index: number) => {
-    if (!emblaApi) return false;
-    const selectedScrollSnap = emblaApi.selectedScrollSnap();
-    // In a looping carousel, the "active" slide might not be the one in the middle
-    // of the visible slides array. The `selectedScrollSnap` is more reliable.
-    return selectedScrollSnap === index;
-  };
-  
-  const videos = [
+  const reels = [
     {
       id: 1,
-      thumbnail: 'https://placehold.co/600x400/1B1B1B/FFFFFF?text=Video+1',
-      videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+      title: 'Reel Destaque 1',
+      instagramLink: 'https://www.instagram.com/maestria.ai', // Placeholder link
+      aiHint: 'instagram reel social media',
     },
     {
       id: 2,
-      thumbnail: 'https://placehold.co/600x400/1B1B1B/FFFFFF?text=Video+2',
-      videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+      title: 'Reel Destaque 2',
+      instagramLink: 'https://www.instagram.com/maestria.ai', // Placeholder link
+      aiHint: 'instagram reel marketing',
     },
-    {
-      id: 3,
-      thumbnail: 'https://placehold.co/600x400/1B1B1B/FFFFFF?text=Video+3',
-      videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-    },
-    {
-      id: 4,
-      thumbnail: 'https://placehold.co/600x400/1B1B1B/FFFFFF?text=Video+4',
-      videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-    },
-    {
-        id: 5,
-        thumbnail: 'https://placehold.co/600x400/1B1B1B/FFFFFF?text=Video+5',
-        videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-      },
-  ]
+  ];
 
   return (
-    <section className="py-16 md:py-24 lg:py-32 bg-background">
+    <section className="pt-12 md:pt-16 lg:pt-20 pb-16 md:pb-24 lg:pb-32 bg-background">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-center mb-12">
-          MaestriaFlix
+        <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-center mb-8 text-primary">
+          Maestria Reels
         </h2>
-        <div className="embla" ref={emblaRef}>
-          <div className="embla__container flex">
-            {videos.map((video, index) => (
-              <div
-                className="embla__slide basis-full sm:basis-1/2 lg:basis-1/3 min-w-0 px-4"
-                key={video.id}
+        <p className="text-lg text-foreground/80 max-w-2xl mx-auto mb-12 md:mb-16 text-center">
+          Acompanhe nossos últimos reels com dicas, insights e novidades diretamente do Instagram. Em breve, você poderá assistir os vídeos aqui mesmo!
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 max-w-3xl mx-auto">
+          {reels.map((reel) => (
+            <Link 
+              href={reel.instagramLink} 
+              key={reel.id} 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="block group rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+              aria-label={`Assistir ${reel.title} no Instagram`}
+            >
+              <div 
+                className="bg-card rounded-xl shadow-lg w-full aspect-[9/16] flex flex-col items-center justify-center p-6 border border-border group-hover:shadow-primary/10 group-hover:border-primary/30 transition-all duration-300 ease-in-out group-hover:scale-[1.02]"
+                data-ai-hint={reel.aiHint}
               >
-                <div
-                  className={`relative aspect-video rounded-lg overflow-hidden transition-opacity duration-300 ease-in-out ${
-                    isSlideCentered(index) ? 'opacity-100' : 'opacity-40'
-                  }`}
-                >
-                  <Link href={video.videoUrl} target="_blank" rel="noopener noreferrer">
-                      <Image
-                        src={video.thumbnail}
-                        alt={`Video ${video.id}`}
-                        layout="fill"
-                        objectFit="cover"
-                      />
-                  </Link>
-                </div>
+                <Instagram className="w-16 h-16 text-primary group-hover:text-primary/90 transition-colors duration-300 mb-6" />
+                <p className="text-card-foreground font-semibold text-xl text-center mb-3 group-hover:text-primary transition-colors duration-300">
+                  {reel.title}
+                </p>
+                <p className="text-card-foreground/70 text-sm text-center mb-auto">
+                  Clique para assistir no Instagram
+                </p>
+                <p className="text-xs text-muted-foreground mt-4 pt-4">
+                  (Integração de embed em breve)
+                </p>
               </div>
-            ))}
-          </div>
+            </Link>
+          ))}
         </div>
       </div>
     </section>
-  )
-}
+  );
+};
 
-export default MaestriaFlixSection
+export default MaestriaFlixSection;
