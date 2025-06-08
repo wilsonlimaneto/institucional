@@ -10,7 +10,7 @@ const GoogleCloudSuccessSection = () => {
         <div className="grid md:grid-cols-1 gap-8 items-center">
           <div className="space-y-4 text-center md:text-left">
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight">
-              Impulsionados pela Google Cloud
+              Somos Caso de Sucesso Google Cloud
             </h2>
             <p className="text-base md:text-lg text-primary-foreground/90 text-[1.15em]">
               Na maestria., utilizamos o poder da Google Cloud Platform para oferecer uma plataforma robusta, escalável e inteligente, processando dados jurídicos com velocidade e segurança, e usando IA avançada para pesquisa de jurisprudência.
@@ -35,3 +35,4 @@ const GoogleCloudSuccessSection = () => {
 };
 
 export default GoogleCloudSuccessSection;
+
