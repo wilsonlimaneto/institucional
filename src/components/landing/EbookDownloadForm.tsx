@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { EbookFormSchema, type EbookFormData } from '@/types';
 import { submitEbookForm, type FormState } from '@/lib/actions';
@@ -17,15 +17,19 @@ import { useToast } from '@/hooks/use-toast';
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
 
-import { pdfjs } from 'react-pdf';
 import dynamic from 'next/dynamic';
 
-// Configure workerSrc using a CDN that matches the pdfjs-dist version used by react-pdf
-if (typeof window !== 'undefined') {
-  (pdfjs.GlobalWorkerOptions as any).workerSrc = `https://unpkg.com/pdfjs-dist@4.8.69/build/pdf.worker.min.mjs`;
-}
-
-const PdfDocument = dynamic(() => import('react-pdf').then(mod => mod.Document), {
+// Dynamically import react-pdf and configure workerSrc
+const PdfDocument = dynamic(() =>
+  import('react-pdf').then(mod => {
+    // Configure workerSrc for react-pdf
+    // This must be done on the client side, after the module is loaded.
+    if (typeof window !== 'undefined') {
+      // Use the unpkg CDN for the worker, matching the pdfjs-dist version in package.json
+      (mod.pdfjs.GlobalWorkerOptions as any).workerSrc = `https://unpkg.com/pdfjs-dist@4.8.69/build/pdf.worker.min.mjs`;
+    }
+    return mod.Document;
+  }), {
   ssr: false,
   loading: () => (
     <div className="flex justify-center items-center w-full max-w-sm h-[424px] bg-muted rounded-lg shadow-inner">
@@ -51,20 +55,20 @@ const EbookDownloadForm = () => {
     defaultValues: {
       name: "",
       email: "",
-      phone: "", // Agora obrigatório, inicia como string vazia
-      areaOfLaw: "", // Inicia como string vazia, placeholder do Select cuida da exibição
+      phone: "", 
+      areaOfLaw: "", 
     }
   });
 
   useEffect(() => {
-    if (formState.message && formState.message !== "") { // Verifica se a mensagem não está vazia
+    if (formState.message && formState.message !== "") { 
       toast({
         title: formState.success ? "Sucesso!" : "Erro na Submissão",
         description: formState.message,
         variant: formState.success ? "default" : "destructive",
       });
       if (formState.success) {
-        reset(); // Limpa o formulário em caso de sucesso
+        reset(); 
       }
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -93,28 +97,25 @@ const EbookDownloadForm = () => {
   };
 
   const applyPhoneMask = (value: string): string => {
-    if (!value) return "+"; // Inicia com + se o campo estiver vazio, pois é obrigatório
+    if (!value) return "+"; 
     let digits = value.replace(/\D/g, "");
-
-    // Assegura que o DDI comece com o "+" mantido, se já não estiver lá pelos dígitos
+    
     if (digits.length > 0 && !value.startsWith('+')) {
-      digits = digits; // O usuário já digitou o DDI sem +, a máscara adicionará
+      digits = digits; 
     }
     
-    // Max 14 digits: DDI (1-3) + DDD(2) + P1(5) + P2(4)
     digits = digits.slice(0, 14);
 
     let masked = "+";
     const len = digits.length;
 
-    if (len === 0) return "+"; // Retorna apenas "+" se todos os dígitos foram apagados
+    if (len === 0) return "+"; 
 
-    // Determina o fim do DDI (1 a 3 dígitos)
     let ddiEnd = 0;
-    if (digits.startsWith('55')) ddiEnd = 2; // Brasil
-    else if (digits.startsWith('1')) ddiEnd = 1; // EUA/Canadá
-    else if (len <=3 ) ddiEnd = len; // Outros DDIs curtos
-    else ddiEnd = Math.min(len, 3); // Default max 3 para outros DDIs mais longos
+    if (digits.startsWith('55')) ddiEnd = 2; 
+    else if (digits.startsWith('1')) ddiEnd = 1; 
+    else if (len <=3 ) ddiEnd = len; 
+    else ddiEnd = Math.min(len, 3); 
 
     masked += digits.substring(0, ddiEnd);
     
@@ -161,45 +162,31 @@ const EbookDownloadForm = () => {
               />
               {errors.email && <p className="text-sm text-destructive">{errors.email.message}</p>}
 
-              <Controller
-                name="phone"
-                control={control}
-                render={({ field }) => (
-                  <Input
-                    {...field}
-                    type="tel"
-                    placeholder="+XX (XX) XXXXX-XXXX"
-                    onChange={(e) => {
-                      const maskedValue = applyPhoneMask(e.target.value);
-                      field.onChange(maskedValue); 
-                      setValue("phone", maskedValue, { shouldValidate: true }); 
-                    }}
-                    value={field.value || ""}
-                    aria-invalid={errors.phone ? "true" : "false"}
-                  />
-                )}
+              <Input
+                {...register("phone")}
+                type="tel"
+                placeholder="+XX (XX) XXXXX-XXXX"
+                onChange={(e) => {
+                  const maskedValue = applyPhoneMask(e.target.value);
+                  setValue("phone", maskedValue, { shouldValidate: true });
+                }}
+                aria-invalid={errors.phone ? "true" : "false"}
               />
                {errors.phone && <p className="text-sm text-destructive">{errors.phone.message}</p>}
 
-              <Controller
-                name="areaOfLaw"
-                control={control}
-                render={({ field }) => (
-                  <Select
-                    onValueChange={field.onChange}
-                    value={field.value || ""} 
-                  >
-                    <SelectTrigger aria-invalid={errors.areaOfLaw ? "true" : "false"}>
-                      <SelectValue placeholder="Selecione seu principal ramo de atuação..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {ramosDeAtuacao.map(ramo => (
-                        <SelectItem key={ramo} value={ramo}>{ramo}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                )}
-              />
+              <Select
+                onValueChange={(value) => setValue("areaOfLaw", value, { shouldValidate: true })}
+                value={control._formValues.areaOfLaw || ""}
+              >
+                <SelectTrigger aria-invalid={errors.areaOfLaw ? "true" : "false"}>
+                  <SelectValue placeholder="Selecione seu principal ramo de atuação..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {ramosDeAtuacao.map(ramo => (
+                    <SelectItem key={ramo} value={ramo}>{ramo}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               {errors.areaOfLaw && <p className="text-sm text-destructive">{errors.areaOfLaw.message}</p>}
 
               {formState.issues && formState.issues.length > 0 && !formState.success && (
