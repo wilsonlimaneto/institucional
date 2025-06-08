@@ -1,12 +1,11 @@
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useActionState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { EbookFormSchema, type EbookFormData } from '@/types';
 import { submitEbookForm, type FormState } from '@/lib/actions';
-import { useActionState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -18,13 +17,13 @@ import { useToast } from '@/hooks/use-toast';
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
 
-import type { DocumentProps, PageProps} from 'react-pdf';
+import type { DocumentProps, PageProps } from 'react-pdf';
 import dynamic from 'next/dynamic';
 import { pdfjs } from 'react-pdf'; // Import pdfjs directly
 
 // Configure workerSrc globally on the client-side
 if (typeof window !== 'undefined') {
-  pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@4.8.69/build/pdf.worker.min.mjs`;
+  pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.8.69/pdf.worker.min.js`;
 }
 
 const PdfDocument = dynamic<DocumentProps>(() => import('react-pdf').then(mod => mod.Document), {
@@ -95,19 +94,22 @@ const EbookDownloadForm = () => {
   };
 
   const applyPhoneMask = (value: string): string => {
-    if (!value) return "+";
+    if (!value) return "+"; 
     let digits = value.replace(/\D/g, "");
 
-    if (digits.length > 0 && !value.startsWith('+')) {
-      digits = digits;
+    if (digits.length > 0 && !value.startsWith('+') && !digits.startsWith(value.replace(/\D/g,''))) {
+       digits = digits;
     }
 
-    digits = digits.slice(0, 14);
+
+    digits = digits.slice(0, 14); 
 
     let masked = "+";
     const len = digits.length;
 
-    if (len === 0) return "+";
+    if (len === 0 && value === "+") return "+";
+    if (len === 0 && value !== "+") return "";
+
 
     let ddiEnd = 0;
     if (digits.startsWith('55')) ddiEnd = 2;
@@ -128,6 +130,7 @@ const EbookDownloadForm = () => {
     }
     return masked;
   };
+
 
   return (
     <section id="ebook" className="py-16 md:py-24 lg:py-32 bg-secondary/30">
@@ -186,7 +189,7 @@ const EbookDownloadForm = () => {
                 </SelectContent>
               </Select>
               {errors.areaOfLaw && <p className="text-sm text-destructive">{errors.areaOfLaw.message}</p>}
-
+              
               {formState.issues && formState.issues.length > 0 && !formState.success && (
                 <p className="text-sm text-destructive text-center py-2">
                   Por favor, preencha todos os campos obrigatórios corretamente.
@@ -202,7 +205,7 @@ const EbookDownloadForm = () => {
             <div className="w-full max-w-sm rounded-lg shadow-2xl">
               <ScrollArea className="h-[424px] rounded-lg border bg-muted">
                 <PdfDocument
-                  file="/ebook-maestria-jurisp-pdf.pdf" // Ensure this PDF is in your /public folder
+                  file="/ebook-maestria-jurisp-pdf.pdf" 
                   onLoadSuccess={onDocumentLoadSuccess}
                   className="flex flex-col items-center py-2"
                   onLoadError={(error) => console.error('Failed to load PDF:', error.message)}
@@ -230,3 +233,4 @@ const EbookDownloadForm = () => {
 };
 
 export default EbookDownloadForm;
+
