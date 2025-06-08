@@ -18,8 +18,8 @@ import { useToast } from '@/hooks/use-toast';
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
 
-import dynamic from 'next/dynamic';
 import type { DocumentProps, PageProps } from 'react-pdf';
+import dynamic from 'next/dynamic';
 
 // Dynamically import react-pdf and configure workerSrc
 const PdfDocument = dynamic<DocumentProps>(() =>
@@ -210,7 +210,7 @@ const EbookDownloadForm = () => {
                   onSourceError={(error) => console.error('Failed to load PDF source:', error.message)}
                 >
                   {numPages &&
-                    Array.from(new Array(Math.min(numPages, 2)), (el, index) => (
+                    Array.from(new Array(Math.min(numPages, 3)), (el, index) => (
                       <PdfPage
                         key={`page_${index + 1}`}
                         pageNumber={index + 1}
