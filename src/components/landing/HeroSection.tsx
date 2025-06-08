@@ -17,9 +17,18 @@ const HeroSection = () => {
             <p className="text-lg md:text-xl text-foreground/80">
               <span style={{ fontSize: '115%' }}>Automatize GRATUITAMENMTE a sua rotina de edição de documentos, resumos de processos e pesquisa de jurisprudência.</span>
             </p>
-            <p className="text-sm md:text-base text-foreground/80">
-              Suporte via WhatsApp
-            </p>
+            
+            <div>
+              <p className="text-sm md:text-base text-foreground/80 font-medium">
+                A única ferramenta que entrega:
+              </p>
+              <ul className="mt-2 ml-0 md:ml-4 list-disc list-inside text-sm md:text-base text-foreground/70 space-y-1.5">
+                <li>Resultados de Jurisprudência reais e com <em className="italic text-foreground/80">busca semântica</em></li>
+                <li>Editor de documentos com o DNA do seu escritório</li>
+                <li>Parceria com empresas e tecnologias reconhecidas internacionalmente</li>
+              </ul>
+            </div>
+
             <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
               <Button asChild size="lg" className="font-semibold">
                 <Link href="#use-agora">Use agora mesmo</Link>
