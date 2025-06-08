@@ -7,7 +7,7 @@ import TestimonialsSection from '@/components/landing/TestimonialsSection';
 import FeaturesSection from '@/components/landing/FeaturesSection';
 import GoogleCloudSuccessSection from '@/components/landing/GoogleCloudSuccessSection';
 import MaestriaFlixSection from '@/components/landing/MaestriaFlixSection';
-import BlogReferralSection from '@/components/landing/BlogReferralSection';
+// import BlogReferralSection from '@/components/landing/BlogReferralSection';
 import EbookDownloadForm from '@/components/landing/EbookDownloadForm';
 import FooterSection from '@/components/landing/FooterSection';
 
@@ -24,7 +24,7 @@ export default function LandingPage() {
         <FeaturesSection />
         <MaestriaFlixSection />
         <EbookDownloadForm />
-        <BlogReferralSection />
+        {/* <BlogReferralSection /> */}
       </main>
       <FooterSection />
     </div>

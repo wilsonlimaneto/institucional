@@ -37,9 +37,9 @@ const Header = () => {
           <Link href="#ebook" className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors whitespace-nowrap" prefetch={false}>
             E-Book
           </Link>
-          <Link href="#blog" className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors whitespace-nowrap" prefetch={false}>
+          {/* <Link href="#blog" className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors whitespace-nowrap" prefetch={false}>
             Blog
-          </Link>
+          </Link> */}
           <Link href="https://wa.me/5511930991110" target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors whitespace-nowrap" prefetch={false}>
             Contato
           </Link>
@@ -79,11 +79,11 @@ const Header = () => {
                     E-Book
                   </Link>
                 </SheetClose>
-                <SheetClose asChild>
+                {/* <SheetClose asChild>
                   <Link href="#blog" className="text-lg font-medium hover:text-primary transition-colors" prefetch={false}>
                     Blog
                   </Link>
-                </SheetClose>
+                </SheetClose> */}
                 <SheetClose asChild>
                   <Link href="https://wa.me/5511930991110" target="_blank" rel="noopener noreferrer" className="text-lg font-medium hover:text-primary transition-colors" prefetch={false}>
                     Contato
