@@ -4,7 +4,8 @@ import { CheckCircle } from 'lucide-react';
 const diferenciais = [
   { text: 'Jurisprudência real, já verificada por meio de busca semântica®' },
   { text: 'Editor de documentos nativo: você não precisa copiar os textos para um editor' },
-  { text: 'Integração Google Docs e MS Office' },
+  { text: 'Integração Google Docs e MS Office ' }, // Note: trailing space here is important for the split
+  { text: 'Integração ao Google Docs e Dropbox' },
   { text: 'Resuma dados de longos documentos (Ago 2025)' },
   { text: 'Parceria com empresas e tecnologias reconhecidas internacionalmente' },
 ];
@@ -24,18 +25,43 @@ const DiferenciaisSection = () => {
             A única ferramenta que entrega:
           </h3>
           <ul className="space-y-3">
-            {diferenciais.map((item, index) => (
-              <li key={index} className="flex items-start">
-                <CheckCircle className="h-6 w-6 text-primary mr-3 flex-shrink-0 mt-0.5" />
-                <span className="text-card-foreground/90">
-                  {item.text.split('(').map((part, i) => 
-                    i === 0 ? part : <span key={i}>({part.split(')').map((subPart, j) => 
-                      j === 0 ? subPart : <span key={j}>{subPart})</span>
-                    ).reduce((acc: (string | JSX.Element)[], curr) => acc.length ? [...acc, ')', curr] : [curr], [])}</span>
-                  ).reduce((acc: (string | JSX.Element)[], curr) => acc.length ? [...acc, '(', curr] : [curr], [])}
-                </span>
-              </li>
-            ))}
+            {diferenciais.map((item, index) => {
+              let itemContent;
+              if (item.text.includes('Integração ao Google Docs e Dropbox')) {
+                const parts = item.text.split('Integração ao Google Docs e Dropbox');
+                itemContent = (
+                  <>
+                    {parts[0]}
+                    {'Integração ao Google Docs e Dropbox'}
+                    <img src="/google_docs.png" alt="Google Docs logo" className="inline-block h-5 w-auto mx-1 align-middle" style={{ height: '20px' }} />
+                    {' e '}
+                    <img src="/dropbox.png" alt="Dropbox logo" className="inline-block h-5 w-auto mx-1 align-middle" style={{ height: '20px' }} />
+                    {parts[1]}
+                  </>
+                );
+              } else if (item.text.includes('Integração Google Docs e MS Office ')) { // Check for the version with a trailing space
+                const parts = item.text.split('Integração Google Docs e MS Office ');
+                itemContent = (
+                  <>
+                    {parts[0]}
+                    {'Integração Google Docs e MS Office'}
+                    <img src="/google_docs.png" alt="Google Docs logo" className="inline-block h-5 w-auto mx-1 align-middle" />
+                    {' e '}
+                    <img src="/ms_word.png" alt="MS Word logo" className="inline-block h-5 w-auto mx-1 align-middle" />
+                    {parts[1]}
+                  </>
+                );
+              } else {
+                itemContent = item.text;
+              }
+
+              return (
+                <li key={index} className="flex items-start">
+                  <CheckCircle className="h-6 w-6 text-primary mr-3 flex-shrink-0 mt-0.5" />
+                  <span className="text-card-foreground/90">{itemContent}</span>
+                </li>
+              );
+            })}
           </ul>
         </div>
       </div>
