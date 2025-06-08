@@ -3,17 +3,17 @@ import Image from 'next/image';
 
 const GoogleCloudSuccessSection = () => {
   return (
-    <section id="google-cloud-success" className="py-12 md:py-16 lg:py-20 bg-primary text-primary-foreground">
+    <section id="google-cloud-success" className="py-9 md:py-12 lg:py-14 bg-primary text-primary-foreground">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid md:grid-cols-2 gap-10 md:gap-12 items-center">
-          <div className="space-y-5 text-center md:text-left">
+        <div className="grid md:grid-cols-2 gap-8 items-center">
+          <div className="space-y-4 text-center md:text-left"> {/* Reduced space-y */}
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight">
               Impulsionados pela Google Cloud
             </h2>
             <p className="text-base md:text-lg text-primary-foreground/90">
               Na maestria., utilizamos o poder da Google Cloud Platform para oferecer uma plataforma robusta, escalável e inteligente, processando dados jurídicos com velocidade e segurança, e usando IA avançada para pesquisa de jurisprudência.
             </p>
-            <ul className="space-y-2 text-left list-disc list-inside text-primary-foreground/80 text-sm md:text-base">
+            <ul className="space-y-1.5 text-left list-disc list-inside text-primary-foreground/80 text-sm md:text-base"> {/* Reduced space-y */}
               <li>Escalabilidade para atender advogados em todo o Brasil.</li>
               <li>Segurança de ponta para proteger dados sensíveis.</li>
               <li>Inovação contínua com as mais recentes tecnologias de IA.</li>
