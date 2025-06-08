@@ -110,11 +110,11 @@
     background-color: hsl(var(--muted) / 0.5) !important; /* Track color */
   }
   .pdf-scroll-area > div > [data-orientation="vertical"] > div[data-radix-scroll-area-thumb] {
-    background-color: hsl(var(--foreground) / 0.4) !important; /* Thumb color */
+    background-color: hsl(0 0% 100% / 0.7) !important; /* Thumb color - more opaque white */
     @apply rounded-full; /* Ensure thumb is rounded */
   }
   .pdf-scroll-area > div > [data-orientation="vertical"]:hover > div[data-radix-scroll-area-thumb] {
-    background-color: hsl(var(--foreground) / 0.6) !important; /* Thumb color on hover */
+    background-color: hsl(0 0% 100% / 0.9) !important; /* Thumb color on hover - even more opaque white */
   }
 
   .pdf-scroll-area > div > [data-orientation="horizontal"] {
@@ -122,10 +122,10 @@
     background-color: hsl(var(--muted) / 0.5) !important; /* Track color */
   }
   .pdf-scroll-area > div > [data-orientation="horizontal"] > div[data-radix-scroll-area-thumb] {
-    background-color: hsl(var(--foreground) / 0.4) !important; /* Thumb color */
+    background-color: hsl(0 0% 100% / 0.7) !important; /* Thumb color - more opaque white */
     @apply rounded-full; /* Ensure thumb is rounded */
   }
   .pdf-scroll-area > div > [data-orientation="horizontal"]:hover > div[data-radix-scroll-area-thumb] {
-    background-color: hsl(var(--foreground) / 0.6) !important; /* Thumb color on hover */
+    background-color: hsl(0 0% 100% / 0.9) !important; /* Thumb color on hover - even more opaque white */
   }
 }
