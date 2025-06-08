@@ -139,7 +139,7 @@ const EbookDownloadForm = () => {
                 Baixe nosso E-book Exclusivo
               </h2>
               <p className="text-lg md:text-xl text-foreground/80">
-                Aprenda os segredos da IA para advogados e transforme sua carreira.
+                Entenda, em 4 exemplos, por que a qualidade da nossa busca semântica supera todas as ferramentas do mercado
               </p>
               <form
                 onSubmit={handleSubmit(onClientValid)}
