@@ -1,6 +1,6 @@
 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Award, BarChart3, DownloadCloud, Rocket, Users, FileText, Link2 } from 'lucide-react';
+import { BarChart3, DownloadCloud, FileText, Link2, MessageSquare, Rocket } from 'lucide-react';
 
 const features = [
   {
@@ -19,9 +19,9 @@ const features = [
     description: 'No 2o semestre de 2025 seus documentos poderão ser gerados dentro do seu editor de texto de preferência, mediante integração entre nossa tecnologia e a dos principais players de mercado.',
   },
   {
-    icon: <Users className="h-8 w-8 text-primary" />,
-    title: 'Community & Support',
-    description: 'Access to a supportive community and resources to help you succeed.',
+    icon: <MessageSquare className="h-8 w-8 text-primary" />,
+    title: 'Suporte Humano por WhatsApp',
+    description: 'Ficou com alguma dúvida? Basta acionar nosso suporte via WhatsApp e teremos o prazer de ajudar',
   },
   {
     icon: <BarChart3 className="h-8 w-8 text-primary" />,
