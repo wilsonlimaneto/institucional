@@ -24,8 +24,8 @@ const Header = () => {
         
         {/* Desktop Navigation */}
         <nav className="hidden lg:flex items-center gap-4">
-          <Link href="#funcionalidades" className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors whitespace-nowrap" prefetch={false}>
-            Funcionalidades
+          <Link href="#diferenciais" className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors whitespace-nowrap" prefetch={false}>
+            Diferenciais Exclusivos
           </Link>
           <Link href="#tecnologia" className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors whitespace-nowrap" prefetch={false}>
             Tecnologia
@@ -56,8 +56,8 @@ const Header = () => {
             <SheetContent side="right">
               <div className="grid gap-4 py-6">
                 <SheetClose asChild>
-                  <Link href="#funcionalidades" className="text-lg font-medium hover:text-primary transition-colors" prefetch={false}>
-                    Funcionalidades
+                  <Link href="#diferenciais" className="text-lg font-medium hover:text-primary transition-colors" prefetch={false}>
+                    Diferenciais Exclusivos
                   </Link>
                 </SheetClose>
                 <SheetClose asChild>
