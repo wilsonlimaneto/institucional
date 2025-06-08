@@ -57,7 +57,7 @@ const HeroSection = () => {
               src="/fast_demo_maestria.webp"
               alt="Maestria logo"
               layout="fill"
-              objectFit="cover"
+              objectFit="contain"
               data-ai-hint="legal tech demo"
             />
           </div>
