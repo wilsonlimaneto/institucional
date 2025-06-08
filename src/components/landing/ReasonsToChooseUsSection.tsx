@@ -1,6 +1,6 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Bot, Clock, Users } from 'lucide-react';
+import { Bot, Clock, Users, PiggyBank } from 'lucide-react';
 
 const reasons = [
   {
@@ -18,6 +18,11 @@ const reasons = [
     title: 'Feito por Advogados, para Advogados',
     description: 'Entendemos os desafios da sua rotina e criamos uma ferramenta que realmente atende às suas necessidades diárias.',
   },
+  {
+    icon: <PiggyBank className="h-10 w-10 text-primary" />,
+    title: 'Custo-Benefício em Reais',
+    description: 'Diferente de plataformas internacionais como o ChatGPT, nossos custos são em moeda local, sem surpresas com a variação cambial do dólar.',
+  },
 ];
 
 const ReasonsToChooseUsSection = () => {
@@ -30,7 +35,7 @@ const ReasonsToChooseUsSection = () => {
             Descubra por que advogados de todo o Brasil confiam na maestria. para otimizar seu trabalho.
           </p>
         </div>
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
           {reasons.map((reason, index) => (
             <Card key={index} className="shadow-lg hover:shadow-xl transition-shadow duration-300 ease-in-out bg-card">
               <CardHeader className="items-center text-center">

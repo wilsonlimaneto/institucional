@@ -122,8 +122,19 @@ const EbookDownloadForm = () => {
     <>
       <section id="ebook" className="py-16 md:py-24 lg:py-32 bg-secondary/30">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-1 gap-12 md:gap-16 items-center">
-            <div className="space-y-6 text-center md:text-left max-w-2xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-12 md:gap-16 items-center">
+ <div className="flex flex-col justify-center items-center space-y-4">
+              <h3 className="text-2xl font-bold tracking-tight text-foreground text-center">
+                Amostra do E-Book
+ </h3>
+              <div className="w-[420px] h-[594px] border-2 border-gray-300 overflow-y-scroll shadow-lg">
+                <img src="/Slide1.PNG" alt="Slide 1" className="w-full h-auto" />
+                <img src="/Slide2.PNG" alt="Slide 2" className="w-full h-auto" />
+                <img src="/Slide3.PNG" alt="Slide 3" className="w-full h-auto" />
+              </div>
+            </div>
+
+            <div className="space-y-6 text-center md:text-left max-w-2xl mx-auto md:mx-0">
               <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-foreground">
                 Baixe nosso E-book Exclusivo
               </h2>
