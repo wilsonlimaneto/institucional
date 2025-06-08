@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import React, { useState, useCallback, useEffect } from 'react';
@@ -7,6 +6,7 @@ import Image from 'next/image';
 import { Card } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { PlayCircle, ArrowLeft } from 'lucide-react';
+import { useToast } from "@/hooks/use-toast";
 
 const testimonials = [
   {
@@ -57,21 +57,24 @@ const TestimonialsSection = () => {
   const [selectedVideoUrl, setSelectedVideoUrl] = useState<string | null>(null);
   const [selectedVideoName, setSelectedVideoName] = useState<string | null>(null);
   const [showVolumeAlert, setShowVolumeAlert] = useState(false);
+  const { toast } = useToast();
+
 
   const openModal = useCallback((videoUrl: string, name: string) => {
     setSelectedVideoUrl(videoUrl);
     setSelectedVideoName(name);
     setIsModalOpen(true);
-    setShowVolumeAlert(true);
+    setShowVolumeAlert(true); 
   }, []);
 
   const closeModal = useCallback(() => {
     setIsModalOpen(false);
-    setShowVolumeAlert(false); 
+    setShowVolumeAlert(false);
+    // Delay resetting video URL to allow fade-out animation of DialogContent
     setTimeout(() => {
       setSelectedVideoUrl(null);
       setSelectedVideoName(null);
-    }, 300); 
+    }, 300); // Corresponds to DialogContent animation duration
   }, []);
 
   useEffect(() => {
@@ -79,7 +82,7 @@ const TestimonialsSection = () => {
     if (showVolumeAlert) {
       timer = setTimeout(() => {
         setShowVolumeAlert(false);
-      }, 5000); 
+      }, 5000); // Alert disappears after 5 seconds
     }
     return () => clearTimeout(timer);
   }, [showVolumeAlert]);
@@ -158,7 +161,7 @@ const TestimonialsSection = () => {
             )}
 
             {showVolumeAlert && (
-              <div className="animate-alert-slide-in-bottom-left absolute bottom-4 left-[146px] p-3 bg-black/70 text-white rounded-md shadow-lg flex items-center space-x-2 text-xs z-[60]">
+              <div className="animate-alert-slide-in-bottom-left absolute bottom-[-4px] left-[146px] p-3 bg-black/70 text-white rounded-md shadow-lg flex items-center space-x-2 text-xs z-[60]">
                 <ArrowLeft className="h-5 w-5 animate-arrow-vibrate text-primary" />
                 <span>O vídeo iniciará sem som. Aumente o volume para ouvir.</span>
               </div>
@@ -171,4 +174,3 @@ const TestimonialsSection = () => {
 };
 
 export default TestimonialsSection;
-
