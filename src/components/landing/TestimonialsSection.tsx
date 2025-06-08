@@ -4,8 +4,9 @@
 import React, { useState, useCallback } from 'react';
 import Image from 'next/image';
 import { Card } from '@/components/ui/card';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
-import { PlayCircle } from 'lucide-react';
+import { Dialog, DialogContent, DialogClose } from '@/components/ui/dialog'; // DialogClose import might not be needed if using default
+import { PlayCircle, Volume2 } from 'lucide-react';
+import { useToast } from "@/hooks/use-toast";
 
 const testimonials = [
   {
@@ -56,12 +57,24 @@ const TestimonialsSection = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedVideoUrl, setSelectedVideoUrl] = useState<string | null>(null);
   const [selectedVideoName, setSelectedVideoName] = useState<string | null>(null);
+  const { toast } = useToast();
 
   const openModal = useCallback((videoUrl: string, name: string) => {
     setSelectedVideoUrl(videoUrl);
     setSelectedVideoName(name);
     setIsModalOpen(true);
-  }, []);
+    toast({
+      title: "Lembrete de Áudio",
+      description: (
+        <div className="flex items-center">
+          <Volume2 className="h-5 w-5 mr-2 text-foreground/80" />
+          <span>O vídeo iniciará sem som. Aumente o volume para ouvir.</span>
+        </div>
+      ),
+      variant: "default",
+      duration: 7000, // 7 seconds
+    });
+  }, [toast]);
 
   const closeModal = useCallback(() => {
     setIsModalOpen(false);
@@ -128,7 +141,7 @@ const TestimonialsSection = () => {
       <Dialog open={isModalOpen} onOpenChange={(open) => { if (!open) closeModal(); else setIsModalOpen(true); }}>
         <DialogContent className="sm:max-w-2xl md:max-w-3xl lg:max-w-4xl !p-0 overflow-hidden border-0 bg-transparent shadow-none" aria-describedby={undefined}>
           {currentVideoIdForModal ? (
-            <div className="aspect-video w-full bg-black rounded-lg overflow-hidden">
+            <div className="aspect-video w-full bg-black rounded-lg overflow-hidden relative">
               <iframe
                 className="w-full h-full"
                 src={`https://www.youtube.com/embed/${currentVideoIdForModal}?autoplay=1&mute=1&modestbranding=1&rel=0&showinfo=0&controls=1`}
@@ -151,3 +164,4 @@ const TestimonialsSection = () => {
 };
 
 export default TestimonialsSection;
+
