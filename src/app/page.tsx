@@ -23,8 +23,8 @@ export default function LandingPage() {
         <TestimonialsSection />
         <FeaturesSection />
         <MaestriaFlixSection />
-        <BlogReferralSection />
         <EbookDownloadForm />
+        <BlogReferralSection />
       </main>
       <FooterSection />
     </div>
