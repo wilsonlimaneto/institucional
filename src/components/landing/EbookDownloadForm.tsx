@@ -127,7 +127,7 @@ const EbookDownloadForm = () => {
               <h3 className="text-2xl font-bold tracking-tight text-foreground text-center">
                 Amostra do E-Book
               </h3>
-              <div className="w-full max-w-[420px] h-[594px] border-2 border-gray-300 overflow-y-scroll overflow-x-hidden shadow-lg">
+              <div className="w-full max-w-[378px] h-[535px] border-2 border-border overflow-y-scroll overflow-x-hidden shadow-lg">
                 <img src="/Slide1.PNG" alt="Slide 1" className="w-full h-auto" />
                 <img src="/Slide2.PNG" alt="Slide 2" className="w-full h-auto" />
                 <img src="/Slide3.PNG" alt="Slide 3" className="w-full h-auto" />
@@ -143,7 +143,7 @@ const EbookDownloadForm = () => {
               </p>
               <form
                 onSubmit={handleSubmit(onClientValid)}
-                className="space-y-4"
+                className="space-y-4 max-w-[90%] mx-auto md:mx-0"
               >
                 <Input
                   {...register("name")}
