@@ -9,14 +9,13 @@ const HeroSection = () => {
   return (
     <section className="py-16 md:py-24 lg:py-32">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid md:grid-cols-5 gap-12 md:gap-12 items-start"> {/* Changed md:grid-cols-2 to md:grid-cols-5 */}
-          <div className="space-y-8 text-center md:text-left md:col-span-2"> {/* Added md:col-span-2 */}
+        <div className="grid md:grid-cols-5 gap-12 md:gap-12 items-start">
+          {/* Left Column: Text content (excluding the moved paragraph) */}
+          <div className="space-y-8 text-center md:text-left md:col-span-2">
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-foreground">
               Gere minutas de <span className="text-primary">documentos jurídicos</span> com <span className="text-primary">Jurisprudência real</span> usando o modelo de IA mais assertivo do mercado.
             </h1>
-            <p className="text-lg md:text-xl text-foreground/80 mb-4">
-              <span style={{ fontSize: '115%' }}>Automatize GRATUITAMENTE a sua rotina de edição de documentos, resumos de processos e pesquisa de jurisprudência.</span>
-            </p>
+            {/* The paragraph "Automatize GRATUITAMENTE..." has been moved from here */}
             
             <div className="mb-4">
               <p className="text-sm md:text-base text-foreground/80 font-medium">
@@ -53,13 +52,15 @@ const HeroSection = () => {
               </div>
             </div>
           </div>
-          <div className="relative rounded-lg overflow-hidden shadow-2xl md:col-span-3"> {/* Added md:col-span-3 */}
+
+          {/* Right Column: Image */}
+          <div className="relative rounded-lg overflow-hidden shadow-2xl md:col-span-3">
             <Image
               src="/fast_demo_maestria.webp"
               alt="Maestria logo"
               width={1280} 
               height={720}
-              sizes="(min-width: 768px) 60vw, 100vw" /* Changed 50vw to 60vw */
+              sizes="(min-width: 768px) 60vw, 100vw"
               style={{
                 width: '100%',
                 height: 'auto',
@@ -69,6 +70,17 @@ const HeroSection = () => {
               priority
             />
           </div>
+
+          {/* Spacer for desktop to correctly position the paragraph under the image's columns */}
+          <div className="hidden md:block md:col-span-2"></div> 
+
+          {/* Moved Paragraph Container - aligned under the image */}
+          <div className="md:col-span-3 mt-6 md:mt-8">
+            <p className="text-lg md:text-xl text-foreground/80 text-center md:text-left">
+              <span style={{ fontSize: '115%' }}>Automatize GRATUITAMENTE a sua rotina de edição de documentos, resumos de processos e pesquisa de jurisprudência.</span>
+            </p>
+          </div>
+
         </div>
       </div>
     </section>
