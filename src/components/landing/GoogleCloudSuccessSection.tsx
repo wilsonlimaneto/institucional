@@ -12,18 +12,17 @@ const GoogleCloudSuccessSection = () => {
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight">
               Somos Caso de Sucesso Google Cloud
             </h2>
-            <p className="text-base md:text-lg text-primary-foreground/90 text-[1.15em]">
+            <p className="text-base md:text-lg text-primary-foreground/90">
               Por meio da cloud Google, possibilitamos uma infraestrutura robusta e tecnologias em rápido avanço para atender aos mais exigentes requisitos de qualidade do mercado jurídico.
             </p>
             <div className="pt-4 text-center md:text-left">
-              <Button asChild variant="outline" size="lg" className="bg-transparent border-primary-foreground/50 hover:bg-primary-foreground/10 text-primary-foreground font-semibold">
+              <Button asChild variant="outline" size="lg" className="bg-transparent border-primary-foreground/50 hover:bg-primary-foreground/10 text-primary-foreground font-semibold w-full sm:w-auto">
                 <Link href="#">
                   Clique aqui para conhecer o Caso de Sucesso
                 </Link>
               </Button>
             </div>
           </div>
-          {/* The md:justify-end class was removed here to allow justify-center to take effect on md screens and up */}
           <div className="relative hidden md:flex justify-center items-center">
             <Image
               src="/google-cloud-logo-4.png" 
