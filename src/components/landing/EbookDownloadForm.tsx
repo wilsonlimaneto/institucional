@@ -125,7 +125,7 @@ const EbookDownloadForm = () => {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
             {/* Coluna da Amostra do Ebook */}
-            <div className="flex flex-col justify-center items-center space-y-4 w-full min-w-0 overflow-hidden">
+            <div className="flex flex-col justify-center items-center space-y-4 w-full min-w-0 overflow-hidden mx-auto sm:max-w-md md:max-w-none md:mx-0">
               <h3 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground text-center">
                 Amostra do E-Book
               </h3>
@@ -137,7 +137,7 @@ const EbookDownloadForm = () => {
             </div>
 
             {/* Coluna do Formulário */}
-            <div className="space-y-6 text-center md:text-left max-w-2xl mx-auto md:mx-0">
+            <div className="space-y-6 text-center md:text-left w-full mx-auto sm:max-w-md md:max-w-2xl md:mx-0">
               <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-foreground">
                 Baixe nosso E-book Exclusivo
               </h2>
@@ -146,7 +146,7 @@ const EbookDownloadForm = () => {
               </p>
               <form
                 onSubmit={handleSubmit(onClientValid)}
-                className="space-y-4 mx-auto md:mx-0" 
+                className="space-y-4" 
               >
                 <Input
                   {...register("name")}
@@ -259,5 +259,3 @@ const EbookDownloadForm = () => {
 };
 
 export default EbookDownloadForm;
-
-    
