@@ -128,7 +128,7 @@ const EbookDownloadForm = () => {
               <h3 className="text-2xl font-bold tracking-tight text-foreground text-center">
                 Amostra do E-Book
               </h3>
-              <div className="w-full max-w-[378px] h-96 md:h-[535px] border-2 border-border overflow-y-scroll overflow-x-hidden shadow-lg bg-background">
+              <div className="w-full max-w-[378px] h-[320px] sm:h-[420px] md:h-[535px] border-2 border-border overflow-y-scroll overflow-x-hidden shadow-lg bg-background">
                 <Image src="/Slide1.PNG" alt="Slide 1 do E-book Maestria Jurisp" width={800} height={600} layout="responsive" />
                 <Image src="/Slide2.PNG" alt="Slide 2 do E-book Maestria Jurisp" width={800} height={600} layout="responsive" />
                 <Image src="/Slide3.PNG" alt="Slide 3 do E-book Maestria Jurisp" width={800} height={600} layout="responsive" />
