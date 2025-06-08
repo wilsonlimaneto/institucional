@@ -1,6 +1,6 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Bot, Clock, BadgeCheck, PiggyBank, ServerCog, MousePointerClick } from 'lucide-react';
+import { Bot, Clock, BadgeCheck, PiggyBank, Users, MousePointerClick } from 'lucide-react';
 
 const reasons = [
   {
@@ -24,7 +24,7 @@ const reasons = [
     description: 'Diferente de plataformas internacionais como o ChatGPT, nossos custos são em moeda local, sem surpresas com a variação cambial do dólar.',
   },
   {
-    icon: <ServerCog className="h-10 w-10 text-primary" />,
+    icon: <Users className="h-10 w-10 text-primary" />,
     title: 'Tecnologia Confiável',
     description: 'Construído sobre uma infraestrutura robusta e moderna, garantindo performance, segurança e disponibilidade para sua prática jurídica.',
   },
@@ -64,3 +64,4 @@ const ReasonsToChooseUsSection = () => {
 };
 
 export default ReasonsToChooseUsSection;
+
