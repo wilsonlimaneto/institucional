@@ -31,9 +31,7 @@ const PDFDocument = dynamic(
   async () => {
     const mod = await import('react-pdf');
     if (typeof window !== 'undefined') {
-      // Using the specific version from package.json (pdfjs-dist: "^4.8.69")
-      // and a reliable CDN (unpkg) for the .mjs worker.
-      // The version needs to match exactly what's in your package.json for pdfjs-dist
+      // Using a robust CDN link with a specific version
       mod.pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@4.8.69/build/pdf.worker.min.mjs`;
     }
     return mod.Document;
@@ -41,7 +39,7 @@ const PDFDocument = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="flex justify-center items-center w-full max-w-xl h-[488px] bg-muted rounded-lg shadow-inner">
+      <div className="flex justify-center items-center w-full max-w-xl h-[820px] bg-muted rounded-lg shadow-inner">
         <p className="text-sm text-muted-foreground">Carregando prévia do PDF...</p>
       </div>
     ),
@@ -65,14 +63,14 @@ const BrazilFlagIcon = () => (
 const EbookDownloadForm = () => {
   const [numPages, setNumPages] = useState<number | null>(null);
   const { toast } = useToast();
-  const [zoomLevel, setZoomLevel] = useState(1.0);
+  const [zoomLevel, setZoomLevel] = useState(1.0); // Initial zoom factor
   const pdfParentContainerRef = useRef<HTMLDivElement | null>(null);
   const [pdfContainerWidth, setPdfContainerWidth] = useState<number | undefined>();
 
   const initialFormState: FormState = { message: "", success: false, issues: [] };
   const [formState, formAction] = useActionState(submitEbookForm, initialFormState);
 
-  const { register, handleSubmit, formState: { errors: formErrors }, reset, control, setValue, watch } = useForm<EbookFormData>({
+  const { register, handleSubmit, formState: { errors: formErrors }, reset, control, setValue } = useForm<EbookFormData>({
     resolver: zodResolver(EbookFormSchema),
     defaultValues: {
       name: "",
@@ -97,23 +95,21 @@ const EbookDownloadForm = () => {
   }, [formState]);
 
   useEffect(() => {
-    if (pdfParentContainerRef.current) {
-      const observer = new ResizeObserver(entries => {
-        if (entries[0]) {
-          setPdfContainerWidth(entries[0].contentRect.width);
-        }
-      });
-      observer.observe(pdfParentContainerRef.current);
-      // Set initial width as well
-      setPdfContainerWidth(pdfParentContainerRef.current.clientWidth);
-      return () => observer.disconnect();
-    }
+    const updatePdfContainerWidth = () => {
+      if (pdfParentContainerRef.current) {
+        setPdfContainerWidth(pdfParentContainerRef.current.clientWidth);
+      }
+    };
+
+    window.addEventListener('resize', updatePdfContainerWidth);
+    updatePdfContainerWidth(); // Initial calculation
+
+    return () => window.removeEventListener('resize', updatePdfContainerWidth);
   }, []);
 
 
   const onDocumentLoadSuccess = ({ numPages: loadedNumPages }: { numPages: number }) => {
     setNumPages(loadedNumPages);
-    // Initial zoom will be handled by PDFPage width prop and zoomLevel state
   };
 
   const ramosDeAtuacao = [
@@ -282,8 +278,8 @@ const EbookDownloadForm = () => {
               </Button>
             </div>
             <div ref={pdfParentContainerRef} className="w-full max-w-xl rounded-lg shadow-2xl">
-              <ScrollArea className="h-[488px] rounded-lg border bg-muted pdf-scroll-area">
-                {pdfContainerWidth && ( // Conditionally render Document once width is known
+              <ScrollArea className="h-[820px] rounded-lg border bg-muted pdf-scroll-area">
+                {pdfContainerWidth && ( 
                   <PDFDocument
                     file="/ebook-maestria-jurisp-pdf.pdf" 
                     onLoadSuccess={onDocumentLoadSuccess}
@@ -297,8 +293,7 @@ const EbookDownloadForm = () => {
                         <PDFPage
                           key={`page_${index + 1}`}
                           pageNumber={index + 1}
-                          width={pdfContainerWidth}
-                          scale={zoomLevel}
+                          width={pdfContainerWidth ? pdfContainerWidth * zoomLevel : undefined}
                           className="mb-2 shadow-md"
                           renderAnnotationLayer={false}
                           renderTextLayer={false}
@@ -318,3 +313,4 @@ const EbookDownloadForm = () => {
 
 export default EbookDownloadForm;
 
+    
