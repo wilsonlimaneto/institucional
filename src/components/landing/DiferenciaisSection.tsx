@@ -17,7 +17,7 @@ const DiferenciaisSection = () => {
         <div className="text-center mb-12 md:mb-16">
           <h2 className="text-3xl sm:text-4xl font-bold text-primary">Nossos Diferenciais</h2>
           <p className="mt-4 text-xl text-foreground/80 max-w-3xl mx-auto">
-            Nossa plataforma oferece IA de nível profissional, com modelos específicos e tecnologia de ponta, projetada para advogados e escritórios que buscam resultados mais assertivos do que cursos de prompts ou outras soluções genéricas do mercado.
+            Para advogados e escritórios que demandam mais que soluções genéricas, nossa plataforma entrega uma Inteligência Artificial de nível profissional, com modelos jurídicos específicos projetados para transformar expertise em resultados de máxima precisão.
           </p>
         </div>
         <div className="max-w-2xl mx-auto bg-card p-8 rounded-lg shadow-xl">
