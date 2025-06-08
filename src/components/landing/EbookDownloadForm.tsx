@@ -18,7 +18,7 @@ import {
 } from '@/components/ui/select';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
-import { ZoomIn, ZoomOut, ArrowUp, ArrowDown } from 'lucide-react';
+import { ZoomIn, ZoomOut } from 'lucide-react';
 
 // CSS imports for react-pdf styling
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
@@ -33,6 +33,7 @@ const PDFDocument = dynamic(
     if (typeof window !== 'undefined') {
       // Using the specific version from package.json (pdfjs-dist: "^4.8.69")
       // and a reliable CDN (unpkg) for the .mjs worker.
+      // The version needs to match exactly what's in your package.json for pdfjs-dist
       mod.pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@4.8.69/build/pdf.worker.min.mjs`;
     }
     return mod.Document;
@@ -40,7 +41,7 @@ const PDFDocument = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="flex justify-center items-center w-full max-w-sm h-[488px] bg-muted rounded-lg shadow-inner">
+      <div className="flex justify-center items-center w-full max-w-xl h-[488px] bg-muted rounded-lg shadow-inner">
         <p className="text-sm text-muted-foreground">Carregando prévia do PDF...</p>
       </div>
     ),
@@ -64,8 +65,9 @@ const BrazilFlagIcon = () => (
 const EbookDownloadForm = () => {
   const [numPages, setNumPages] = useState<number | null>(null);
   const { toast } = useToast();
-  const [scale, setScale] = useState(1.0);
-  const scrollViewportRef = useRef<HTMLDivElement | null>(null);
+  const [zoomLevel, setZoomLevel] = useState(1.0);
+  const pdfParentContainerRef = useRef<HTMLDivElement | null>(null);
+  const [pdfContainerWidth, setPdfContainerWidth] = useState<number | undefined>();
 
   const initialFormState: FormState = { message: "", success: false, issues: [] };
   const [formState, formAction] = useActionState(submitEbookForm, initialFormState);
@@ -94,9 +96,24 @@ const EbookDownloadForm = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formState]);
 
+  useEffect(() => {
+    if (pdfParentContainerRef.current) {
+      const observer = new ResizeObserver(entries => {
+        if (entries[0]) {
+          setPdfContainerWidth(entries[0].contentRect.width);
+        }
+      });
+      observer.observe(pdfParentContainerRef.current);
+      // Set initial width as well
+      setPdfContainerWidth(pdfParentContainerRef.current.clientWidth);
+      return () => observer.disconnect();
+    }
+  }, []);
+
 
   const onDocumentLoadSuccess = ({ numPages: loadedNumPages }: { numPages: number }) => {
     setNumPages(loadedNumPages);
+    // Initial zoom will be handled by PDFPage width prop and zoomLevel state
   };
 
   const ramosDeAtuacao = [
@@ -144,25 +161,11 @@ const EbookDownloadForm = () => {
   };
 
   const handleZoomIn = () => {
-    setScale((prevScale) => Math.min(prevScale + 0.2, 3.0)); // Max zoom 3x, step 0.2
+    setZoomLevel((prevZoom) => Math.min(prevZoom + 0.2, 3.0));
   };
 
   const handleZoomOut = () => {
-    setScale((prevScale) => Math.max(prevScale - 0.2, 0.5)); // Min zoom 0.5x, step 0.2
-  };
-
-  const handleScrollUp = () => {
-    const viewport = scrollViewportRef.current?.firstElementChild as HTMLElement | null;
-    if (viewport) {
-      viewport.scrollTop -= 200; // Scroll up by 200px
-    }
-  };
-
-  const handleScrollDown = () => {
-    const viewport = scrollViewportRef.current?.firstElementChild as HTMLElement | null;
-    if (viewport) {
-      viewport.scrollTop += 200; // Scroll down by 200px
-    }
+    setZoomLevel((prevZoom) => Math.max(prevZoom - 0.2, 0.5));
   };
 
   return (
@@ -213,11 +216,10 @@ const EbookDownloadForm = () => {
                         const userInput = e.target.value;
                         let digitsOnly = userInput.replace(/\D/g, '');
                         
-                        // Always ensure the DDI is 55 if there are numbers
                         if (digitsOnly.length > 0 && !digitsOnly.startsWith('55')) {
                             digitsOnly = '55' + digitsOnly;
                         } else if (digitsOnly.length === 0) {
-                             field.onChange(""); // Allow clearing the field
+                             field.onChange(""); 
                              return;
                         }
                         
@@ -225,13 +227,10 @@ const EbookDownloadForm = () => {
                              field.onChange("");
                         } else {
                             const maskedValue = applyPhoneMask(digitsOnly);
-                            // Store the full +55 number for validation/submission
-                            // but display the masked version without +55
                             setValue('phone', `+${digitsOnly}`, { shouldValidate: true });
-                            field.onChange(maskedValue); // Update display with masked value
+                            field.onChange(maskedValue); 
                         }
                       }}
-                      // Display value without +55 for masking
                       value={field.value ? applyPhoneMask(field.value.replace(/^\+/, '')) : ""}
                       aria-invalid={formErrors.phone ? "true" : "false"}
                     />
@@ -281,36 +280,33 @@ const EbookDownloadForm = () => {
               <Button onClick={handleZoomOut} variant="outline" size="icon" aria-label="Diminuir zoom">
                 <ZoomOut className="h-5 w-5" />
               </Button>
-              <Button onClick={handleScrollUp} variant="outline" size="icon" aria-label="Rolar para cima">
-                <ArrowUp className="h-5 w-5" />
-              </Button>
-              <Button onClick={handleScrollDown} variant="outline" size="icon" aria-label="Rolar para baixo">
-                <ArrowDown className="h-5 w-5" />
-              </Button>
             </div>
-            <div className="w-full max-w-sm rounded-lg shadow-2xl">
-              <ScrollArea ref={scrollViewportRef} className="h-[488px] rounded-lg border bg-muted pdf-scroll-area">
-                <PDFDocument
-                  file="/ebook-maestria-jurisp-pdf.pdf" 
-                  onLoadSuccess={onDocumentLoadSuccess}
-                  className="flex flex-col items-center py-2"
-                  onLoadError={(error) => console.error('Failed to load PDF:', error.message)}
-                  onSourceError={(error) => console.error('Failed to load PDF source:', error.message)}
-                  loading={<div className="flex justify-center items-center w-full h-full"><p className="text-sm text-muted-foreground">Carregando PDF...</p></div>}
-                >
-                  {numPages &&
-                    Array.from(new Array(Math.min(numPages, 3)), (el, index) => (
-                      <PDFPage
-                        key={`page_${index + 1}`}
-                        pageNumber={index + 1}
-                        scale={scale}
-                        className="mb-2 shadow-md"
-                        renderAnnotationLayer={false}
-                        renderTextLayer={false}
-                        loading="" 
-                      />
-                    ))}
-                </PDFDocument>
+            <div ref={pdfParentContainerRef} className="w-full max-w-xl rounded-lg shadow-2xl">
+              <ScrollArea className="h-[488px] rounded-lg border bg-muted pdf-scroll-area">
+                {pdfContainerWidth && ( // Conditionally render Document once width is known
+                  <PDFDocument
+                    file="/ebook-maestria-jurisp-pdf.pdf" 
+                    onLoadSuccess={onDocumentLoadSuccess}
+                    className="flex flex-col items-center py-2"
+                    onLoadError={(error) => console.error('Failed to load PDF:', error.message)}
+                    onSourceError={(error) => console.error('Failed to load PDF source:', error.message)}
+                    loading={<div className="flex justify-center items-center w-full h-full"><p className="text-sm text-muted-foreground">Carregando PDF...</p></div>}
+                  >
+                    {numPages &&
+                      Array.from(new Array(Math.min(numPages, 3)), (el, index) => (
+                        <PDFPage
+                          key={`page_${index + 1}`}
+                          pageNumber={index + 1}
+                          width={pdfContainerWidth}
+                          scale={zoomLevel}
+                          className="mb-2 shadow-md"
+                          renderAnnotationLayer={false}
+                          renderTextLayer={false}
+                          loading="" 
+                        />
+                      ))}
+                  </PDFDocument>
+                )}
               </ScrollArea>
             </div>
           </div>
@@ -321,3 +317,4 @@ const EbookDownloadForm = () => {
 };
 
 export default EbookDownloadForm;
+

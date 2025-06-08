@@ -107,25 +107,25 @@
   /* Custom scrollbar for PDF preview */
   .pdf-scroll-area > div > [data-orientation="vertical"] {
     opacity: 1 !important;
-    background-color: hsl(var(--muted) / 0.5) !important; /* Track color */
+    background-color: hsl(var(--border) / 0.3) !important; /* Track color */
   }
   .pdf-scroll-area > div > [data-orientation="vertical"] > div[data-radix-scroll-area-thumb] {
-    background-color: hsl(0 0% 100% / 0.7) !important; /* Thumb color - more opaque white */
+    background-color: hsl(var(--foreground) / 0.8) !important; /* Thumb color - more opaque white */
     @apply rounded-full; /* Ensure thumb is rounded */
   }
   .pdf-scroll-area > div > [data-orientation="vertical"]:hover > div[data-radix-scroll-area-thumb] {
-    background-color: hsl(0 0% 100% / 0.9) !important; /* Thumb color on hover - even more opaque white */
+    background-color: hsl(var(--foreground)) !important; /* Thumb color on hover - solid white */
   }
 
   .pdf-scroll-area > div > [data-orientation="horizontal"] {
     opacity: 1 !important;
-    background-color: hsl(var(--muted) / 0.5) !important; /* Track color */
+    background-color: hsl(var(--border) / 0.3) !important; /* Track color */
   }
   .pdf-scroll-area > div > [data-orientation="horizontal"] > div[data-radix-scroll-area-thumb] {
-    background-color: hsl(0 0% 100% / 0.7) !important; /* Thumb color - more opaque white */
+    background-color: hsl(var(--foreground) / 0.8) !important; /* Thumb color - more opaque white */
     @apply rounded-full; /* Ensure thumb is rounded */
   }
   .pdf-scroll-area > div > [data-orientation="horizontal"]:hover > div[data-radix-scroll-area-thumb] {
-    background-color: hsl(0 0% 100% / 0.9) !important; /* Thumb color on hover - even more opaque white */
+    background-color: hsl(var(--foreground)) !important; /* Thumb color on hover - solid white */
   }
 }
