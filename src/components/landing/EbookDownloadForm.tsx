@@ -28,25 +28,21 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
+} from "@/components/ui/alert-dialog";
 
-
-// CSS imports for react-pdf styling
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
 import "pdfjs-dist/web/pdf_viewer.css";
 
 import dynamic from 'next/dynamic';
-import type { PDFDocumentProxy, PageProxy } from 'pdfjs-dist/types/src/display/api';
-
+import type { PDFDocumentProxy } from 'pdfjs-dist/types/src/display/api';
 
 const PDFDocument = dynamic(
   async () => {
     const mod = await import('react-pdf');
-    // Dynamically set workerSrc only on the client side
     if (typeof window !== 'undefined') {
-      mod.pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@4.8.69/build/pdf.worker.min.mjs`;
+      // Use a versioned CDN link matching your pdfjs-dist version
+      mod.pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@4.8.69/build/pdf.worker.mjs`;
     }
     return mod.Document;
   },
@@ -64,7 +60,6 @@ const PDFPage = dynamic(() => import('react-pdf').then(mod => mod.Page), {
   ssr: false,
 });
 
-
 const BrazilFlagIcon = () => (
     <svg width="28" height="20" viewBox="0 0 28 20" fill="none" xmlns="http://www.w3.org/2000/svg" className="rounded-sm">
         <rect width="28" height="20" fill="#009B3A"/>
@@ -72,6 +67,40 @@ const BrazilFlagIcon = () => (
         <circle cx="13.9999" cy="10.0001" r="3.66667" fill="#002776"/>
     </svg>
 );
+
+const applyPhoneMask = (digits: string): string => {
+  if (!digits) return "";
+
+  const len = digits.length;
+
+  if (len <= 2) { // (XX
+    return `(${digits}`;
+  }
+  // (XX) XXXXX-XXXX (for 11 digits) or (XX) XXXX-XXXX (for 10 digits)
+  const ddd = digits.substring(0, 2);
+  let mainPart;
+  let lastFour;
+
+  if (len <= 7) { // (XX) XXXXX
+    mainPart = digits.substring(2);
+    return `(${ddd}) ${mainPart}`;
+  }
+  
+  // Handles 10 or 11 digits for the rest
+  if (len === 11) { // Celular com 9º dígito: (XX) 9XXXX-XXXX
+    mainPart = digits.substring(2, 7);
+    lastFour = digits.substring(7);
+  } else { // Telefone com 8 dígitos: (XX) XXXX-XXXX
+    mainPart = digits.substring(2, 6);
+    lastFour = digits.substring(6);
+  }
+
+  let masked = `(${ddd}) ${mainPart}`;
+  if (lastFour) {
+    masked += `-${lastFour}`;
+  }
+  return masked;
+};
 
 
 const EbookDownloadForm = () => {
@@ -81,7 +110,7 @@ const EbookDownloadForm = () => {
   const pdfParentContainerRef = useRef<HTMLDivElement | null>(null);
   const [pdfContainerWidth, setPdfContainerWidth] = useState<number | undefined>();
   const [firstPageAspectRatio, setFirstPageAspectRatio] = useState<number | null>(null);
-  const [calculatedPdfHeight, setCalculatedPdfHeight] = useState<number | undefined>();
+  const [calculatedPdfHeight, setCalculatedPdfHeight] = useState<string | number>('488px'); // Initial fixed height
   const [showDownloadDialog, setShowDownloadDialog] = useState(false);
   const [downloadUrl, setDownloadUrl] = useState<string | undefined>(undefined);
 
@@ -93,7 +122,7 @@ const EbookDownloadForm = () => {
     defaultValues: {
       name: "",
       email: "",
-      phone: "",
+      phone: "", // Will store raw digits like "11987654321"
       areaOfLaw: "",
     }
   });
@@ -105,14 +134,15 @@ const EbookDownloadForm = () => {
         description: formState.message,
         variant: formState.success ? "default" : "destructive",
       });
-      if (formState.success) {
+      if (formState.success && formState.downloadUrl) {
         setDownloadUrl(formState.downloadUrl);
         setShowDownloadDialog(true);
-        reset();
+        reset(); // Reset form fields after successful submission
       }
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formState, reset, toast]);
+
 
   useEffect(() => {
     const updatePdfContainerWidth = () => {
@@ -120,7 +150,7 @@ const EbookDownloadForm = () => {
         const newWidth = pdfParentContainerRef.current.clientWidth;
         setPdfContainerWidth(newWidth);
         if (firstPageAspectRatio) {
-          setCalculatedPdfHeight(newWidth * firstPageAspectRatio * zoomLevel);
+          setCalculatedPdfHeight(newWidth * firstPageAspectRatio);
         }
       }
     };
@@ -129,7 +159,7 @@ const EbookDownloadForm = () => {
     updatePdfContainerWidth(); 
 
     return () => window.removeEventListener('resize', updatePdfContainerWidth);
-  }, [firstPageAspectRatio, zoomLevel]);
+  }, [firstPageAspectRatio]);
 
   useEffect(() => {
     if (pdfContainerWidth && firstPageAspectRatio) {
@@ -143,12 +173,12 @@ const EbookDownloadForm = () => {
     if (pdf.numPages > 0) {
       const page1 = await pdf.getPage(1);
       const viewport = page1.getViewport({ scale: 1 });
-      setFirstPageAspectRatio(viewport.height / viewport.width);
+      const aspectRatio = viewport.height / viewport.width;
+      setFirstPageAspectRatio(aspectRatio);
       if (pdfParentContainerRef.current) {
-         // Ensure width is up-to-date for initial fit
         const currentWidth = pdfParentContainerRef.current.clientWidth;
         setPdfContainerWidth(currentWidth);
-        setCalculatedPdfHeight(currentWidth * (viewport.height / viewport.width) * zoomLevel); 
+        setCalculatedPdfHeight(currentWidth * aspectRatio * zoomLevel); 
       }
     }
   };
@@ -162,39 +192,9 @@ const EbookDownloadForm = () => {
   const handleFormSubmit = (data: EbookFormData) => {
     const formData = new FormData();
     (Object.keys(data) as Array<keyof EbookFormData>).forEach((key) => {
-      const value = data[key];
-      if (key === 'phone' && value && !value.startsWith('+55')) {
-        formData.append(key, `+55${value.replace(/\D/g, '')}`);
-      } else if (key === 'phone' && value) {
-        formData.append(key, `+${value.replace(/\D/g, '')}`);
-      }
-      else {
-        formData.append(key, String(value ?? ''));
-      }
+        formData.append(key, String(data[key] ?? ''));
     });
     formAction(formData);
-  };
-
-  const applyPhoneMask = (digitsOnlyWithDDI: string): string => {
-    if (!digitsOnlyWithDDI) return "";
-
-    const ddi = digitsOnlyWithDDI.substring(0, 2);
-    let nationalNum = digitsOnlyWithDDI.substring(2);
-
-    if (nationalNum.length === 0) {
-        return "";
-    }
-
-    nationalNum = nationalNum.slice(0, 11);
-
-    let masked = `(${nationalNum.substring(0, Math.min(2, nationalNum.length))}`;
-    if (nationalNum.length > 2) {
-      masked += `) ${nationalNum.substring(2, Math.min(2 + 5, nationalNum.length))}`;
-    }
-    if (nationalNum.length > 7) {
-      masked += `-${nationalNum.substring(7, Math.min(7 + 4, nationalNum.length))}`;
-    }
-    return masked;
   };
 
   const handleZoomIn = () => {
@@ -204,18 +204,19 @@ const EbookDownloadForm = () => {
   const handleZoomOut = () => {
     setZoomLevel((prevZoom) => Math.max(prevZoom - 0.2, 0.5));
   };
-
+  
   const handleDownloadPdf = () => {
     if (downloadUrl) {
       const link = document.createElement('a');
       link.href = downloadUrl;
-      link.setAttribute('download', 'ebook-maestria-jurisprudencia.pdf');
+      link.setAttribute('download', 'ebook-maestria-jurisprudencia.pdf'); // Or get filename from URL if dynamic
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      setShowDownloadDialog(false);
+      setShowDownloadDialog(false); // Close dialog after initiating download
     }
   };
+
 
   return (
     <>
@@ -263,25 +264,18 @@ const EbookDownloadForm = () => {
                         placeholder="(XX) XXXXX-XXXX"
                         className="pl-12 pr-3 py-2 w-full"
                         onChange={(e) => {
-                          const userInput = e.target.value;
-                          let digitsOnly = userInput.replace(/\D/g, '');
+                          let inputValue = e.target.value;
+                          // Remove all non-digit characters
+                          let digits = inputValue.replace(/\D/g, '');
                           
-                          if (digitsOnly.length > 0 && !digitsOnly.startsWith('55')) {
-                              digitsOnly = '55' + digitsOnly;
-                          } else if (digitsOnly.length === 0) {
-                               field.onChange("");
-                               return;
+                          // Limit to 11 digits (DDD + number)
+                          if (digits.length > 11) {
+                            digits = digits.substring(0, 11);
                           }
                           
-                          if (digitsOnly === "55") {
-                               field.onChange("");
-                          } else {
-                              const maskedValue = applyPhoneMask(digitsOnly);
-                              setValue('phone', `+${digitsOnly}`, { shouldValidate: true });
-                              field.onChange(maskedValue);
-                          }
+                          field.onChange(digits); // Update RHF with the raw digits
                         }}
-                        value={field.value ? applyPhoneMask(field.value.replace(/^\+/, '')) : ""}
+                        value={applyPhoneMask(field.value || '')} // Display the masked version
                         aria-invalid={formErrors.phone ? "true" : "false"}
                       />
                     )}
@@ -345,18 +339,17 @@ const EbookDownloadForm = () => {
                       onSourceError={(error) => console.error('Failed to load PDF source:', error.message)}
                       loading={<div className="flex justify-center items-center w-full h-full"><p className="text-sm text-muted-foreground">Carregando PDF...</p></div>}
                     >
-                      {numPages &&
-                        Array.from(new Array(Math.min(numPages, 3)), (el, index) => (
-                          <PDFPage
-                            key={`page_${index + 1}`}
-                            pageNumber={index + 1}
-                            width={pdfContainerWidth ? pdfContainerWidth * zoomLevel : undefined}
-                            className="mb-2 shadow-md"
-                            renderAnnotationLayer={false}
-                            renderTextLayer={false}
-                            loading=""
-                          />
-                        ))}
+                      {Array.from(new Array(numPages ? Math.min(numPages, 3) : 0), (el, index) => (
+                        <PDFPage
+                          key={`page_${index + 1}`}
+                          pageNumber={index + 1}
+                          width={pdfContainerWidth ? pdfContainerWidth * zoomLevel : undefined}
+                          className="mb-2 shadow-md"
+                          renderAnnotationLayer={false}
+                          renderTextLayer={false}
+                          loading=""
+                        />
+                      ))}
                     </PDFDocument>
                   )}
                 </ScrollArea>
@@ -369,17 +362,14 @@ const EbookDownloadForm = () => {
       <AlertDialog open={showDownloadDialog} onOpenChange={setShowDownloadDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Download Iniciado</AlertDialogTitle>
+            <AlertDialogTitle>Download Liberado</AlertDialogTitle>
             <AlertDialogDescription>
-              Seu e-book está sendo baixado. Verifique sua pasta de downloads.
+              Seu e-book está pronto! Clique no botão abaixo para iniciar o download.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogAction onClick={() => {
-              handleDownloadPdf();
-              setShowDownloadDialog(false);
-            }}>
-              Baixar Novamente
+            <AlertDialogAction onClick={handleDownloadPdf}>
+              Baixar E-book
             </AlertDialogAction>
             <AlertDialogCancel onClick={() => setShowDownloadDialog(false)}>Fechar</AlertDialogCancel>
           </AlertDialogFooter>

@@ -3,6 +3,14 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import WhatsAppButton from '@/components/landing/WhatsAppButton';
+import { Noto_Sans } from 'next/font/google';
+
+const noto_sans = Noto_Sans({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  display: 'swap',
+  variable: '--font-noto-sans', // Optional: if you prefer to use it as a CSS variable
+});
 
 export const metadata: Metadata = {
   title: 'maestria.',
@@ -16,12 +24,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
-      </head>
-      <body className="font-body antialiased">
+      <body className={`${noto_sans.className} antialiased`}>
         {children}
         <Toaster />
         <WhatsAppButton />

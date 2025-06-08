@@ -1,3 +1,4 @@
+
 "use server";
 
 import { EbookFormSchema, type EbookFormData } from '@/types';
@@ -7,7 +8,7 @@ export interface FormState {
   fields?: Record<string, string>;
   issues?: string[];
   success: boolean;
-  downloadUrl?: string; // Added to provide the PDF URL
+  downloadUrl?: string; 
 }
 
 export async function submitEbookForm(
@@ -20,25 +21,31 @@ export async function submitEbookForm(
   const parsed = EbookFormSchema.safeParse(formData);
 
   if (!parsed.success) {
+    // Log detailed validation errors for debugging
+    console.error("Validation errors:", parsed.error.flatten().fieldErrors);
     return {
-      message: "Invalid form data. Please check the fields below.",
-      fields: formData as Record<string, string>, // Send back erroneous fields
-      issues: parsed.error.issues.map((issue) => issue.message),
+      message: "Dados inválidos. Por favor, verifique os campos.",
+      fields: formData as Record<string, string>,
+      issues: parsed.error.issues.map((issue) => `${issue.path.join('.')}: ${issue.message}`),
       success: false,
     };
   }
 
+  // At this point, parsed.data.phone contains the national number (e.g., "11987654321")
   const validatedData: EbookFormData = parsed.data;
-
-  // Simulate saving data
-  console.log("Ebook form submitted with validated data:", validatedData);
   
-  // In a real app, you'd save to a database, trigger an email with the PDF, etc.
-  // For now, we just return a success message and the download URL.
+  // Add country code for storage/processing
+  const phoneWithCountryCode = `+55${validatedData.phone}`;
+
+  // Simulate saving data with the full number
+  console.log("Ebook form submitted. Data to be saved:", {
+    ...validatedData,
+    phone: phoneWithCountryCode, // Use the number with country code for backend operations
+  });
   
   return {
     message: `Obrigado, ${validatedData.name}! Seu e-book está pronto para download.`,
     success: true,
-    downloadUrl: "/ebook-maestria-jurisp-pdf.pdf" // Provide the path to the PDF
+    downloadUrl: "/ebook-maestria-jurisp-pdf.pdf"
   };
 }
