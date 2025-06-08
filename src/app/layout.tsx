@@ -23,7 +23,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR" className={`${notoSans.variable}`}>
+    <html lang="pt-BR" className={`${notoSans.variable}`} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: 'document.documentElement.setAttribute("data-cookieconsent", "ignore");' }} />
+      </head>
       <body className="font-sans antialiased">
         {children}
         <Toaster />
