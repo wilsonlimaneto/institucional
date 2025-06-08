@@ -4,14 +4,14 @@ import { Bot, Clock, BadgeCheck, PiggyBank } from 'lucide-react';
 
 const reasons = [
   {
-    icon: <Bot className="h-10 w-10 text-primary" />,
-    title: 'IA Especializada para Advogados',
-    description: 'Nossa Inteligência Artificial é treinada especificamente para o contexto jurídico brasileiro, garantindo precisão e relevância incomparáveis.',
-  },
-  {
     icon: <Clock className="h-10 w-10 text-primary" />,
     title: 'Economize Tempo Precioso',
     description: 'Automatize a pesquisa de jurisprudência e a elaboração de petições, liberando horas para você focar em estratégias e clientes.',
+  },
+  {
+    icon: <Bot className="h-10 w-10 text-primary" />,
+    title: 'IA Especializada para Advogados',
+    description: 'Nossa Inteligência Artificial é treinada especificamente para o contexto jurídico brasileiro, garantindo precisão e relevância incomparáveis.',
   },
   {
     icon: <BadgeCheck className="h-10 w-10 text-primary" />,
