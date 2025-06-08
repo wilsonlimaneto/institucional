@@ -31,12 +31,17 @@ import 'react-pdf/dist/esm/Page/TextLayer.css';
 
 import type { DocumentProps, PageProps } from 'react-pdf';
 import dynamic from 'next/dynamic';
+import { pdfjs } from 'react-pdf';
 
-// Simplified PDF worker setup
+// Explicitly set the workerSrc for pdfjs to a CDN version matching the installed pdfjs-dist
+if (typeof window !== 'undefined') {
+  pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+}
+
 const PDFDocument = dynamic(() => import('react-pdf').then(mod => mod.Document), {
   ssr: false,
   loading: () => (
-    <div className="flex justify-center items-center w-full max-w-sm h-[424px] bg-muted rounded-lg shadow-inner">
+    <div className="flex justify-center items-center w-full max-w-sm h-[488px] bg-muted rounded-lg shadow-inner">
       <p className="text-sm text-muted-foreground">Carregando prévia do PDF...</p>
     </div>
   ),
@@ -233,7 +238,7 @@ const EbookDownloadForm = () => {
           </div>
           <div className="flex justify-center items-center">
             <div className="w-full max-w-sm rounded-lg shadow-2xl">
-              <ScrollArea className="h-[424px] rounded-lg border bg-muted">
+              <ScrollArea className="h-[488px] rounded-lg border bg-muted">
                 <PDFDocument
                   file="/ebook-maestria-jurisp-pdf.pdf" 
                   onLoadSuccess={onDocumentLoadSuccess}
@@ -263,3 +268,4 @@ const EbookDownloadForm = () => {
 };
 
 export default EbookDownloadForm;
+
