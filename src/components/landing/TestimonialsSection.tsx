@@ -11,20 +11,20 @@ const testimonials = [
   {
     name: 'Sarah L.',
     title: 'Marketing Manager, Tech Solutions Inc.',
-    videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-    aiHint: 'video thumbnail',
+    videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', // Example: Rick Astley
+    aiHint: 'video thumbnail marketing',
   },
   {
     name: 'John B.',
     title: 'Founder, Creative Startup Co.',
-    videoUrl: 'https://www.youtube.com/watch?v=ZyDbq-lEKBQ',
-    aiHint: 'video thumbnail',
+    videoUrl: 'https://www.youtube.com/watch?v=ZyDbq-lEKBQ', // Example: Another short video
+    aiHint: 'video thumbnail startup',
   },
   {
     name: 'Alice M.',
     title: 'Digital Strategist, Alpha Agency',
-    videoUrl: 'https://www.youtube.com/watch?v=3JZ_D3ELwOQ',
-    aiHint: 'video thumbnail',
+    videoUrl: 'https://www.youtube.com/watch?v=3JZ_D3ELwOQ', // Example: Short tech review
+    aiHint: 'video thumbnail strategy',
   },
 ];
 
@@ -43,6 +43,7 @@ function extractYouTubeVideoId(url: string): string | null {
     }
   } catch (error) {
     console.error('Error parsing YouTube URL:', error);
+    // Fallback for cases where a raw ID might be passed (less ideal)
     if (typeof url === 'string' && !url.includes('/') && !url.includes('.')) {
         videoId = url;
     }
@@ -61,12 +62,13 @@ const TestimonialsSection = () => {
     setSelectedVideoUrl(videoUrl);
     setSelectedVideoName(name);
     setIsModalOpen(true);
-    setShowVolumeAlert(true);
+    setShowVolumeAlert(true); // Show custom alert when modal opens
   }, []);
 
   const closeModal = useCallback(() => {
     setIsModalOpen(false);
-    setShowVolumeAlert(false);
+    setShowVolumeAlert(false); // Hide custom alert when modal closes
+    // Delay resetting video URL to allow for closing animation of DialogContent
     setTimeout(() => {
       setSelectedVideoUrl(null);
       setSelectedVideoName(null);
@@ -78,7 +80,7 @@ const TestimonialsSection = () => {
     if (showVolumeAlert) {
       timer = setTimeout(() => {
         setShowVolumeAlert(false);
-      }, 5000); 
+      }, 5000); // Hide alert after 5 seconds
     }
     return () => clearTimeout(timer);
   }, [showVolumeAlert]);
@@ -100,7 +102,7 @@ const TestimonialsSection = () => {
               const videoId = extractYouTubeVideoId(testimonial.videoUrl);
               const thumbnailUrl = videoId
                 ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`
-                : 'https://placehold.co/600x400.png';
+                : 'https://placehold.co/600x400.png'; // Fallback thumbnail
 
               return (
                 <Card
@@ -137,10 +139,13 @@ const TestimonialsSection = () => {
       </section>
 
       <Dialog open={isModalOpen} onOpenChange={(open) => { if (!open) closeModal(); else setIsModalOpen(true); }}>
-        <DialogContent className="sm:max-w-2xl md:max-w-3xl lg:max-w-4xl !p-0 overflow-hidden border-0 bg-transparent shadow-none relative flex items-center justify-center">
-           <DialogTitle className="sr-only">{selectedVideoName || "Video Testimonial"}</DialogTitle>
-          {currentVideoIdForModal ? (
-            <div className="aspect-video w-full bg-black rounded-lg overflow-hidden relative">
+        <DialogContent className="sm:max-w-2xl md:max-w-3xl lg:max-w-4xl !p-0 border-0 bg-transparent shadow-none overflow-hidden">
+          {/* DialogTitle for accessibility, visually hidden */}
+          <DialogTitle className="sr-only">{selectedVideoName || "Video Testimonial"}</DialogTitle>
+          
+          {/* Main video container: this div defines the modal's appearance */}
+          <div className="relative w-full aspect-video bg-black rounded-lg overflow-hidden">
+            {currentVideoIdForModal ? (
               <iframe
                 className="w-full h-full"
                 src={`https://www.youtube.com/embed/${currentVideoIdForModal}?autoplay=1&mute=1&modestbranding=1&rel=0&showinfo=0&controls=1`}
@@ -149,18 +154,20 @@ const TestimonialsSection = () => {
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 allowFullScreen
               ></iframe>
-            </div>
-          ) : (
-            <div className="aspect-video w-full flex items-center justify-center bg-black rounded-lg">
-              <p className="text-white">Loading video...</p>
-            </div>
-          )}
-          {showVolumeAlert && (
-            <div className="animate-alert-slide-in-bottom-left absolute bottom-4 left-4 p-3 bg-black/70 text-white rounded-md shadow-lg flex items-center space-x-2 text-xs z-[60]">
-              <ArrowUp className="h-5 w-5 animate-arrow-vibrate text-primary" />
-              <span>O vídeo iniciará sem som. Aumente o volume para ouvir.</span>
-            </div>
-          )}
+            ) : (
+              <div className="w-full h-full flex items-center justify-center">
+                <p className="text-white">Loading video...</p>
+              </div>
+            )}
+
+            {/* Custom Volume Alert - positioned relative to this black container */}
+            {showVolumeAlert && (
+              <div className="animate-alert-slide-in-bottom-left absolute bottom-4 left-4 p-3 bg-black/70 text-white rounded-md shadow-lg flex items-center space-x-2 text-xs z-[60]">
+                <ArrowUp className="h-5 w-5 animate-arrow-vibrate text-primary" />
+                <span>O vídeo iniciará sem som. Aumente o volume para ouvir.</span>
+              </div>
+            )}
+          </div>
         </DialogContent>
       </Dialog>
     </>
