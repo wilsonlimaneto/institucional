@@ -10,14 +10,13 @@ const HeroSection = () => {
     <section className="py-16 md:py-24 lg:py-32">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid md:grid-cols-5 gap-12 md:gap-12 items-start">
-          {/* Left Column: Text content (excluding the moved paragraph) */}
+          {/* Left Column: Text content */}
           <div className="space-y-8 text-center md:text-left md:col-span-2">
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-foreground">
               Gere minutas de <span className="text-primary">documentos jurídicos</span> com <span className="text-primary">Jurisprudência real</span> usando o modelo de IA mais assertivo do mercado.
             </h1>
-            {/* The paragraph "Automatize GRATUITAMENTE..." has been moved from here */}
             
-            <div className="mb-4">
+            <div className="mb-4"> {/* Container for bullets */}
               <p className="text-sm md:text-base text-foreground/80 font-medium">
                 A única ferramenta que entrega:
               </p>
@@ -30,6 +29,13 @@ const HeroSection = () => {
               </ul>
             </div>
 
+            {/* Moved Paragraph */}
+            <div>
+              <p className="text-lg md:text-xl text-foreground/80 text-center md:text-left">
+                <span style={{ fontSize: '115%' }}>Automatize GRATUITAMENTE a sua rotina de edição de documentos, resumos de processos e pesquisa de jurisprudência.</span>
+              </p>
+            </div>
+            
             <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
               <Button asChild size="lg" className="font-semibold">
                 <Link href="#use-agora">Use agora mesmo</Link>
@@ -38,6 +44,7 @@ const HeroSection = () => {
                 <Link href="#saiba-mais">Saiba Mais</Link>
               </Button>
             </div>
+
             <div className="mt-8 text-center md:text-left">
               <p className="text-sm text-foreground/80 mb-1">
                 Startup apoiada pelo
@@ -70,17 +77,7 @@ const HeroSection = () => {
               priority
             />
           </div>
-
-          {/* Spacer for desktop to correctly position the paragraph under the image's columns */}
-          <div className="hidden md:block md:col-span-2"></div> 
-
-          {/* Moved Paragraph Container - aligned under the image */}
-          <div className="md:col-span-3 mt-6 md:mt-8">
-            <p className="text-lg md:text-xl text-foreground/80 text-center md:text-left">
-              <span style={{ fontSize: '115%' }}>Automatize GRATUITAMENTE a sua rotina de edição de documentos, resumos de processos e pesquisa de jurisprudência.</span>
-            </p>
-          </div>
-
+          {/* Spacer and old paragraph container previously here are now removed */}
         </div>
       </div>
     </section>
