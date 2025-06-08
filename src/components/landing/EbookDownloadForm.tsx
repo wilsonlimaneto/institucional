@@ -29,10 +29,8 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-// Import types from react-pdf
 import type { PDFDocumentProxy, DocumentProps as ReactPdfDocumentProps, PageProps as ReactPdfPageProps } from 'react-pdf';
 
-// CSS for react-pdf layers
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
 
@@ -67,7 +65,7 @@ const applyPhoneMask = (digits: string): string => {
 interface PdfModuleType {
   Document: React.ComponentType<ReactPdfDocumentProps>;
   Page: React.ComponentType<ReactPdfPageProps>;
-  pdfjs: any; // Access to pdfjs-dist
+  pdfjs: any; 
 }
 
 const EbookDownloadForm = () => {
@@ -99,9 +97,9 @@ const EbookDownloadForm = () => {
         console.log("react-pdf module loaded.", RPDF);
 
         if (RPDF.pdfjs) {
-          // Try with the non-module (UMD) worker from CDN
-          const workerSrc = `https://unpkg.com/pdfjs-dist@4.8.69/build/pdf.worker.min.js`;
-          console.log("Setting PDF worker src to:", workerSrc);
+          // Try with the non-module (UMD) worker from cdnjs
+          const workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.8.69/pdf.worker.min.js`;
+          console.log("Setting PDF worker src to (cdnjs):", workerSrc);
           RPDF.pdfjs.GlobalWorkerOptions.workerSrc = workerSrc;
         } else {
           console.error("RPDF.pdfjs is undefined after import.");
@@ -162,8 +160,8 @@ const EbookDownloadForm = () => {
         friendlyMessage += " O arquivo PDF pode estar corrompido ou não ser um PDF válido.";
     } else if (error.message.toLowerCase().includes('network') || error.message.toLowerCase().includes('http')) {
         friendlyMessage += " Problema de rede ao tentar carregar o PDF. Verifique sua conexão ou o caminho do arquivo.";
-    } else if (error.message.toLowerCase().includes('worker')) {
-        friendlyMessage = `Erro com o processador de PDF (worker): ${error.message}. Isso pode ser um problema de configuração, da rede ou do ambiente. Verifique o console para mais detalhes.`;
+    } else if (error.message.toLowerCase().includes('worker') || error.message.toLowerCase().includes('fakeworker')) {
+        friendlyMessage = `Erro com o processador de PDF (worker): ${error.message}. Isso pode ser um problema de configuração, da rede ou do ambiente. Verifique o console para mais detalhes. Tente atualizar a página.`;
     }
 
     setPdfLoadError(friendlyMessage);
@@ -173,7 +171,7 @@ const EbookDownloadForm = () => {
   const onPageLoadError = (error: Error) => {
     console.error('Failed to load PDF Page:', error);
     const pageLoadErrorMessage = `Erro ao carregar página do PDF: ${error.message || 'desconhecido'}`;
-    setPdfLoadError(pageLoadErrorMessage); // Update general PDF error state
+    setPdfLoadError(pageLoadErrorMessage); 
     toast({ title: `Erro Página PDF`, description: pageLoadErrorMessage, variant: "destructive" });
   };
 
@@ -302,7 +300,7 @@ const EbookDownloadForm = () => {
             <div className="flex flex-col justify-center items-center">
               <h3 className="text-lg font-semibold text-foreground mb-2">Amostra do E-book</h3>
               <div className="w-full max-w-xl rounded-lg shadow-2xl mt-4 border bg-muted">
-                <ScrollArea className="pdf-scroll-area" style={{ height: '550px' }}> {/* Simplified height for now */}
+                <ScrollArea className="pdf-scroll-area" style={{ height: '550px' }}> 
                   {isLoadingPdfModule ? (
                     <SimplePlaceholder text="Carregando visualizador de PDF..." height="550px" />
                   ) : pdfLoadError ? (
@@ -318,15 +316,14 @@ const EbookDownloadForm = () => {
                       {numPages && numPages > 0 ? (
                         <pdfModule.Page
                           pageNumber={1} 
-                          scale={1.0} // Simplified scale
+                          scale={1.0}
                           className="mb-2 shadow-md"
                           onLoadError={onPageLoadError}
                           loading={<SimplePlaceholder text="Carregando página..." height="530px"/>}
-                           // Simpler loading for page
                           renderAnnotationLayer={false} 
                           renderTextLayer={false} 
                         />
-                      ) : !pdfLoadError ? ( // Only show if no general load error
+                      ) : !pdfLoadError ? ( 
                         <SimplePlaceholder text="Nenhuma página para exibir ou PDF ainda carregando." height="550px"/>
                       ) : null}
                     </pdfModule.Document>
