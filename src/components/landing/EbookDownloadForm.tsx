@@ -13,18 +13,22 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
 
+// Import pdfjs from react-pdf to configure it
+import { pdfjs } from 'react-pdf';
+
 // CSS imports for react-pdf styling
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
 
-import type { DocumentProps, PageProps } from 'react-pdf';
-import dynamic from 'next/dynamic';
-import { pdfjs } from 'react-pdf'; // Import pdfjs directly
-
 // Configure workerSrc globally on the client-side
 if (typeof window !== 'undefined') {
-  pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.8.69/pdf.worker.min.js`;
+  const pdfjsVersion = pdfjs.version;
+  // Using unpkg CDN to get the .mjs worker file directly
+  pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjsVersion}/build/pdf.worker.min.mjs`;
 }
+
+import type { DocumentProps, PageProps } from 'react-pdf';
+import dynamic from 'next/dynamic';
 
 const PdfDocument = dynamic<DocumentProps>(() => import('react-pdf').then(mod => mod.Document), {
   ssr: false,
@@ -94,27 +98,27 @@ const EbookDownloadForm = () => {
   };
 
   const applyPhoneMask = (value: string): string => {
-    if (!value) return "+"; 
+    if (!value && value !== '+') return ""; 
+    if (value === "+") return "+";
+
     let digits = value.replace(/\D/g, "");
 
     if (digits.length > 0 && !value.startsWith('+') && !digits.startsWith(value.replace(/\D/g,''))) {
        digits = digits;
     }
-
-
+    
     digits = digits.slice(0, 14); 
 
     let masked = "+";
     const len = digits.length;
 
-    if (len === 0 && value === "+") return "+";
-    if (len === 0 && value !== "+") return "";
+    if (len === 0) return "+";
 
 
     let ddiEnd = 0;
     if (digits.startsWith('55')) ddiEnd = 2;
     else if (digits.startsWith('1')) ddiEnd = 1;
-    else if (len <=3 ) ddiEnd = len;
+    else if (len <=3 ) ddiEnd = len; // Allow up to 3 digits for DDI if not 1 or 55
     else ddiEnd = Math.min(len, 3);
 
     masked += digits.substring(0, ddiEnd);
@@ -233,4 +237,3 @@ const EbookDownloadForm = () => {
 };
 
 export default EbookDownloadForm;
-
