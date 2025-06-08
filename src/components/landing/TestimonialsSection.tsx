@@ -94,9 +94,9 @@ const TestimonialsSection = () => {
       <section id="depoimentos" className="pt-8 pb-16 md:pt-12 md:pb-24 lg:pt-16 lg:pb-32 bg-primary/20">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12 md:mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold text-primary">Depoimentos Verdadeiros</h2>
+            <h2 className="text-3xl sm:text-4xl font-bold text-primary">Profissionais Reais. Histórias Reais.</h2>
             <p className="mt-4 text-xl text-foreground/80 max-w-2xl mx-auto">
-              Nada de números falsos de usuários nem 5 estrelinhas de advogados que não existem! Assista a o que os advogados verdadeiros têm a dizer...
+              Sem atalhos, sem números fabricados. O que você verá a seguir são depoimentos autênticos de advogados que validam nosso trabalho no dia a dia. Ouça o que eles têm a dizer sobre a transformação em seus escritórios.
             </p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
