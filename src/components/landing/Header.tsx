@@ -27,8 +27,8 @@ const Header = () => {
           <Link href="#diferenciais" className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors whitespace-nowrap" prefetch={false}>
             Diferenciais Exclusivos
           </Link>
-          <Link href="#tecnologia" className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors whitespace-nowrap" prefetch={false}>
-            Tecnologia
+          <Link href="#features" className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors whitespace-nowrap" prefetch={false}>
+            Funcionalidades
           </Link>
           <Link href="#depoimentos" className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors whitespace-nowrap" prefetch={false}>
             Depoimentos
@@ -61,8 +61,8 @@ const Header = () => {
                   </Link>
                 </SheetClose>
                 <SheetClose asChild>
-                  <Link href="#tecnologia" className="text-lg font-medium hover:text-primary transition-colors" prefetch={false}>
-                    Tecnologia
+                  <Link href="#features" className="text-lg font-medium hover:text-primary transition-colors" prefetch={false}>
+                    Funcionalidades
                   </Link>
                 </SheetClose>
                 <SheetClose asChild>
