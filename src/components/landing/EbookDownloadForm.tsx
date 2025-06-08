@@ -26,12 +26,14 @@ import 'react-pdf/dist/esm/Page/TextLayer.css';
 import "pdfjs-dist/web/pdf_viewer.css";
 
 import dynamic from 'next/dynamic';
+import type { PDFDocumentProxy, PageProxy } from 'pdfjs-dist/types/src/display/api';
+
 
 const PDFDocument = dynamic(
   async () => {
     const mod = await import('react-pdf');
+    // Dynamically set workerSrc only on the client side
     if (typeof window !== 'undefined') {
-      // Using a robust CDN link with a specific version
       mod.pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@4.8.69/build/pdf.worker.min.mjs`;
     }
     return mod.Document;
@@ -39,7 +41,7 @@ const PDFDocument = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="flex justify-center items-center w-full max-w-xl h-[820px] bg-muted rounded-lg shadow-inner">
+      <div className="flex justify-center items-center w-full max-w-xl h-[488px] bg-muted rounded-lg shadow-inner">
         <p className="text-sm text-muted-foreground">Carregando prévia do PDF...</p>
       </div>
     ),
@@ -63,9 +65,11 @@ const BrazilFlagIcon = () => (
 const EbookDownloadForm = () => {
   const [numPages, setNumPages] = useState<number | null>(null);
   const { toast } = useToast();
-  const [zoomLevel, setZoomLevel] = useState(1.0); // Initial zoom factor
+  const [zoomLevel, setZoomLevel] = useState(1.0);
   const pdfParentContainerRef = useRef<HTMLDivElement | null>(null);
   const [pdfContainerWidth, setPdfContainerWidth] = useState<number | undefined>();
+  const [firstPageAspectRatio, setFirstPageAspectRatio] = useState<number | null>(null);
+  const [calculatedPdfHeight, setCalculatedPdfHeight] = useState<number | undefined>();
 
   const initialFormState: FormState = { message: "", success: false, issues: [] };
   const [formState, formAction] = useActionState(submitEbookForm, initialFormState);
@@ -102,14 +106,27 @@ const EbookDownloadForm = () => {
     };
 
     window.addEventListener('resize', updatePdfContainerWidth);
-    updatePdfContainerWidth(); // Initial calculation
+    updatePdfContainerWidth(); 
 
     return () => window.removeEventListener('resize', updatePdfContainerWidth);
   }, []);
 
+  useEffect(() => {
+    if (pdfContainerWidth && firstPageAspectRatio) {
+      // Calculate height based on container width, aspect ratio, and current zoom level
+      const pageHeight = pdfContainerWidth * firstPageAspectRatio * zoomLevel;
+      setCalculatedPdfHeight(pageHeight);
+    }
+  }, [pdfContainerWidth, firstPageAspectRatio, zoomLevel]);
 
-  const onDocumentLoadSuccess = ({ numPages: loadedNumPages }: { numPages: number }) => {
-    setNumPages(loadedNumPages);
+
+  const onDocumentLoadSuccess = async (pdf: PDFDocumentProxy) => {
+    setNumPages(pdf.numPages);
+    if (pdf.numPages > 0) {
+      const page1 = await pdf.getPage(1);
+      const viewport = page1.getViewport({ scale: 1 });
+      setFirstPageAspectRatio(viewport.height / viewport.width);
+    }
   };
 
   const ramosDeAtuacao = [
@@ -141,16 +158,16 @@ const EbookDownloadForm = () => {
     let nationalNum = digitsOnlyWithDDI.substring(2);
 
     if (nationalNum.length === 0) {
-        return ""; 
+        return "";
     }
 
-    nationalNum = nationalNum.slice(0, 11); 
+    nationalNum = nationalNum.slice(0, 11);
 
-    let masked = `(${nationalNum.substring(0, Math.min(2, nationalNum.length))}`; 
+    let masked = `(${nationalNum.substring(0, Math.min(2, nationalNum.length))}`;
     if (nationalNum.length > 2) {
       masked += `) ${nationalNum.substring(2, Math.min(2 + 5, nationalNum.length))}`;
     }
-    if (nationalNum.length > 7) { 
+    if (nationalNum.length > 7) {
       masked += `-${nationalNum.substring(7, Math.min(7 + 4, nationalNum.length))}`;
     }
     return masked;
@@ -207,7 +224,7 @@ const EbookDownloadForm = () => {
                       {...field}
                       type="tel"
                       placeholder="(XX) XXXXX-XXXX"
-                      className="pl-12 pr-3 py-2 w-full" 
+                      className="pl-12 pr-3 py-2 w-full"
                       onChange={(e) => {
                         const userInput = e.target.value;
                         let digitsOnly = userInput.replace(/\D/g, '');
@@ -215,7 +232,7 @@ const EbookDownloadForm = () => {
                         if (digitsOnly.length > 0 && !digitsOnly.startsWith('55')) {
                             digitsOnly = '55' + digitsOnly;
                         } else if (digitsOnly.length === 0) {
-                             field.onChange(""); 
+                             field.onChange("");
                              return;
                         }
                         
@@ -224,7 +241,7 @@ const EbookDownloadForm = () => {
                         } else {
                             const maskedValue = applyPhoneMask(digitsOnly);
                             setValue('phone', `+${digitsOnly}`, { shouldValidate: true });
-                            field.onChange(maskedValue); 
+                            field.onChange(maskedValue);
                         }
                       }}
                       value={field.value ? applyPhoneMask(field.value.replace(/^\+/, '')) : ""}
@@ -278,10 +295,13 @@ const EbookDownloadForm = () => {
               </Button>
             </div>
             <div ref={pdfParentContainerRef} className="w-full max-w-xl rounded-lg shadow-2xl">
-              <ScrollArea className="h-[820px] rounded-lg border bg-muted pdf-scroll-area">
-                {pdfContainerWidth && ( 
+              <ScrollArea
+                className="rounded-lg border bg-muted pdf-scroll-area"
+                style={{ height: calculatedPdfHeight ? `${calculatedPdfHeight}px` : '488px' }} 
+              >
+                {pdfContainerWidth && (
                   <PDFDocument
-                    file="/ebook-maestria-jurisp-pdf.pdf" 
+                    file="/ebook-maestria-jurisp-pdf.pdf"
                     onLoadSuccess={onDocumentLoadSuccess}
                     className="flex flex-col items-center py-2"
                     onLoadError={(error) => console.error('Failed to load PDF:', error.message)}
@@ -293,11 +313,12 @@ const EbookDownloadForm = () => {
                         <PDFPage
                           key={`page_${index + 1}`}
                           pageNumber={index + 1}
-                          width={pdfContainerWidth ? pdfContainerWidth * zoomLevel : undefined}
+                          width={pdfContainerWidth} // Keep width as is for initial fit-to-width
+                          scale={zoomLevel} // Use scale for zooming
                           className="mb-2 shadow-md"
                           renderAnnotationLayer={false}
                           renderTextLayer={false}
-                          loading="" 
+                          loading=""
                         />
                       ))}
                   </PDFDocument>
@@ -312,5 +333,3 @@ const EbookDownloadForm = () => {
 };
 
 export default EbookDownloadForm;
-
-    
