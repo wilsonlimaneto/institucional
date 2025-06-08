@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -38,7 +39,7 @@ const HeroSection = () => {
               <p className="text-sm text-foreground/80 mb-1">
                 Startup apoiada pelo
               </p>
-              <div className="relative h-[5.6rem] w-[22.4rem] inline-block -ml-[10px] -mt-[10px]">
+              <div className="relative h-[5.6rem] w-[22.4rem] inline-block -ml-[10px] -mt-[20px]"> {/* Adjusted margin-top */}
                  <Image
                     src="/gfs_h.png"
                     alt="Google for Startups Logo"

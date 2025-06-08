@@ -1,3 +1,4 @@
+
 import Link from 'next/link';
 import Image from 'next/image';
 import { Facebook, Linkedin, Twitter, MessageSquare } from 'lucide-react';
@@ -39,7 +40,7 @@ const FooterSection = () => {
 
           <div className="flex flex-col items-center md:items-end">
             <h3 className="font-headline text-lg font-semibold mb-3 text-foreground">Apoiado por</h3>
-            <div className="relative h-12 w-48">
+            <div className="relative h-12 w-48 -mt-2.5"> {/* Added negative margin-top */}
               <Image
                 src="/gfs_h.png"
                 alt="Google for Startups Logo"
