@@ -1,5 +1,10 @@
 
 'use client';
+// Import types from pdfjs-dist for PDFDocumentProxy
+import type { PDFDocumentProxy } from 'pdfjs-dist/types/src/display/api';
+
+// You can then use PDFDocumentProxy directly or rename it if you prefer
+// import type { PDFDocumentProxy as ReactPdfDocumentProxy } from 'pdfjs-dist/types/src/display/api';
 
 import React, { useEffect, useState, useRef } from 'react';
 import { useForm, Controller } from 'react-hook-form';
@@ -82,11 +87,11 @@ const EbookDownloadForm = () => {
   const { toast } = useToast();
   
   const pdfParentContainerRef = useRef<HTMLDivElement | null>(null);
-  const [pdfContainerWidth, setPdfContainerWidth] = useState<number | undefined>();
   const originalPageDimensionsRef = useRef<{width: number, height: number} | null>(null);
-  const [calculatedPdfHeight, setCalculatedPdfHeight] = useState<string | number>('488px'); // Initial fixed height
+  const [pdfContainerWidth, setPdfContainerWidth] = useState<number | undefined>();
   const [zoomLevel, setZoomLevel] = useState(1.0); 
-
+  const [calculatedPdfHeight, setCalculatedPdfHeight] = useState<string | number>('488px'); // Initial fixed height
+  
   const [showDownloadDialog, setShowDownloadDialog] = useState(false);
   const [downloadUrl, setDownloadUrl] = useState<string | undefined>(undefined);
 
@@ -111,8 +116,6 @@ const EbookDownloadForm = () => {
       try {
         const RPDF = await import('react-pdf');
         if (typeof window !== 'undefined' && RPDF.pdfjs) {
-          // Configure worker source to use the ES Module version from the public folder.
-          // IMPORTANT: Ensure 'pdf.worker.min.mjs' is copied from 'node_modules/pdfjs-dist/build/' to your '/public' directory.
           RPDF.pdfjs.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs';
         }
         setReactPdfModule(RPDF);
@@ -151,17 +154,18 @@ const EbookDownloadForm = () => {
       if (pdfParentContainerRef.current && originalPageDimensionsRef.current) {
         const containerWidth = pdfParentContainerRef.current.clientWidth;
         if (containerWidth > 0) {
+          // Store current width for comparison and trigger effect if it changes
           if (pdfContainerWidth !== containerWidth) {
-            setPdfContainerWidth(containerWidth); // Store current width for comparison
+            setPdfContainerWidth(containerWidth);
           }
 
           const { width: pageWidth, height: pageHeight } = originalPageDimensionsRef.current;
           if (pageWidth > 0) { 
-            const newZoomLevel = containerWidth / pageWidth;
+            const newZoomLevel = containerWidth / pageWidth; // Scale to fit width
             setZoomLevel(newZoomLevel);
             
-            const aspectRatio = pageHeight / pageWidth;
-            setCalculatedPdfHeight(containerWidth * aspectRatio);
+            // Calculate height based on new zoom level (aspect ratio preserved by scale)
+            setCalculatedPdfHeight(pageHeight * newZoomLevel);
           }
         }
       }
@@ -179,31 +183,39 @@ const EbookDownloadForm = () => {
 
     return () => {
       if (pdfParentContainerRef.current) {
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         resizeObserver.unobserve(pdfParentContainerRef.current);
       }
       resizeObserver.disconnect();
     };
-  // Re-run effect if originalPageDimensionsRef.current changes (after PDF load) or pdfParentContainerRef is set
-  // pdfContainerWidth is used to track if a recalculation due to width change is needed.
-  }, [originalPageDimensionsRef.current, pdfParentContainerRef.current]); 
-
+  }, [pdfParentContainerRef, originalPageDimensionsRef, pdfContainerWidth]); // Rerun on container ref, original dimensions, or width change
 
   const onDocumentLoadSuccess = async (pdf: ReactPdfDocumentProxy) => {
     const nextNumPages = pdf.numPages;
     setNumPages(nextNumPages);
-    if (nextNumPages > 0 && pdfParentContainerRef.current) {
-      const page1 = await pdf.getPage(1); 
-      const viewport = page1.getViewport({ scale: 1 }); // Get viewport at original scale
-      originalPageDimensionsRef.current = { width: viewport.width, height: viewport.height };
-      
-      // Trigger recalculation now that original dimensions are set.
-      // This will be picked up by the sizing useEffect by updating its dependency.
-      // Forcing a re-render or explicitly calling calculateAndSetPdfSizing might be an option
-      // but relying on the effect driven by originalPageDimensionsRef.current is cleaner.
-      // To ensure the effect re-runs if container is already there but dimensions just loaded:
-      setPdfContainerWidth(pdfParentContainerRef.current.clientWidth + Math.random()); // Force update to trigger sizing effect
+    if (nextNumPages > 0) {
+      try {
+        const page1 = await pdf.getPage(1); 
+        const viewport = page1.getViewport({ scale: 1 }); // Get viewport at original scale
+        originalPageDimensionsRef.current = { width: viewport.width, height: viewport.height };
+        
+        // Trigger recalculation now that original dimensions are set.
+        // Force update pdfContainerWidth slightly to trigger the sizing effect
+        // if the container is already rendered.
+        if (pdfParentContainerRef.current) {
+          setPdfContainerWidth(pdfParentContainerRef.current.clientWidth + Math.random()); 
+        }
+      } catch (error) {
+        console.error("Error getting page 1 dimensions:", error);
+        toast({
+          title: "Erro ao Carregar Dimensões da Página",
+          description: "Não foi possível obter as dimensões da primeira página do PDF.",
+          variant: "destructive",
+        });
+      }
     }
   };
+
 
   const ramosDeAtuacao = [
     "Administrativo", "Adv. Pública", "Civil", "Digital", "Empresarial", "Família",
@@ -362,7 +374,7 @@ const EbookDownloadForm = () => {
                         </div>
                       }
                     >
-                      {Array.from(new Array(numPages ? Math.min(numPages, 3) : 0), (el, index) => (
+                      {Array.from(new Array(numPages ? Math.min(numPages, 1) : 0), (el, index) => ( // Display only 1 page
                         <reactPdfModule.Page
                           key={`page_${index + 1}`}
                           pageNumber={index + 1}
@@ -370,7 +382,7 @@ const EbookDownloadForm = () => {
                           className="mb-2 shadow-md"
                           renderAnnotationLayer={false}
                           renderTextLayer={false}
-                          loading="" // Disable individual page loader as Document has one
+                          loading="" 
                           onLoadError={(error: any) => {
                             console.error(`Failed to load page ${index + 1}:`, error.message);
                             toast({ title: `Erro ao Carregar Página ${index + 1}`, description: "Não foi possível carregar uma página do PDF.", variant: "destructive" });
