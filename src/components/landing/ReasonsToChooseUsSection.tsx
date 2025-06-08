@@ -1,6 +1,6 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Bot, Clock, Users, PiggyBank } from 'lucide-react';
+import { Bot, Clock, BadgeCheck, PiggyBank } from 'lucide-react';
 
 const reasons = [
   {
@@ -14,7 +14,7 @@ const reasons = [
     description: 'Automatize a pesquisa de jurisprudência e a elaboração de petições, liberando horas para você focar em estratégias e clientes.',
   },
   {
-    icon: <Users className="h-10 w-10 text-primary" />,
+    icon: <BadgeCheck className="h-10 w-10 text-primary" />,
     title: 'Feito por Advogados, para Advogados',
     description: 'Entendemos os desafios da sua rotina e criamos uma ferramenta que realmente atende às suas necessidades diárias.',
   },
