@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useEffect, useState, startTransition } from 'react';
-import Image from 'next/image'; // Added import for next/image
+import Image from 'next/image'; 
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { EbookFormSchema, type EbookFormData } from '@/types';
@@ -124,11 +124,11 @@ const EbookDownloadForm = () => {
       <section id="ebook" className="py-16 md:py-24 lg:py-32 bg-secondary/30">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
-            <div className="flex flex-col justify-center items-center space-y-4 w-full min-w-0">
-              <h3 className="text-2xl font-bold tracking-tight text-foreground text-center">
+            {/* Coluna da Amostra do Ebook */}
+            <div className="flex flex-col justify-center items-center space-y-4 w-full min-w-0 overflow-hidden">
+              <h3 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground text-center">
                 Amostra do E-Book
               </h3>
-              {/* Removed max-w-[378px] to allow w-full to take effect within container paddings */}
               <div className="w-full h-[320px] sm:h-[420px] md:h-[535px] border-2 border-border overflow-y-scroll overflow-x-hidden shadow-lg bg-background">
                 <Image src="/Slide1.PNG" alt="Slide 1 do E-book Maestria Jurisp" width={800} height={600} layout="responsive" />
                 <Image src="/Slide2.PNG" alt="Slide 2 do E-book Maestria Jurisp" width={800} height={600} layout="responsive" />
@@ -136,6 +136,7 @@ const EbookDownloadForm = () => {
               </div>
             </div>
 
+            {/* Coluna do Formulário */}
             <div className="space-y-6 text-center md:text-left max-w-2xl mx-auto md:mx-0">
               <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-foreground">
                 Baixe nosso E-book Exclusivo
@@ -145,7 +146,6 @@ const EbookDownloadForm = () => {
               </p>
               <form
                 onSubmit={handleSubmit(onClientValid)}
-                // Removed max-w-[90%] to let parent div and container handle width/centering
                 className="space-y-4 mx-auto md:mx-0" 
               >
                 <Input
@@ -153,16 +153,18 @@ const EbookDownloadForm = () => {
                   type="text"
                   placeholder="Nome Completo"
                   aria-invalid={formErrors.name ? "true" : "false"}
+                  className="text-base"
                 />
-                {formErrors.name && <p className="text-sm text-destructive">{formErrors.name.message}</p>}
+                {formErrors.name && <p className="text-sm text-destructive text-left">{formErrors.name.message}</p>}
 
                 <Input
                   {...register("email")}
                   type="email"
                   placeholder="Seu Melhor E-mail"
                   aria-invalid={formErrors.email ? "true" : "false"}
+                  className="text-base"
                 />
-                {formErrors.email && <p className="text-sm text-destructive">{formErrors.email.message}</p>}
+                {formErrors.email && <p className="text-sm text-destructive text-left">{formErrors.email.message}</p>}
 
                 <div className="relative flex items-center">
                   <div className="absolute left-3 top-1/2 -translate-y-1/2 z-10 pointer-events-none">
@@ -176,7 +178,7 @@ const EbookDownloadForm = () => {
                         {...field}
                         type="tel"
                         placeholder="(XX) XXXXX-XXXX"
-                        className="pl-12 pr-3 py-2 w-full"
+                        className="pl-12 pr-3 py-2 w-full text-base"
                         onChange={(e) => {
                           let inputValue = e.target.value;
                           let digits = inputValue.replace(/\D/g, '');
@@ -191,7 +193,7 @@ const EbookDownloadForm = () => {
                     )}
                   />
                 </div>
-                 {formErrors.phone && <p className="text-sm text-destructive">{formErrors.phone.message}</p>}
+                 {formErrors.phone && <p className="text-sm text-destructive text-left">{formErrors.phone.message}</p>}
 
                 <Controller
                   name="areaOfLaw"
@@ -201,7 +203,7 @@ const EbookDownloadForm = () => {
                           onValueChange={(value) => field.onChange(value)}
                           value={field.value}
                       >
-                          <SelectTrigger aria-invalid={formErrors.areaOfLaw ? "true" : "false"}>
+                          <SelectTrigger aria-invalid={formErrors.areaOfLaw ? "true" : "false"} className="text-base">
                           <SelectValue placeholder="Selecione seu principal ramo de atuação..." />
                           </SelectTrigger>
                           <SelectContent>
@@ -212,7 +214,7 @@ const EbookDownloadForm = () => {
                       </Select>
                   )}
                 />
-                {formErrors.areaOfLaw && <p className="text-sm text-destructive">{formErrors.areaOfLaw.message}</p>}
+                {formErrors.areaOfLaw && <p className="text-sm text-destructive text-left">{formErrors.areaOfLaw.message}</p>}
 
                 {serverFormState.issues && serverFormState.issues.length > 0 && !serverFormState.success && (
                   <p className="text-sm text-destructive text-center py-2">
