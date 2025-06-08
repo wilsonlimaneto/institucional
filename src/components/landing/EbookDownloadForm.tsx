@@ -26,14 +26,12 @@ const PdfDocument = dynamic(
     const { pdfjs, Document } = await import('react-pdf');
 
     // Configure workerSrc here, strictly on the client-side.
-    // Using .mjs version as recommended for modern bundlers with ESM and Next.js App Router.
-    // This path should be correctly handled by Next.js to serve the worker from node_modules.
-    // This requires "pdfjs-dist": "VERSION_MATCHING_API" (e.g. ^4.8.69 if API is 4.8.69) in package.json
-    pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-      'pdfjs-dist/build/pdf.worker.min.mjs',
-      import.meta.url
-    ).toString();
-
+    // Use a CDN link that matches the version of pdfjs-dist specified in package.json (^4.8.69)
+    // This ensures API and Worker versions match.
+    if (typeof window !== 'undefined') {
+      pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@4.8.69/build/pdf.worker.min.mjs`;
+    }
+    
     return Document; // Return the Document component
   },
   {
@@ -153,7 +151,7 @@ const EbookDownloadForm = () => {
                 render={({ field }) => (
                   <Select
                     onValueChange={field.onChange}
-                    value={field.value || ""}
+                    value={field.value || ""} // Ensure value is an empty string for placeholder to work
                   >
                     <SelectTrigger aria-invalid={errors.areaOfLaw ? "true" : "false"}>
                       <SelectValue placeholder="Ramo de Atuação (Opcional)" />
@@ -175,17 +173,15 @@ const EbookDownloadForm = () => {
           </div>
           <div className="flex justify-center items-center">
             <div className="w-full max-w-sm rounded-lg overflow-hidden shadow-2xl">
-              {typeof window !== 'undefined' && (
-                <PdfDocument
-                  file="/ebook-maestria-jurisp-pdf.pdf" // Ensure this PDF is in your /public folder
-                  onLoadSuccess={onDocumentLoadSuccess}
-                  className="flex justify-center"
-                  onLoadError={(error) => console.error('Failed to load PDF:', error.message)}
-                  onSourceError={(error) => console.error('Failed to load PDF source:', error.message)}
-                >
-                  {numPages && <PdfPage pageNumber={1} width={300} />}
-                </PdfDocument>
-              )}
+              <PdfDocument
+                file="/ebook-maestria-jurisp-pdf.pdf" // Ensure this PDF is in your /public folder
+                onLoadSuccess={onDocumentLoadSuccess}
+                className="flex justify-center"
+                onLoadError={(error: Error) => console.error('Failed to load PDF:', error.message)}
+                onSourceError={(error: Error) => console.error('Failed to load PDF source:', error.message)}
+              >
+                {numPages && <PdfPage pageNumber={1} width={300} />}
+              </PdfDocument>
             </div>
           </div>
         </div>
