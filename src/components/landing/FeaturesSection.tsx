@@ -1,6 +1,6 @@
 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { BarChart3, DownloadCloud, FileText, Link2, MessageSquare, Rocket } from 'lucide-react';
+import { FileText, Link2, MessageSquare, Rocket } from 'lucide-react';
 
 const features = [
   {
@@ -22,16 +22,6 @@ const features = [
     icon: <MessageSquare className="h-8 w-8 text-primary" />,
     title: 'Suporte Humano por WhatsApp',
     description: 'Ficou com alguma dúvida? Basta acionar nosso suporte via WhatsApp e teremos o prazer de ajudar',
-  },
-  {
-    icon: <BarChart3 className="h-8 w-8 text-primary" />,
-    title: 'Analytics Integration',
-    description: 'Easily track your performance and make data-driven decisions.',
-  },
-  {
-    icon: <DownloadCloud className="h-8 w-8 text-primary" />,
-    title: 'Valuable Resources',
-    description: 'Get access to exclusive content like ebooks and guides to grow your business.',
   },
 ];
 
