@@ -38,7 +38,7 @@ const MaestriaFlixSection = () => {
         <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-center mb-8 text-primary">
           Maestria Reels
         </h2>
-        <p className="text-lg text-foreground/80 max-w-2xl mx-auto mb-12 md:mb-16 text-center">
+        <p className="text-xl text-foreground/80 max-w-2xl mx-auto mb-12 md:mb-16 text-center">
           Acompanhe nossos últimos reels com dicas, insights e novidades diretamente do Instagram.
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 max-w-3xl mx-auto">
