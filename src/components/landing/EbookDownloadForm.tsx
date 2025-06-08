@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { useEffect, useState, useRef, useActionState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { EbookFormSchema, type EbookFormData } from '@/types';
@@ -19,6 +19,18 @@ import {
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
 import { ZoomIn, ZoomOut } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+
 
 // CSS imports for react-pdf styling
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
@@ -70,9 +82,11 @@ const EbookDownloadForm = () => {
   const [pdfContainerWidth, setPdfContainerWidth] = useState<number | undefined>();
   const [firstPageAspectRatio, setFirstPageAspectRatio] = useState<number | null>(null);
   const [calculatedPdfHeight, setCalculatedPdfHeight] = useState<number | undefined>();
+  const [showDownloadDialog, setShowDownloadDialog] = useState(false);
+  const [downloadUrl, setDownloadUrl] = useState<string | undefined>(undefined);
 
   const initialFormState: FormState = { message: "", success: false, issues: [] };
-  const [formState, formAction] = useActionState(submitEbookForm, initialFormState);
+  const [formState, formAction] = React.useActionState(submitEbookForm, initialFormState);
 
   const { register, handleSubmit, formState: { errors: formErrors }, reset, control, setValue } = useForm<EbookFormData>({
     resolver: zodResolver(EbookFormSchema),
@@ -92,16 +106,22 @@ const EbookDownloadForm = () => {
         variant: formState.success ? "default" : "destructive",
       });
       if (formState.success) {
+        setDownloadUrl(formState.downloadUrl);
+        setShowDownloadDialog(true);
         reset();
       }
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formState]);
+  }, [formState, reset, toast]);
 
   useEffect(() => {
     const updatePdfContainerWidth = () => {
       if (pdfParentContainerRef.current) {
-        setPdfContainerWidth(pdfParentContainerRef.current.clientWidth);
+        const newWidth = pdfParentContainerRef.current.clientWidth;
+        setPdfContainerWidth(newWidth);
+        if (firstPageAspectRatio) {
+          setCalculatedPdfHeight(newWidth * firstPageAspectRatio * zoomLevel);
+        }
       }
     };
 
@@ -109,13 +129,11 @@ const EbookDownloadForm = () => {
     updatePdfContainerWidth(); 
 
     return () => window.removeEventListener('resize', updatePdfContainerWidth);
-  }, []);
+  }, [firstPageAspectRatio, zoomLevel]);
 
   useEffect(() => {
     if (pdfContainerWidth && firstPageAspectRatio) {
-      // Calculate height based on container width, aspect ratio, and current zoom level
-      const pageHeight = pdfContainerWidth * firstPageAspectRatio * zoomLevel;
-      setCalculatedPdfHeight(pageHeight);
+      setCalculatedPdfHeight(pdfContainerWidth * firstPageAspectRatio * zoomLevel);
     }
   }, [pdfContainerWidth, firstPageAspectRatio, zoomLevel]);
 
@@ -126,6 +144,12 @@ const EbookDownloadForm = () => {
       const page1 = await pdf.getPage(1);
       const viewport = page1.getViewport({ scale: 1 });
       setFirstPageAspectRatio(viewport.height / viewport.width);
+      if (pdfParentContainerRef.current) {
+         // Ensure width is up-to-date for initial fit
+        const currentWidth = pdfParentContainerRef.current.clientWidth;
+        setPdfContainerWidth(currentWidth);
+        setCalculatedPdfHeight(currentWidth * (viewport.height / viewport.width) * zoomLevel); 
+      }
     }
   };
 
@@ -181,154 +205,187 @@ const EbookDownloadForm = () => {
     setZoomLevel((prevZoom) => Math.max(prevZoom - 0.2, 0.5));
   };
 
+  const handleDownloadPdf = () => {
+    if (downloadUrl) {
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.setAttribute('download', 'ebook-maestria-jurisprudencia.pdf');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      setShowDownloadDialog(false);
+    }
+  };
+
   return (
-    <section id="ebook" className="py-16 md:py-24 lg:py-32 bg-secondary/30">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid md:grid-cols-2 gap-12 md:gap-16 items-center">
-          <div className="space-y-6 text-center md:text-left">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-foreground">
-              Baixe nosso E-book Exclusivo
-            </h2>
-            <p className="text-lg md:text-xl text-foreground/80">
-              Aprenda os segredos da IA para advogados e transforme sua carreira.
-            </p>
-            <form
-              onSubmit={handleSubmit(handleFormSubmit)}
-              className="space-y-4"
-            >
-              <Input
-                {...register("name")}
-                type="text"
-                placeholder="Nome Completo"
-                aria-invalid={formErrors.name ? "true" : "false"}
-              />
-              {formErrors.name && <p className="text-sm text-destructive">{formErrors.name.message}</p>}
+    <>
+      <section id="ebook" className="py-16 md:py-24 lg:py-32 bg-secondary/30">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid md:grid-cols-2 gap-12 md:gap-16 items-center">
+            <div className="space-y-6 text-center md:text-left">
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-foreground">
+                Baixe nosso E-book Exclusivo
+              </h2>
+              <p className="text-lg md:text-xl text-foreground/80">
+                Aprenda os segredos da IA para advogados e transforme sua carreira.
+              </p>
+              <form
+                onSubmit={handleSubmit(handleFormSubmit)}
+                className="space-y-4"
+              >
+                <Input
+                  {...register("name")}
+                  type="text"
+                  placeholder="Nome Completo"
+                  aria-invalid={formErrors.name ? "true" : "false"}
+                />
+                {formErrors.name && <p className="text-sm text-destructive">{formErrors.name.message}</p>}
 
-              <Input
-                {...register("email")}
-                type="email"
-                placeholder="Seu Melhor E-mail"
-                aria-invalid={formErrors.email ? "true" : "false"}
-              />
-              {formErrors.email && <p className="text-sm text-destructive">{formErrors.email.message}</p>}
+                <Input
+                  {...register("email")}
+                  type="email"
+                  placeholder="Seu Melhor E-mail"
+                  aria-invalid={formErrors.email ? "true" : "false"}
+                />
+                {formErrors.email && <p className="text-sm text-destructive">{formErrors.email.message}</p>}
 
-              <div className="relative flex items-center">
-                <div className="absolute left-3 top-1/2 -translate-y-1/2 z-10 pointer-events-none">
-                  <BrazilFlagIcon />
+                <div className="relative flex items-center">
+                  <div className="absolute left-3 top-1/2 -translate-y-1/2 z-10 pointer-events-none">
+                    <BrazilFlagIcon />
+                  </div>
+                  <Controller
+                    name="phone"
+                    control={control}
+                    render={({ field }) => (
+                      <Input
+                        {...field}
+                        type="tel"
+                        placeholder="(XX) XXXXX-XXXX"
+                        className="pl-12 pr-3 py-2 w-full"
+                        onChange={(e) => {
+                          const userInput = e.target.value;
+                          let digitsOnly = userInput.replace(/\D/g, '');
+                          
+                          if (digitsOnly.length > 0 && !digitsOnly.startsWith('55')) {
+                              digitsOnly = '55' + digitsOnly;
+                          } else if (digitsOnly.length === 0) {
+                               field.onChange("");
+                               return;
+                          }
+                          
+                          if (digitsOnly === "55") {
+                               field.onChange("");
+                          } else {
+                              const maskedValue = applyPhoneMask(digitsOnly);
+                              setValue('phone', `+${digitsOnly}`, { shouldValidate: true });
+                              field.onChange(maskedValue);
+                          }
+                        }}
+                        value={field.value ? applyPhoneMask(field.value.replace(/^\+/, '')) : ""}
+                        aria-invalid={formErrors.phone ? "true" : "false"}
+                      />
+                    )}
+                  />
                 </div>
+                 {formErrors.phone && <p className="text-sm text-destructive">{formErrors.phone.message}</p>}
+
                 <Controller
-                  name="phone"
+                  name="areaOfLaw"
                   control={control}
                   render={({ field }) => (
-                    <Input
-                      {...field}
-                      type="tel"
-                      placeholder="(XX) XXXXX-XXXX"
-                      className="pl-12 pr-3 py-2 w-full"
-                      onChange={(e) => {
-                        const userInput = e.target.value;
-                        let digitsOnly = userInput.replace(/\D/g, '');
-                        
-                        if (digitsOnly.length > 0 && !digitsOnly.startsWith('55')) {
-                            digitsOnly = '55' + digitsOnly;
-                        } else if (digitsOnly.length === 0) {
-                             field.onChange("");
-                             return;
-                        }
-                        
-                        if (digitsOnly === "55") {
-                             field.onChange("");
-                        } else {
-                            const maskedValue = applyPhoneMask(digitsOnly);
-                            setValue('phone', `+${digitsOnly}`, { shouldValidate: true });
-                            field.onChange(maskedValue);
-                        }
-                      }}
-                      value={field.value ? applyPhoneMask(field.value.replace(/^\+/, '')) : ""}
-                      aria-invalid={formErrors.phone ? "true" : "false"}
-                    />
+                      <Select
+                          onValueChange={(value) => field.onChange(value)}
+                          value={field.value}
+                      >
+                          <SelectTrigger aria-invalid={formErrors.areaOfLaw ? "true" : "false"}>
+                          <SelectValue placeholder="Selecione seu principal ramo de atuação..." />
+                          </SelectTrigger>
+                          <SelectContent>
+                          {ramosDeAtuacao.map(ramo => (
+                              <SelectItem key={ramo} value={ramo}>{ramo}</SelectItem>
+                          ))}
+                          </SelectContent>
+                      </Select>
                   )}
                 />
-              </div>
-               {formErrors.phone && <p className="text-sm text-destructive">{formErrors.phone.message}</p>}
+                {formErrors.areaOfLaw && <p className="text-sm text-destructive">{formErrors.areaOfLaw.message}</p>}
 
-              <Controller
-                name="areaOfLaw"
-                control={control}
-                render={({ field }) => (
-                    <Select
-                        onValueChange={(value) => field.onChange(value)}
-                        value={field.value}
-                    >
-                        <SelectTrigger aria-invalid={formErrors.areaOfLaw ? "true" : "false"}>
-                        <SelectValue placeholder="Selecione seu principal ramo de atuação..." />
-                        </SelectTrigger>
-                        <SelectContent>
-                        {ramosDeAtuacao.map(ramo => (
-                            <SelectItem key={ramo} value={ramo}>{ramo}</SelectItem>
-                        ))}
-                        </SelectContent>
-                    </Select>
+                {formState.issues && formState.issues.length > 0 && !formState.success && (
+                  <p className="text-sm text-destructive text-center py-2">
+                    Por favor, preencha todos os campos obrigatórios corretamente.
+                  </p>
                 )}
-              />
-              {formErrors.areaOfLaw && <p className="text-sm text-destructive">{formErrors.areaOfLaw.message}</p>}
 
-              {formState.issues && formState.issues.length > 0 && !formState.success && (
-                <p className="text-sm text-destructive text-center py-2">
-                  Por favor, preencha todos os campos obrigatórios corretamente.
-                </p>
-              )}
-
-              <Button type="submit" size="lg" className="w-full font-semibold">
-                Clique para receber GRATUITAMENTE o E-Book
-              </Button>
-            </form>
-          </div>
-          <div className="flex flex-col justify-center items-center">
-            <h3 className="text-lg font-semibold text-foreground mb-2">Amostra</h3>
-            <div className="flex justify-center space-x-2 my-4">
-              <Button onClick={handleZoomIn} variant="outline" size="icon" aria-label="Aumentar zoom">
-                <ZoomIn className="h-5 w-5" />
-              </Button>
-              <Button onClick={handleZoomOut} variant="outline" size="icon" aria-label="Diminuir zoom">
-                <ZoomOut className="h-5 w-5" />
-              </Button>
+                <Button type="submit" size="lg" className="w-full font-semibold">
+                  Clique para receber GRATUITAMENTE o E-Book
+                </Button>
+              </form>
             </div>
-            <div ref={pdfParentContainerRef} className="w-full max-w-xl rounded-lg shadow-2xl">
-              <ScrollArea
-                className="rounded-lg border bg-muted pdf-scroll-area"
-                style={{ height: calculatedPdfHeight ? `${calculatedPdfHeight}px` : '488px' }} 
-              >
-                {pdfContainerWidth && (
-                  <PDFDocument
-                    file="/ebook-maestria-jurisp-pdf.pdf"
-                    onLoadSuccess={onDocumentLoadSuccess}
-                    className="flex flex-col items-center py-2"
-                    onLoadError={(error) => console.error('Failed to load PDF:', error.message)}
-                    onSourceError={(error) => console.error('Failed to load PDF source:', error.message)}
-                    loading={<div className="flex justify-center items-center w-full h-full"><p className="text-sm text-muted-foreground">Carregando PDF...</p></div>}
-                  >
-                    {numPages &&
-                      Array.from(new Array(Math.min(numPages, 3)), (el, index) => (
-                        <PDFPage
-                          key={`page_${index + 1}`}
-                          pageNumber={index + 1}
-                          width={pdfContainerWidth} // Keep width as is for initial fit-to-width
-                          scale={zoomLevel} // Use scale for zooming
-                          className="mb-2 shadow-md"
-                          renderAnnotationLayer={false}
-                          renderTextLayer={false}
-                          loading=""
-                        />
-                      ))}
-                  </PDFDocument>
-                )}
-              </ScrollArea>
+            <div className="flex flex-col justify-center items-center">
+              <h3 className="text-lg font-semibold text-foreground mb-2">Amostra</h3>
+              <div className="flex justify-center space-x-2 my-4">
+                <Button onClick={handleZoomIn} variant="outline" size="icon" aria-label="Aumentar zoom">
+                  <ZoomIn className="h-5 w-5" />
+                </Button>
+                <Button onClick={handleZoomOut} variant="outline" size="icon" aria-label="Diminuir zoom">
+                  <ZoomOut className="h-5 w-5" />
+                </Button>
+              </div>
+              <div ref={pdfParentContainerRef} className="w-full max-w-xl rounded-lg shadow-2xl">
+                <ScrollArea
+                  className="rounded-lg border bg-muted pdf-scroll-area"
+                  style={{ height: calculatedPdfHeight ? `${calculatedPdfHeight}px` : '488px' }} 
+                >
+                  {pdfContainerWidth && (
+                    <PDFDocument
+                      file="/ebook-maestria-jurisp-pdf.pdf"
+                      onLoadSuccess={onDocumentLoadSuccess}
+                      className="flex flex-col items-center py-2"
+                      onLoadError={(error) => console.error('Failed to load PDF:', error.message)}
+                      onSourceError={(error) => console.error('Failed to load PDF source:', error.message)}
+                      loading={<div className="flex justify-center items-center w-full h-full"><p className="text-sm text-muted-foreground">Carregando PDF...</p></div>}
+                    >
+                      {numPages &&
+                        Array.from(new Array(Math.min(numPages, 3)), (el, index) => (
+                          <PDFPage
+                            key={`page_${index + 1}`}
+                            pageNumber={index + 1}
+                            width={pdfContainerWidth ? pdfContainerWidth * zoomLevel : undefined}
+                            className="mb-2 shadow-md"
+                            renderAnnotationLayer={false}
+                            renderTextLayer={false}
+                            loading=""
+                          />
+                        ))}
+                    </PDFDocument>
+                  )}
+                </ScrollArea>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+
+      <AlertDialog open={showDownloadDialog} onOpenChange={setShowDownloadDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Download Iniciado</AlertDialogTitle>
+            <AlertDialogDescription>
+              Seu e-book está sendo baixado. Verifique sua pasta de downloads.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction onClick={() => {
+              handleDownloadPdf();
+              setShowDownloadDialog(false);
+            }}>
+              Baixar Novamente
+            </AlertDialogAction>
+            <AlertDialogCancel onClick={() => setShowDownloadDialog(false)}>Fechar</AlertDialogCancel>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 };
 

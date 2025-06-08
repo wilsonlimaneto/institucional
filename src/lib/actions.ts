@@ -7,6 +7,7 @@ export interface FormState {
   fields?: Record<string, string>;
   issues?: string[];
   success: boolean;
+  downloadUrl?: string; // Added to provide the PDF URL
 }
 
 export async function submitEbookForm(
@@ -33,10 +34,11 @@ export async function submitEbookForm(
   console.log("Ebook form submitted with validated data:", validatedData);
   
   // In a real app, you'd save to a database, trigger an email with the PDF, etc.
-  // For now, we just return a success message.
+  // For now, we just return a success message and the download URL.
   
   return {
-    message: `Thank you, ${validatedData.name}! Your ebook download link would be sent to ${validatedData.email} (or displayed here).`,
+    message: `Obrigado, ${validatedData.name}! Seu e-book está pronto para download.`,
     success: true,
+    downloadUrl: "/ebook-maestria-jurisp-pdf.pdf" // Provide the path to the PDF
   };
 }
