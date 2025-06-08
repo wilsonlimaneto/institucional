@@ -4,8 +4,8 @@ import { CheckCircle } from 'lucide-react';
 const diferenciais = [
   { text: 'Jurisprudência real, já verificada por meio de busca semântica®' },
   { text: 'Editor de documentos nativo: você não precisa copiar os textos para um editor' },
-  { text: 'Integração Google Docs e MS Office ' }, // Note: trailing space here is important for the split
-  { text: 'Integração ao Google Drive e Dropbox' }, // Atualizado aqui
+  { text: 'Integração Google Docs e MS Office (2o Sem 2025)' },
+  { text: 'Integração ao Google Drive e Dropbox (2o Sem 2025)' },
   { text: 'Resuma dados de longos documentos (Ago 2025)' },
   { text: 'Parceria com empresas e tecnologias reconhecidas internacionalmente' },
 ];
@@ -27,24 +27,27 @@ const DiferenciaisSection = () => {
           <ul className="space-y-3">
             {diferenciais.map((item, index) => {
               let itemContent;
-              if (item.text.includes('Integração ao Google Drive e Dropbox')) { // Atualizado aqui
-                const parts = item.text.split('Integração ao Google Drive e Dropbox');
+              const integrationTextGDrive = 'Integração ao Google Drive e Dropbox';
+              const integrationTextGDocs = 'Integração Google Docs e MS Office';
+
+              if (item.text.includes(integrationTextGDrive)) {
+                const parts = item.text.split(integrationTextGDrive);
                 itemContent = (
                   <>
                     {parts[0]}
-                    {'Integração ao Google Drive e Dropbox'}
-                    <img src="/google_drive.png" alt="Google Drive logo" className="inline-block h-5 w-auto mx-1 align-middle" style={{ height: '20px' }} /> {/* Atualizado src e alt */}
+                    {integrationTextGDrive}
+                    <img src="/google_drive.png" alt="Google Drive logo" className="inline-block h-5 w-auto mx-1 align-middle" style={{ height: '20px' }} />
                     {' e '}
                     <img src="/dropbox.png" alt="Dropbox logo" className="inline-block h-5 w-auto mx-1 align-middle" style={{ height: '20px' }} />
                     {parts[1]}
                   </>
                 );
-              } else if (item.text.includes('Integração Google Docs e MS Office ')) { 
-                const parts = item.text.split('Integração Google Docs e MS Office ');
+              } else if (item.text.includes(integrationTextGDocs)) {
+                const parts = item.text.split(integrationTextGDocs);
                 itemContent = (
                   <>
                     {parts[0]}
-                    {'Integração Google Docs e MS Office'}
+                    {integrationTextGDocs}
                     <img src="/google_docs.png" alt="Google Docs logo" className="inline-block h-5 w-auto mx-1 align-middle" />
                     {' e '}
                     <img src="/ms_word.png" alt="MS Word logo" className="inline-block h-5 w-auto mx-1 align-middle" />
