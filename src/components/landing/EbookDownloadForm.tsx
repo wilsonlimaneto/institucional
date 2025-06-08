@@ -2,6 +2,7 @@
 'use client';
 
 import React, { useEffect, useState, startTransition } from 'react';
+import Image from 'next/image'; // Added import for next/image
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { EbookFormSchema, type EbookFormData } from '@/types';
@@ -122,15 +123,15 @@ const EbookDownloadForm = () => {
     <>
       <section id="ebook" className="py-16 md:py-24 lg:py-32 bg-secondary/30">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-2 gap-8 md:gap-16 items-center">
+          <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
             <div className="flex flex-col justify-center items-center space-y-4 w-full min-w-0">
               <h3 className="text-2xl font-bold tracking-tight text-foreground text-center">
                 Amostra do E-Book
               </h3>
               <div className="w-full max-w-[378px] h-96 md:h-[535px] border-2 border-border overflow-y-scroll overflow-x-hidden shadow-lg bg-background">
-                <img src="/Slide1.PNG" alt="Slide 1" className="w-full h-auto" />
-                <img src="/Slide2.PNG" alt="Slide 2" className="w-full h-auto" />
-                <img src="/Slide3.PNG" alt="Slide 3" className="w-full h-auto" />
+                <Image src="/Slide1.PNG" alt="Slide 1 do E-book Maestria Jurisp" width={800} height={600} layout="responsive" />
+                <Image src="/Slide2.PNG" alt="Slide 2 do E-book Maestria Jurisp" width={800} height={600} layout="responsive" />
+                <Image src="/Slide3.PNG" alt="Slide 3 do E-book Maestria Jurisp" width={800} height={600} layout="responsive" />
               </div>
             </div>
 
