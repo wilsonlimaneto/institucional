@@ -1,17 +1,12 @@
 
 'use client';
 
-import React,
-{
-  useEffect,
-  useState,
-} from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { EbookFormSchema, type EbookFormData } from '@/types';
 import { submitEbookForm, type FormState } from '@/lib/actions';
-import { useActionState }
-  from 'react';
+import { useActionState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -29,24 +24,28 @@ import { useToast } from '@/hooks/use-toast';
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
 
-import type { DocumentProps, PageProps } from 'react-pdf';
 import dynamic from 'next/dynamic';
-import { pdfjs } from 'react-pdf';
+// Note: pdfjs object will be accessed via the dynamic import's resolved module
 
-// Configure the workerSrc to point to the local file in the public directory.
-// This needs to be done once and on the client side.
-if (typeof window !== 'undefined') {
-  pdfjs.GlobalWorkerOptions.workerSrc = `/pdf.worker.min.js`;
-}
-
-const PDFDocument = dynamic(() => import('react-pdf').then(mod => mod.Document), {
-  ssr: false,
-  loading: () => (
-    <div className="flex justify-center items-center w-full max-w-sm h-[488px] bg-muted rounded-lg shadow-inner">
-      <p className="text-sm text-muted-foreground">Carregando prévia do PDF...</p>
-    </div>
-  ),
-});
+const PDFDocument = dynamic(
+  async () => {
+    const mod = await import('react-pdf');
+    // Configure workerSrc here, using the imported pdfjs object from react-pdf
+    // and the specific version from package.json
+    if (typeof window !== 'undefined') {
+      mod.pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.8.69/pdf.worker.min.mjs`;
+    }
+    return mod.Document;
+  },
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex justify-center items-center w-full max-w-sm h-[488px] bg-muted rounded-lg shadow-inner">
+        <p className="text-sm text-muted-foreground">Carregando prévia do PDF...</p>
+      </div>
+    ),
+  }
+);
 
 const PDFPage = dynamic(() => import('react-pdf').then(mod => mod.Page), {
   ssr: false,
@@ -74,7 +73,7 @@ const EbookDownloadForm = () => {
     defaultValues: {
       name: "",
       email: "",
-      phone: "", // Default to empty, the flag will imply +55
+      phone: "",
       areaOfLaw: "",
     }
   });
@@ -94,8 +93,8 @@ const EbookDownloadForm = () => {
   }, [formState]);
 
 
-  const onDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
-    setNumPages(numPages);
+  const onDocumentLoadSuccess = ({ numPages: loadedNumPages }: { numPages: number }) => {
+    setNumPages(loadedNumPages);
   };
 
   const ramosDeAtuacao = [
@@ -113,17 +112,13 @@ const EbookDownloadForm = () => {
     formAction(formData);
   };
 
-  const applyPhoneMask = (digitsOnlyWithDDI: string): string => { // Expects digits like "5511999998888"
+  const applyPhoneMask = (digitsOnlyWithDDI: string): string => {
     if (!digitsOnlyWithDDI) return "";
 
-    const ddi = digitsOnlyWithDDI.substring(0, 2); // Should be "55"
+    const ddi = digitsOnlyWithDDI.substring(0, 2);
     let nationalNum = digitsOnlyWithDDI.substring(2);
 
     if (nationalNum.length === 0) {
-        // If only DDI was effectively provided (e.g., user cleared national part)
-        // return "+55 " to indicate the DDI is set, or empty if we want to clear fully.
-        // For now, if national part is empty, we set field value to "" in onChange.
-        // So this path might only be hit if initial value somehow is just "55".
         return `+${ddi} `;
     }
 
@@ -184,20 +179,19 @@ const EbookDownloadForm = () => {
                       {...field}
                       type="tel"
                       placeholder="(XX) XXXXX-XXXX"
-                      className="pl-12 pr-3 py-2 w-full" // Padding left for flag
+                      className="pl-12 pr-3 py-2 w-full"
                       onChange={(e) => {
-                        const userInput = e.target.value; // This is the (XX) XXXXX-XXXX part
+                        const userInput = e.target.value;
                         const nationalDigits = userInput.replace(/\D/g, '');
 
                         if (nationalDigits === "") {
-                            field.onChange(""); // Clear field value if national part is empty
+                            field.onChange("");
                         } else {
-                            const fullDigitsToMask = `55${nationalDigits}`; // Always prepend 55 for Brazil
+                            const fullDigitsToMask = `55${nationalDigits}`;
                             const maskedValue = applyPhoneMask(fullDigitsToMask);
                             field.onChange(maskedValue);
                         }
                       }}
-                      // Display only the national part after "+55 "
                       value={field.value ? field.value.replace(/^\+55\s*/, '').trimStart() : ""}
                       aria-invalid={formErrors.phone ? "true" : "false"}
                     />
@@ -242,11 +236,12 @@ const EbookDownloadForm = () => {
             <div className="w-full max-w-sm rounded-lg shadow-2xl">
               <ScrollArea className="h-[488px] rounded-lg border bg-muted">
                 <PDFDocument
-                  file="/ebook-maestria-jurisp-pdf.pdf" 
+                  file="/ebook-maestria-jurisp-pdf.pdf"
                   onLoadSuccess={onDocumentLoadSuccess}
                   className="flex flex-col items-center py-2"
                   onLoadError={(error) => console.error('Failed to load PDF:', error.message)}
                   onSourceError={(error) => console.error('Failed to load PDF source:', error.message)}
+                  loading={<div className="flex justify-center items-center w-full h-full"><p className="text-sm text-muted-foreground">Carregando PDF...</p></div>}
                 >
                   {numPages &&
                     Array.from(new Array(Math.min(numPages, 3)), (el, index) => (
@@ -257,6 +252,7 @@ const EbookDownloadForm = () => {
                         className="mb-2 shadow-md"
                         renderAnnotationLayer={false}
                         renderTextLayer={false}
+                        loading="" 
                       />
                     ))}
                 </PDFDocument>
@@ -271,3 +267,4 @@ const EbookDownloadForm = () => {
 
 export default EbookDownloadForm;
 
+    
