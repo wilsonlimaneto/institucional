@@ -18,17 +18,16 @@ import { useToast } from '@/hooks/use-toast';
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
 
-import type { DocumentProps, PageProps } from 'react-pdf';
+import type { DocumentProps, PageProps} from 'react-pdf';
 import dynamic from 'next/dynamic';
+import { pdfjs } from 'react-pdf'; // Import pdfjs directly
 
-// Dynamically import react-pdf and configure workerSrc
-const PdfDocument = dynamic<DocumentProps>(() =>
-  import('react-pdf').then(mod => {
-    if (typeof window !== 'undefined') {
-      (mod.pdfjs as any).GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@4.8.69/build/pdf.worker.min.mjs`;
-    }
-    return mod.Document;
-  }), {
+// Configure workerSrc globally on the client-side
+if (typeof window !== 'undefined') {
+  pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@4.8.69/build/pdf.worker.min.mjs`;
+}
+
+const PdfDocument = dynamic<DocumentProps>(() => import('react-pdf').then(mod => mod.Document), {
   ssr: false,
   loading: () => (
     <div className="flex justify-center items-center w-full max-w-sm h-[424px] bg-muted rounded-lg shadow-inner">
@@ -216,7 +215,7 @@ const EbookDownloadForm = () => {
                         pageNumber={index + 1}
                         width={300}
                         className="mb-2 shadow-md"
-                        renderAnnotationLayer={false} 
+                        renderAnnotationLayer={false}
                         renderTextLayer={false}
                       />
                     ))}
@@ -231,4 +230,3 @@ const EbookDownloadForm = () => {
 };
 
 export default EbookDownloadForm;
-
