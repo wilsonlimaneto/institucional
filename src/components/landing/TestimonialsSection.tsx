@@ -4,7 +4,7 @@
 import React, { useState, useCallback } from 'react';
 import Image from 'next/image';
 import { Card } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogClose } from '@/components/ui/dialog'; // DialogClose import might not be needed if using default
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { PlayCircle, Volume2 } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 
@@ -139,7 +139,10 @@ const TestimonialsSection = () => {
       </section>
 
       <Dialog open={isModalOpen} onOpenChange={(open) => { if (!open) closeModal(); else setIsModalOpen(true); }}>
-        <DialogContent className="sm:max-w-2xl md:max-w-3xl lg:max-w-4xl !p-0 overflow-hidden border-0 bg-transparent shadow-none" aria-describedby={undefined}>
+        <DialogContent className="sm:max-w-2xl md:max-w-3xl lg:max-w-4xl !p-0 overflow-hidden border-0 bg-transparent shadow-none">
+          <DialogHeader className="sr-only">
+            <DialogTitle>{selectedVideoName || "Video Testimonial"}</DialogTitle>
+          </DialogHeader>
           {currentVideoIdForModal ? (
             <div className="aspect-video w-full bg-black rounded-lg overflow-hidden relative">
               <iframe
@@ -152,7 +155,6 @@ const TestimonialsSection = () => {
               ></iframe>
             </div>
           ) : (
-            // Fallback or loading state if videoId isn't ready (shouldn't usually show with current logic)
             <div className="aspect-video w-full flex items-center justify-center bg-black rounded-lg">
               <p className="text-white">Loading video...</p>
             </div>
@@ -164,4 +166,3 @@ const TestimonialsSection = () => {
 };
 
 export default TestimonialsSection;
-
