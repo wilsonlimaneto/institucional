@@ -129,10 +129,7 @@ const TestimonialsSection = () => {
                       <PlayCircle className="h-16 w-16 text-white/90 drop-shadow-lg" />
                     </div>
                   </div>
-                  <div className="p-4 flex-grow">
-                    <h3 className="font-headline text-lg font-semibold text-card-foreground">{testimonial.name}</h3>
-                    <p className="text-sm text-card-foreground/70 line-clamp-2">{testimonial.title}</p>
-                  </div>
+                  {/* Name and title removed from here */}
                 </Card>
               );
             })}
