@@ -29,7 +29,6 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-// Import types directly from react-pdf
 import type { PDFDocumentProxy, DocumentProps as ReactPdfDocumentProps, PageProps as ReactPdfPageProps } from 'react-pdf';
 
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
@@ -87,10 +86,9 @@ const EbookDownloadForm = () => {
   const [pdfLoadError, setPdfLoadError] = useState<string | null>(null);
   const [numPages, setNumPages] = useState<number | null>(null);
   
-  // Ref for the PDF container to get its width
   const pdfParentContainerRef = useRef<HTMLDivElement>(null);
   const [pdfContainerWidth, setPdfContainerWidth] = useState<number | null>(null);
-  const [calculatedPdfHeight, setCalculatedPdfHeight] = useState<string>("550px"); // Default height
+  const [calculatedPdfHeight, setCalculatedPdfHeight] = useState<string>("550px");
   const [currentZoomLevel, setCurrentZoomLevel] = useState(1.0);
   const [originalPdfPageSize, setOriginalPdfPageSize] = useState<{width: number, height: number} | null>(null);
 
@@ -104,9 +102,9 @@ const EbookDownloadForm = () => {
         const RPDF = await import('react-pdf');
         console.log("react-pdf module loaded.", RPDF);
 
+        // We will let pdfjs-dist handle worker loading, assuming Webpack config is correct
         if (RPDF.pdfjs) {
-          // Worker path will be determined by pdfjs-dist/react-pdf, using Webpack's output
-          console.log("PDF.js worker will be loaded based on Webpack configuration or defaults.");
+           console.log("PDF.js object found. Worker path will be determined by pdfjs-dist and Webpack.");
         } else {
           console.error("RPDF.pdfjs is undefined after import.");
           throw new Error("pdfjs object not found in react-pdf module.");
@@ -117,9 +115,8 @@ const EbookDownloadForm = () => {
           Page: RPDF.Page,
           pdfjs: RPDF.pdfjs
         });
-        console.log("PDF module configured (worker path determined by pdfjs-dist/react-pdf).");
       } catch (error) {
-        console.error("Failed to load react-pdf module or set worker:", error);
+        console.error("Failed to load react-pdf module:", error);
         const errorMessage = error instanceof Error ? error.message : "Unknown error loading PDF module.";
         setPdfLoadError(`Não foi possível inicializar o visualizador de PDF: ${errorMessage}`);
         toast({
@@ -134,7 +131,6 @@ const EbookDownloadForm = () => {
     loadPdfDependencies();
   }, [toast]);
 
-  // Observer for PDF container width
   useEffect(() => {
     const currentRef = pdfParentContainerRef.current;
     if (!currentRef) return;
@@ -146,15 +142,16 @@ const EbookDownloadForm = () => {
     });
 
     resizeObserver.observe(currentRef);
-    setPdfContainerWidth(currentRef.offsetWidth); // Initial width
+    setPdfContainerWidth(currentRef.offsetWidth); 
 
     return () => {
-      resizeObserver.unobserve(currentRef);
+      if (currentRef) {
+        resizeObserver.unobserve(currentRef);
+      }
       resizeObserver.disconnect();
     };
   }, []);
 
-  // Effect to calculate PDF scale and container height
   useEffect(() => {
     if (pdfContainerWidth && originalPdfPageSize && originalPdfPageSize.width > 0) {
       const scale = pdfContainerWidth / originalPdfPageSize.width;
@@ -162,7 +159,6 @@ const EbookDownloadForm = () => {
       
       const calculatedHeight = originalPdfPageSize.height * scale;
       setCalculatedPdfHeight(`${calculatedHeight}px`);
-      console.log(`Container width: ${pdfContainerWidth}, PDF original width: ${originalPdfPageSize.width}, scale: ${scale}, calculated height: ${calculatedHeight}px`);
     }
   }, [pdfContainerWidth, originalPdfPageSize]);
 
@@ -188,12 +184,11 @@ const EbookDownloadForm = () => {
     setNumPages(pdf.numPages);
     if (pdf.numPages > 0) {
       pdf.getPage(1).then(page => {
-        const viewport = page.getViewport({ scale: 1 }); // Get viewport at scale 1
+        const viewport = page.getViewport({ scale: 1 }); 
         setOriginalPdfPageSize({ width: viewport.width, height: viewport.height });
-        console.log("Original PDF Page 1 dimensions:", { width: viewport.width, height: viewport.height });
       }).catch(pageLoadError => {
         console.error('Failed to load page 1 for dimensions:', pageLoadError);
-        setPdfLoadError(`Erro ao carregar informações da página 1 do PDF: ${pageLoadError.message}`);
+        setPdfLoadError(`Erro ao carregar informações da página 1 do PDF: ${pageLoadError instanceof Error ? pageLoadError.message : String(pageLoadError)}`);
       });
     }
   }, []);
@@ -202,14 +197,14 @@ const EbookDownloadForm = () => {
     console.error('Failed to load PDF Document:', error);
     let friendlyMessage = `Erro ao carregar o documento PDF: ${error.message}.`;
     
-    if (error.message.toLowerCase().includes('missing pdf')) {
+    if (error.message?.toLowerCase().includes('missing pdf')) {
         friendlyMessage = "Arquivo PDF não encontrado. Verifique se '/ebook-maestria-jurisp-pdf.pdf' existe na pasta 'public' e o caminho está correto.";
-    } else if (error.message.toLowerCase().includes('invalid pdf structure')) {
+    } else if (error.message?.toLowerCase().includes('invalid pdf structure')) {
         friendlyMessage += " O arquivo PDF pode estar corrompido ou não ser um PDF válido.";
-    } else if (error.message.toLowerCase().includes('network') || error.message.toLowerCase().includes('http')) {
+    } else if (error.message?.toLowerCase().includes('network') || error.message?.toLowerCase().includes('http')) {
         friendlyMessage += " Problema de rede ao tentar carregar o PDF. Verifique sua conexão ou o caminho do arquivo.";
-    } else if (error.message.toLowerCase().includes('worker') || error.message.toLowerCase().includes('fakeworker')) {
-        friendlyMessage = `Erro com o processador de PDF (worker): ${error.message}. Isso pode ser um problema de configuração, da rede ou do ambiente. Verifique o console para mais detalhes. Tente atualizar a página.`;
+    } else if (error.message?.toLowerCase().includes('worker') || error.message?.toLowerCase().includes('fakeworker') || error.message?.includes("especificador")) {
+        friendlyMessage = `Erro com o processador de PDF (worker): ${error.message}. Isso pode ser um problema de configuração do Webpack, da rede ou do ambiente. Verifique o console para mais detalhes. Tente reiniciar o servidor de desenvolvimento e atualizar a página.`;
     }
 
     setPdfLoadError(friendlyMessage);
@@ -361,7 +356,7 @@ const EbookDownloadForm = () => {
                       className="flex flex-col items-center py-2"
                       loading={<SimplePlaceholder text="Carregando PDF..." height={calculatedPdfHeight}/>}
                     >
-                      {numPages && numPages > 0 && originalPdfPageSize ? (
+                      {numPages && numPages > 0 && originalPdfPageSize && currentZoomLevel > 0 ? (
                         <pdfModule.Page
                           pageNumber={1} 
                           scale={currentZoomLevel}

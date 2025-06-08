@@ -28,11 +28,11 @@ const nextConfig = {
     config.resolve.alias.canvas = false;
     config.resolve.alias.encoding = false;
 
-    // Add rule for pdf.js worker to be treated as an asset
-    // This is crucial for pdfjs-dist to correctly load its worker
+    // Add rule for pdf.js module worker to be treated as an asset
+    // This is crucial for pdfjs-dist to correctly load its module worker
     if (!isServer) {
       config.module.rules.push({
-        test: /pdf\.worker\.min\.js$/,
+        test: /pdf\.worker\.min\.mjs$/, // Target the .mjs module worker
         type: 'asset/resource',
         generator: {
           filename: 'static/chunks/[name].[hash][ext]',
