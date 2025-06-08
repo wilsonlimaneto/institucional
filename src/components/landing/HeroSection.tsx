@@ -1,6 +1,4 @@
 
-'use client';
-
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
@@ -16,15 +14,24 @@ const HeroSection = () => {
               Gere minutas de <span className="text-primary">documentos jurídicos</span> com <span className="text-primary">Jurisprudência real</span> usando o modelo de IA mais assertivo do mercado.
             </h1>
             
-            {/* "Automatize GRATUITAMENTE..." Paragraph moved here */}
             <div>
               <p className="text-lg md:text-xl text-foreground/80">
                 <span style={{ fontSize: '115%' }}>Automatize GRATUITAMENTE a sua rotina de edição de documentos, resumos de processos e pesquisa de jurisprudência.</span>
               </p>
             </div>
+
+            {/* Action Buttons moved here */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+              <Button asChild size="lg" className="font-semibold">
+                <Link href="#use-agora">Use agora mesmo</Link>
+              </Button>
+              <Button asChild size="lg" variant="outline" className="font-semibold">
+                <Link href="#saiba-mais">Saiba Mais</Link>
+              </Button>
+            </div>
             
             {/* Google for Startups Logo */}
-            <div className="text-center md:text-left"> {/* Removed mt-8 as space-y-8 on parent handles it */}
+            <div className="text-center md:text-left">
               <p className="text-sm text-foreground/80 mb-1">
                 Startup apoiada pelo
               </p>
@@ -39,7 +46,7 @@ const HeroSection = () => {
             </div>
           </div>
 
-          {/* Right Column: Image, then bullets and buttons */}
+          {/* Right Column: Image, then bullets */}
           <div className="md:col-span-3">
             <div className="relative rounded-lg overflow-hidden shadow-2xl">
               <Image
@@ -58,7 +65,6 @@ const HeroSection = () => {
               />
             </div>
 
-            {/* "A única ferramenta que entrega:" and Bullet list moved here */}
             <div className="mt-8 text-center md:text-left">
               <p className="text-sm md:text-base text-foreground/80 font-medium">
                 A única ferramenta que entrega:
@@ -70,16 +76,6 @@ const HeroSection = () => {
                 <li>Resuma dados de longos documentos <span style={{ fontSize: '0.8em' }}>(Ago 2025)</span></li>
                 <li>Parceria com empresas e tecnologias reconhecidas internacionalmente</li>
               </ul>
-            </div>
-
-            {/* Action Buttons moved here */}
-            <div className="mt-6 flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-              <Button asChild size="lg" className="font-semibold">
-                <Link href="#use-agora">Use agora mesmo</Link>
-              </Button>
-              <Button asChild size="lg" variant="outline" className="font-semibold">
-                <Link href="#saiba-mais">Saiba Mais</Link>
-              </Button>
             </div>
           </div>
         </div>
