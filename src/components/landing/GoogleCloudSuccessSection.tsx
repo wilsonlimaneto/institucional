@@ -3,7 +3,7 @@ import Image from 'next/image';
 
 const GoogleCloudSuccessSection = () => {
   return (
-    <section id="google-cloud-success" className="py-9 md:py-12 lg:py-14 bg-primary text-primary-foreground">
+    <section id="google-cloud-success" className="py-9 md:py-12 lg:py-14 bg-[hsl(217,90%,40%)] text-primary-foreground">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid md:grid-cols-2 gap-8 items-center">
           <div className="space-y-4 text-center md:text-left"> {/* Reduced space-y */}
