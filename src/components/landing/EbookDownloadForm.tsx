@@ -11,6 +11,7 @@ import { useActionState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
 
 // CSS imports for react-pdf styling
@@ -18,15 +19,13 @@ import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
 
 import dynamic from 'next/dynamic';
+import type { DocumentProps, PageProps } from 'react-pdf';
 
 // Dynamically import react-pdf and configure workerSrc
-const PdfDocument = dynamic(() =>
+const PdfDocument = dynamic<DocumentProps>(() =>
   import('react-pdf').then(mod => {
-    // Configure workerSrc for react-pdf
-    // This must be done on the client side, after the module is loaded.
     if (typeof window !== 'undefined') {
-      // Use the unpkg CDN for the worker, matching the pdfjs-dist version in package.json
-      (mod.pdfjs.GlobalWorkerOptions as any).workerSrc = `https://unpkg.com/pdfjs-dist@4.8.69/build/pdf.worker.min.mjs`;
+      (mod.pdfjs as any).GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@4.8.69/build/pdf.worker.min.mjs`;
     }
     return mod.Document;
   }), {
@@ -38,7 +37,7 @@ const PdfDocument = dynamic(() =>
   ),
 });
 
-const PdfPage = dynamic(() => import('react-pdf').then(mod => mod.Page), {
+const PdfPage = dynamic<PageProps>(() => import('react-pdf').then(mod => mod.Page), {
   ssr: false,
 });
 
@@ -55,20 +54,20 @@ const EbookDownloadForm = () => {
     defaultValues: {
       name: "",
       email: "",
-      phone: "", 
-      areaOfLaw: "", 
+      phone: "",
+      areaOfLaw: "",
     }
   });
 
   useEffect(() => {
-    if (formState.message && formState.message !== "") { 
+    if (formState.message && formState.message !== "") {
       toast({
         title: formState.success ? "Sucesso!" : "Erro na Submissão",
         description: formState.message,
         variant: formState.success ? "default" : "destructive",
       });
       if (formState.success) {
-        reset(); 
+        reset();
       }
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -97,28 +96,28 @@ const EbookDownloadForm = () => {
   };
 
   const applyPhoneMask = (value: string): string => {
-    if (!value) return "+"; 
+    if (!value) return "+";
     let digits = value.replace(/\D/g, "");
-    
+
     if (digits.length > 0 && !value.startsWith('+')) {
-      digits = digits; 
+      digits = digits;
     }
-    
+
     digits = digits.slice(0, 14);
 
     let masked = "+";
     const len = digits.length;
 
-    if (len === 0) return "+"; 
+    if (len === 0) return "+";
 
     let ddiEnd = 0;
-    if (digits.startsWith('55')) ddiEnd = 2; 
-    else if (digits.startsWith('1')) ddiEnd = 1; 
-    else if (len <=3 ) ddiEnd = len; 
-    else ddiEnd = Math.min(len, 3); 
+    if (digits.startsWith('55')) ddiEnd = 2;
+    else if (digits.startsWith('1')) ddiEnd = 1;
+    else if (len <=3 ) ddiEnd = len;
+    else ddiEnd = Math.min(len, 3);
 
     masked += digits.substring(0, ddiEnd);
-    
+
     if (len > ddiEnd) {
       masked += ` (${digits.substring(ddiEnd, Math.min(ddiEnd + 2, len))}`;
     }
@@ -201,16 +200,28 @@ const EbookDownloadForm = () => {
             </form>
           </div>
           <div className="flex justify-center items-center">
-            <div className="w-full max-w-sm rounded-lg overflow-hidden shadow-2xl">
-              <PdfDocument
-                file="/ebook-maestria-jurisp-pdf.pdf" // Ensure this PDF is in your /public folder
-                onLoadSuccess={onDocumentLoadSuccess}
-                className="flex justify-center"
-                onLoadError={(error) => console.error('Failed to load PDF:', error.message)}
-                onSourceError={(error) => console.error('Failed to load PDF source:', error.message)}
-              >
-                {numPages && <PdfPage pageNumber={1} width={300} />}
-              </PdfDocument>
+            <div className="w-full max-w-sm rounded-lg shadow-2xl">
+              <ScrollArea className="h-[424px] rounded-lg border bg-muted">
+                <PdfDocument
+                  file="/ebook-maestria-jurisp-pdf.pdf" // Ensure this PDF is in your /public folder
+                  onLoadSuccess={onDocumentLoadSuccess}
+                  className="flex flex-col items-center py-2"
+                  onLoadError={(error) => console.error('Failed to load PDF:', error.message)}
+                  onSourceError={(error) => console.error('Failed to load PDF source:', error.message)}
+                >
+                  {numPages &&
+                    Array.from(new Array(Math.min(numPages, 2)), (el, index) => (
+                      <PdfPage
+                        key={`page_${index + 1}`}
+                        pageNumber={index + 1}
+                        width={300}
+                        className="mb-2 shadow-md"
+                        renderAnnotationLayer={false} 
+                        renderTextLayer={false}
+                      />
+                    ))}
+                </PdfDocument>
+              </ScrollArea>
             </div>
           </div>
         </div>
@@ -220,3 +231,4 @@ const EbookDownloadForm = () => {
 };
 
 export default EbookDownloadForm;
+
