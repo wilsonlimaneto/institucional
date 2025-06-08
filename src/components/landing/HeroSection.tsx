@@ -18,12 +18,12 @@ const HeroSection = () => {
               <span style={{ fontSize: '115%' }}>Automatize GRATUITAMENTE a sua rotina de edição de documentos, resumos de processos e pesquisa de jurisprudência.</span>
             </p>
             
-            <div>
+            <div className="mb-4">
               <p className="text-sm md:text-base text-foreground/80 font-medium">
                 A única ferramenta que entrega:
               </p>
               <ul className="mt-2 ml-0 md:ml-4 list-disc list-inside text-sm md:text-base text-foreground/70 space-y-1.5" data-ai-hint="List of features including semantic search for real jurisprudence">
-                <li>Jurisprudência reais, já verificadas e com <em className="italic text-foreground/80">busca semântica</em></li>
+                <li>Jurisprudência real, já verificada por meio de <em className="italic text-foreground/80">busca semântica</em>®</li>
                 <li>Editor de documentos com o DNA do seu escritório</li>
                 <li>Resuma dados de longos documentos</li>
                 <li>Parceria com empresas e tecnologias reconhecidas internacionalmente</li>
@@ -75,3 +75,4 @@ const HeroSection = () => {
 };
 
 export default HeroSection;
+
