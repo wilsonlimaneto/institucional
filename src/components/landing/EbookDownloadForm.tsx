@@ -42,7 +42,7 @@ const PDFDocument = dynamic(
     const mod = await import('react-pdf');
     if (typeof window !== 'undefined') {
       // Use a versioned CDN link matching your pdfjs-dist version
-      mod.pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@4.8.69/build/pdf.worker.mjs`;
+      mod.pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@4.8.69/build/pdf.worker.min.js`;
     }
     return mod.Document;
   },
@@ -117,12 +117,12 @@ const EbookDownloadForm = () => {
   const initialFormState: FormState = { message: "", success: false, issues: [] };
   const [formState, formAction] = React.useActionState(submitEbookForm, initialFormState);
 
-  const { register, handleSubmit, formState: { errors: formErrors }, reset, control, setValue } = useForm<EbookFormData>({
+  const { register, handleSubmit, formState: { errors: formErrors, isSubmitting }, reset, control, setValue } = useForm<EbookFormData>({
     resolver: zodResolver(EbookFormSchema),
     defaultValues: {
       name: "",
       email: "",
-      phone: "", // Will store raw digits like "11987654321"
+      phone: "", 
       areaOfLaw: "",
     }
   });
@@ -137,7 +137,7 @@ const EbookDownloadForm = () => {
       if (formState.success && formState.downloadUrl) {
         setDownloadUrl(formState.downloadUrl);
         setShowDownloadDialog(true);
-        reset(); // Reset form fields after successful submission
+        reset(); 
       }
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -189,14 +189,6 @@ const EbookDownloadForm = () => {
     "Promotoria", "Sucessões", "Trabalhista", "Tributário"
   ].sort();
 
-  const handleFormSubmit = (data: EbookFormData) => {
-    const formData = new FormData();
-    (Object.keys(data) as Array<keyof EbookFormData>).forEach((key) => {
-        formData.append(key, String(data[key] ?? ''));
-    });
-    formAction(formData);
-  };
-
   const handleZoomIn = () => {
     setZoomLevel((prevZoom) => Math.min(prevZoom + 0.2, 3.0));
   };
@@ -231,7 +223,7 @@ const EbookDownloadForm = () => {
                 Aprenda os segredos da IA para advogados e transforme sua carreira.
               </p>
               <form
-                onSubmit={handleSubmit(handleFormSubmit)}
+                action={formAction}
                 className="space-y-4"
               >
                 <Input
@@ -265,17 +257,15 @@ const EbookDownloadForm = () => {
                         className="pl-12 pr-3 py-2 w-full"
                         onChange={(e) => {
                           let inputValue = e.target.value;
-                          // Remove all non-digit characters
                           let digits = inputValue.replace(/\D/g, '');
                           
-                          // Limit to 11 digits (DDD + number)
                           if (digits.length > 11) {
                             digits = digits.substring(0, 11);
                           }
                           
-                          field.onChange(digits); // Update RHF with the raw digits
+                          field.onChange(digits); 
                         }}
-                        value={applyPhoneMask(field.value || '')} // Display the masked version
+                        value={applyPhoneMask(field.value || '')} 
                         aria-invalid={formErrors.phone ? "true" : "false"}
                       />
                     )}
@@ -310,8 +300,8 @@ const EbookDownloadForm = () => {
                   </p>
                 )}
 
-                <Button type="submit" size="lg" className="w-full font-semibold">
-                  Clique para receber GRATUITAMENTE o E-Book
+                <Button type="submit" size="lg" className="w-full font-semibold" disabled={isSubmitting}>
+                  {isSubmitting ? "Enviando..." : "Clique para receber GRATUITAMENTE o E-Book"}
                 </Button>
               </form>
             </div>
