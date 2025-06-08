@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 
 const GoogleCloudSuccessSection = () => {
   return (
-    <section id="google-cloud-success" className="py-9 md:py-12 lg:py-14 text-primary-foreground bg-[hsl(217,90%,40%)]">
+    <section id="google-cloud-success" className="py-9 md:py-12 lg:py-14 text-primary-foreground bg-[hsl(217,90%,32%)]">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid md:grid-cols-2 gap-12 items-center">
           <div className="space-y-6 text-center md:text-left">
@@ -26,10 +26,10 @@ const GoogleCloudSuccessSection = () => {
           {/* The md:justify-end class was removed here to allow justify-center to take effect on md screens and up */}
           <div className="relative hidden md:flex justify-center items-center">
             <Image
-              src="https://placehold.co/300x100.png" 
+              src="/google-cloud-logo-4.png" 
               alt="Google Cloud Logo"
-              width={300}
-              height={100}
+              width={390}
+              height={130}
               objectFit="contain"
               data-ai-hint="google cloud logo"
             />

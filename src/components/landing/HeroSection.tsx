@@ -23,9 +23,10 @@ const HeroSection = () => {
                 A única ferramenta que entrega:
               </p>
               <ul className="mt-2 ml-0 md:ml-4 list-disc list-inside text-sm md:text-base text-foreground/70 space-y-1.5" data-ai-hint="List of features including semantic search for real jurisprudence">
-                <li>Jurisprudência real, já verificada por meio de <em className="italic text-foreground/80">busca semântica</em>®</li>
-                <li>Editor de documentos com o DNA do seu escritório</li>
-                <li>Resuma dados de longos documentos</li>
+                <li>Jurisprudência real, já verificada por meio de <em className="italic text-foreground/80">busca semântica</em> ®</li>
+                <li>Editor de documentos embutido <span style={{ fontSize: '0.8em' }}>(2o Sem 2025)</span></li>
+                <li>Integração Google Docs e MS Office</li>
+                <li>Resuma dados de longos documentos <span style={{ fontSize: '0.8em' }}>(Ago 2025)</span></li>
                 <li>Parceria com empresas e tecnologias reconhecidas internacionalmente</li>
               </ul>
             </div>

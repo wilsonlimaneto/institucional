@@ -6,25 +6,24 @@ import Image from 'next/image';
 import { Card } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { PlayCircle, ArrowLeft } from 'lucide-react';
-import { useToast } from "@/hooks/use-toast";
 
 const testimonials = [
   {
     name: 'Sarah L.',
     title: 'Marketing Manager, Tech Solutions Inc.',
-    videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', // Example: Rick Astley
+    videoUrl: 'https://www.youtube.com/watch?v=wN2e1aRXNU0',
     aiHint: 'video thumbnail marketing',
   },
   {
     name: 'John B.',
     title: 'Founder, Creative Startup Co.',
-    videoUrl: 'https://www.youtube.com/watch?v=ZyDbq-lEKBQ', // Example: Another short video
+    videoUrl: 'https://www.youtube.com/watch?v=Ni26TutiOrA',
     aiHint: 'video thumbnail startup',
   },
   {
     name: 'Alice M.',
     title: 'Digital Strategist, Alpha Agency',
-    videoUrl: 'https://www.youtube.com/watch?v=3JZ_D3ELwOQ', // Example: Short tech review
+    videoUrl: 'https://www.youtube.com/watch?v=FZwUYt-vuBo',
     aiHint: 'video thumbnail strategy',
   },
 ];
@@ -57,34 +56,35 @@ const TestimonialsSection = () => {
   const [selectedVideoUrl, setSelectedVideoUrl] = useState<string | null>(null);
   const [selectedVideoName, setSelectedVideoName] = useState<string | null>(null);
   const [showVolumeAlert, setShowVolumeAlert] = useState(false);
-  const { toast } = useToast();
-
 
   const openModal = useCallback((videoUrl: string, name: string) => {
     setSelectedVideoUrl(videoUrl);
     setSelectedVideoName(name);
     setIsModalOpen(true);
-    setShowVolumeAlert(true); 
-  }, []);
+    setShowVolumeAlert(true);
+  }, [setSelectedVideoUrl, setSelectedVideoName, setIsModalOpen, setShowVolumeAlert]);
 
   const closeModal = useCallback(() => {
     setIsModalOpen(false);
     setShowVolumeAlert(false);
-    // Delay resetting video URL to allow fade-out animation of DialogContent
     setTimeout(() => {
       setSelectedVideoUrl(null);
       setSelectedVideoName(null);
-    }, 300); // Corresponds to DialogContent animation duration
-  }, []);
+    }, 300); 
+  }, [setIsModalOpen, setShowVolumeAlert, setSelectedVideoUrl, setSelectedVideoName]);
 
   useEffect(() => {
-    let timer: NodeJS.Timeout;
+    let timer: NodeJS.Timeout | undefined = undefined;
     if (showVolumeAlert) {
       timer = setTimeout(() => {
         setShowVolumeAlert(false);
-      }, 5000); // Alert disappears after 5 seconds
+      }, 5000); 
     }
-    return () => clearTimeout(timer);
+    return () => {
+      if (timer) {
+        clearTimeout(timer);
+      }
+    };
   }, [showVolumeAlert]);
 
   const currentVideoIdForModal = selectedVideoUrl ? extractYouTubeVideoId(selectedVideoUrl) : null;
@@ -104,7 +104,7 @@ const TestimonialsSection = () => {
               const videoId = extractYouTubeVideoId(testimonial.videoUrl);
               const thumbnailUrl = videoId
                 ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`
-                : 'https://placehold.co/600x400.png'; 
+                : 'https://placehold.co/600x400.png';
 
               return (
                 <Card
@@ -117,27 +117,27 @@ const TestimonialsSection = () => {
                   aria-label={`Watch video testimonial from ${testimonial.name}`}
                 >
                   <div className="relative aspect-video w-full">
-                    <Image
-                      src={thumbnailUrl}
-                      alt={`Video testimonial from ${testimonial.name}`}
-                      layout="fill"
-                      objectFit="cover"
-                      data-ai-hint={testimonial.aiHint}
-                      className="transition-transform duration-300 group-hover:scale-105"
-                    />
-                    <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
-                      <PlayCircle className="h-16 w-16 text-white/90 drop-shadow-lg" />
-                    </div>
-                    <div className="absolute bottom-2 left-2 z-10 pointer-events-none">
                       <Image
-                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/YouTube_full-color_icon_%282017%29.svg/64px-YouTube_full-color_icon_%282017%29.svg.png"
-                        alt="YouTube Logo"
-                        width={28}
-                        height={20}
-                        className="opacity-90"
+                        src={thumbnailUrl}
+                        alt={`Video testimonial from ${testimonial.name}`}
+                        layout="fill"
+                        objectFit="cover"
+                        data-ai-hint={testimonial.aiHint}
+                        className="transition-transform duration-300 group-hover:scale-105"
                       />
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
+                        <PlayCircle className="h-16 w-16 text-white/90 drop-shadow-lg" />
+                      </div>
+                      <div className="absolute bottom-2 left-2 z-10 pointer-events-none">
+                        <Image
+                          src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/YouTube_full-color_icon_%282017%29.svg/64px-YouTube_full-color_icon_%282017%29.svg.png"
+                          alt="YouTube Logo"
+                          width={28}
+                          height={20}
+                          className="opacity-90"
+                        />
+                      </div>
                     </div>
-                  </div>
                 </Card>
               );
             })}
@@ -148,22 +148,12 @@ const TestimonialsSection = () => {
       <Dialog open={isModalOpen} onOpenChange={(open) => { if (!open) closeModal(); else setIsModalOpen(true); }}>
         <DialogContent className="sm:max-w-2xl md:max-w-3xl lg:max-w-4xl !p-0 border-0 bg-transparent shadow-none overflow-hidden">
           <DialogTitle className="sr-only">{selectedVideoName || "Video Testimonial"}</DialogTitle>
-          
+
           <div className="relative w-full aspect-video bg-black rounded-lg overflow-hidden">
             {currentVideoIdForModal ? (
-              <iframe
-                className="w-full h-full"
-                src={`https://www.youtube.com/embed/${currentVideoIdForModal}?autoplay=1&mute=1&modestbranding=1&rel=0&showinfo=0&controls=1`}
-                title={selectedVideoName || "YouTube video player"}
-                frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowFullScreen
-              ></iframe>
-            ) : (
-              <div className="w-full h-full flex items-center justify-center">
+              <iframe className="w-full h-full" src={`https://www.youtube.com/embed/${currentVideoIdForModal}?autoplay=1&mute=1&modestbranding=1&rel=0&showinfo=0&controls=1`} title={selectedVideoName || "YouTube video player"} frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowFullScreen></iframe>) : (<div className="w-full h-full flex items-center justify-center">
                 <p className="text-white">Loading video...</p>
-              </div>
-            )}
+              </div>)}
 
             {showVolumeAlert && (
               <div className="animate-alert-slide-in-bottom-left absolute bottom-[-4px] left-[146px] p-3 bg-black/70 text-white rounded-md shadow-lg flex items-center space-x-2 text-xs z-[60]">
