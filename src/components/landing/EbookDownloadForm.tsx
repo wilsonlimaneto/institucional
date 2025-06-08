@@ -32,33 +32,10 @@ import {
 
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
-import "pdfjs-dist/web/pdf_viewer.css";
+// import "pdfjs-dist/web/pdf_viewer.css"; // Removed as it might not be necessary for basic rendering
 
 import dynamic from 'next/dynamic';
 import type { PDFDocumentProxy } from 'pdfjs-dist/types/src/display/api';
-
-const PDFDocument = dynamic(
-  async () => {
-    const mod = await import('react-pdf');
-    if (typeof window !== 'undefined') {
-      // Point to the local ES Module worker file in the public directory
-      mod.pdfjs.GlobalWorkerOptions.workerSrc = `/pdf.worker.min.mjs`;
-    }
-    return mod.Document;
-  },
-  {
-    ssr: false,
-    loading: () => (
-      <div className="flex justify-center items-center w-full max-w-xl h-[488px] bg-muted rounded-lg shadow-inner">
-        <p className="text-sm text-muted-foreground">Carregando prévia do PDF...</p>
-      </div>
-    ),
-  }
-);
-
-const PDFPage = dynamic(() => import('react-pdf').then(mod => mod.Page), {
-  ssr: false,
-});
 
 const BrazilFlagIcon = () => (
     <svg width="28" height="20" viewBox="0 0 28 20" fill="none" xmlns="http://www.w3.org/2000/svg" className="rounded-sm">
@@ -126,6 +103,30 @@ const EbookDownloadForm = () => {
       areaOfLaw: "",
     }
   });
+  
+  // Define PdfComponents inside the component to access `calculatedPdfHeight` for its loading placeholder
+  const PdfComponents = dynamic(
+    async () => {
+      const { pdfjs, Document, Page } = await import('react-pdf');
+      if (typeof window !== 'undefined') {
+        // Ensure this path correctly points to the worker file in your /public directory
+        pdfjs.GlobalWorkerOptions.workerSrc = `/pdf.worker.min.mjs`;
+      }
+      return { Document, Page };
+    },
+    {
+      ssr: false,
+      loading: () => (
+        <div 
+          className="flex justify-center items-center w-full bg-muted rounded-lg shadow-inner"
+          // Use calculatedPdfHeight for the loading placeholder's height to minimize layout shift
+          style={{ height: typeof calculatedPdfHeight === 'string' ? calculatedPdfHeight : `${calculatedPdfHeight}px` }}
+        >
+          <p className="text-sm text-muted-foreground">Carregando visualizador de PDF...</p>
+        </div>
+      ),
+    }
+  );
 
   useEffect(() => {
     if (formState.message && formState.message !== "") {
@@ -157,28 +158,23 @@ const EbookDownloadForm = () => {
     };
 
     window.addEventListener('resize', updatePdfContainerWidth);
-    // Call it once initially to set the width and potentially height
     if (pdfParentContainerRef.current) {
         const initialWidth = pdfParentContainerRef.current.clientWidth;
-        if (initialWidth > 0) { // Ensure clientWidth is available
+        if (initialWidth > 0) {
             setPdfContainerWidth(initialWidth);
-             if (firstPageAspectRatio) { // If aspect ratio is already known
+             if (firstPageAspectRatio) { 
                 setCalculatedPdfHeight(initialWidth * firstPageAspectRatio * zoomLevel);
             }
         } else {
-            // Fallback or retry if clientWidth is 0 initially (e.g. hidden element)
-            // This might require a more sophisticated approach if the element is initially display:none
-            setTimeout(updatePdfContainerWidth, 50); // Retry after a short delay
+            setTimeout(updatePdfContainerWidth, 50); 
         }
     }
 
-
     return () => window.removeEventListener('resize', updatePdfContainerWidth);
-  }, [firstPageAspectRatio, zoomLevel]); // Add zoomLevel to dependencies
+  }, [firstPageAspectRatio, zoomLevel]); 
 
   useEffect(() => {
     if (pdfContainerWidth && firstPageAspectRatio) {
-      // When width or aspect ratio changes, calculate height based on zoom
       setCalculatedPdfHeight(pdfContainerWidth * firstPageAspectRatio * zoomLevel);
     }
   }, [pdfContainerWidth, firstPageAspectRatio, zoomLevel]);
@@ -188,27 +184,24 @@ const EbookDownloadForm = () => {
     setNumPages(pdf.numPages);
     if (pdf.numPages > 0) {
       const page1 = await pdf.getPage(1);
-      const viewport = page1.getViewport({ scale: 1 }); // Use scale 1 for pristine aspect ratio
+      const viewport = page1.getViewport({ scale: 1 }); 
       const aspectRatio = viewport.height / viewport.width;
       setFirstPageAspectRatio(aspectRatio);
       
-      // Set initial zoom level to fit page width
       if (pdfParentContainerRef.current && pdfParentContainerRef.current.clientWidth > 0) {
         const currentWidth = pdfParentContainerRef.current.clientWidth;
-        setPdfContainerWidth(currentWidth); // Ensure width is set
+        setPdfContainerWidth(currentWidth); 
         
-        // Calculate initial zoom to fit width
         const initialZoomToFit = currentWidth / viewport.width;
         setZoomLevel(initialZoomToFit); 
         setCalculatedPdfHeight(currentWidth * aspectRatio * initialZoomToFit);
       } else {
-         // Fallback if width isn't immediately available
         if (pdfParentContainerRef.current) {
           const currentWidth = pdfParentContainerRef.current.clientWidth;
           setPdfContainerWidth(currentWidth);
-          setCalculatedPdfHeight(currentWidth * aspectRatio); // Default to zoom 1 if width is 0
+          setCalculatedPdfHeight(currentWidth * aspectRatio); 
         } else {
-            setCalculatedPdfHeight(viewport.width * aspectRatio); // Default height if container is null
+            setCalculatedPdfHeight(viewport.width * aspectRatio); 
         }
       }
     }
@@ -349,10 +342,10 @@ const EbookDownloadForm = () => {
               <div ref={pdfParentContainerRef} className="w-full max-w-xl rounded-lg shadow-2xl">
                 <ScrollArea
                   className="rounded-lg border bg-muted pdf-scroll-area"
-                  style={{ height: calculatedPdfHeight ? `${calculatedPdfHeight}px` : '488px' }} 
+                  style={{ height: typeof calculatedPdfHeight === 'string' ? calculatedPdfHeight : `${calculatedPdfHeight}px` }} 
                 >
-                  {pdfContainerWidth && (
-                    <PDFDocument
+                  {pdfContainerWidth && PdfComponents && ( // Check if PdfComponents is loaded
+                    <PdfComponents.Document
                       file="/ebook-maestria-jurisp-pdf.pdf"
                       onLoadSuccess={onDocumentLoadSuccess}
                       className="flex flex-col items-center py-2"
@@ -364,25 +357,25 @@ const EbookDownloadForm = () => {
                          console.error('Failed to load PDF source:', error.message);
                          toast({ title: "Erro na Fonte do PDF", description: "Não foi possível encontrar o arquivo PDF. Verifique o caminho.", variant: "destructive" });
                       }}
-                      loading={
-                        <div className="flex justify-center items-center w-full" style={{ height: calculatedPdfHeight ? `${calculatedPdfHeight}px` : '488px' }}>
+                      loading={ // This loading is for the Document itself, distinct from dynamic import loading
+                        <div className="flex justify-center items-center w-full" style={{ height: typeof calculatedPdfHeight === 'string' ? calculatedPdfHeight : `${calculatedPdfHeight}px` }}>
                             <p className="text-sm text-muted-foreground">Carregando PDF...</p>
                         </div>
                       }
                     >
                       {Array.from(new Array(numPages ? Math.min(numPages, 3) : 0), (el, index) => (
-                        <PDFPage
+                        <PdfComponents.Page // Use PdfComponents.Page
                           key={`page_${index + 1}`}
                           pageNumber={index + 1}
-                          scale={pdfContainerWidth && firstPageAspectRatio ? zoomLevel : 1} // Use scale for zooming
+                          scale={pdfContainerWidth && firstPageAspectRatio ? zoomLevel : 1} 
                           className="mb-2 shadow-md"
                           renderAnnotationLayer={false}
                           renderTextLayer={false}
-                          loading=""
-                          width={pdfContainerWidth} // Keep width for layout, scale will adjust rendering size
+                          loading="" // react-pdf Page specific loading
+                          width={pdfContainerWidth} 
                         />
                       ))}
-                    </PDFDocument>
+                    </PdfComponents.Document>
                   )}
                 </ScrollArea>
               </div>
@@ -412,4 +405,3 @@ const EbookDownloadForm = () => {
 };
 
 export default EbookDownloadForm;
-
