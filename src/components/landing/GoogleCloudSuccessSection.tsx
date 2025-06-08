@@ -23,7 +23,7 @@ const GoogleCloudSuccessSection = () => {
               </Button>
             </div>
           </div>
-          <div className="relative flex justify-center items-center mt-8 md:mt-0">
+          <div className="relative flex justify-center items-center mt-8 md:mt-0 w-full">
             <Image
               src="/google-cloud-logo-4.png" 
               alt="Google Cloud Logo"
@@ -31,7 +31,7 @@ const GoogleCloudSuccessSection = () => {
               height={130}
               objectFit="contain"
               data-ai-hint="google cloud logo"
-              style={{ maxWidth: '100%', height: 'auto' }} 
+              className="max-w-full h-auto"
             />
           </div>
         </div>
