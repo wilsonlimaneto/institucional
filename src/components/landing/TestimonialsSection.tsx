@@ -5,7 +5,8 @@ import React, { useState, useCallback, useEffect } from 'react';
 import Image from 'next/image';
 import { Card } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
-import { PlayCircle, ArrowLeft } from 'lucide-react';
+import { PlayCircle, ArrowLeft, Volume2, VolumeX } from 'lucide-react'; // Added Volume icons
+import { useMobile } from '@/hooks/use-mobile'; // Import useMobile
 
 const testimonials = [
   {
@@ -56,17 +57,18 @@ const TestimonialsSection = () => {
   const [selectedVideoUrl, setSelectedVideoUrl] = useState<string | null>(null);
   const [selectedVideoName, setSelectedVideoName] = useState<string | null>(null);
   const [showVolumeAlert, setShowVolumeAlert] = useState(false);
+  const isMobile = useMobile(); // Initialize useMobile
 
   const openModal = useCallback((videoUrl: string, name: string) => {
     setSelectedVideoUrl(videoUrl);
     setSelectedVideoName(name);
     setIsModalOpen(true);
-    setShowVolumeAlert(true);
+    setShowVolumeAlert(true); // Show alert when modal opens
   }, [setSelectedVideoUrl, setSelectedVideoName, setIsModalOpen, setShowVolumeAlert]);
 
   const closeModal = useCallback(() => {
     setIsModalOpen(false);
-    setShowVolumeAlert(false);
+    setShowVolumeAlert(false); // Hide alert when modal closes
     setTimeout(() => {
       setSelectedVideoUrl(null);
       setSelectedVideoName(null);
@@ -77,7 +79,12 @@ const TestimonialsSection = () => {
     let timer: NodeJS.Timeout | undefined = undefined;
     if (showVolumeAlert) {
       timer = setTimeout(() => {
-        setShowVolumeAlert(false);
+        // Don't auto-hide if it's the mobile clickable alert, 
+        // only if it's the desktop auto-hiding one.
+        // User will click to dismiss mobile.
+        if (!isMobile) {
+          setShowVolumeAlert(false);
+        }
       }, 5000); 
     }
     return () => {
@@ -85,7 +92,7 @@ const TestimonialsSection = () => {
         clearTimeout(timer);
       }
     };
-  }, [showVolumeAlert]);
+  }, [showVolumeAlert, isMobile]); // Add isMobile to dependency array
 
   const currentVideoIdForModal = selectedVideoUrl ? extractYouTubeVideoId(selectedVideoUrl) : null;
 
@@ -156,10 +163,33 @@ const TestimonialsSection = () => {
               </div>)}
 
             {showVolumeAlert && (
-              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 w-max max-w-[90%] animate-alert-slide-in-bottom-center p-3 bg-black/70 text-white rounded-md shadow-lg flex items-center space-x-2 text-xs z-[60]">
-                <ArrowLeft className="h-5 w-5 animate-arrow-vibrate text-primary" />
-                <span>O vídeo iniciará sem som. Aumente o volume para ouvir.</span>
-              </div>
+              isMobile ? (
+                <div
+                  className="absolute inset-0 flex items-center justify-center p-4 z-[60] cursor-pointer"
+                  onClick={() => setShowVolumeAlert(false)} 
+                >
+                  <div
+                    className="bg-black/85 text-white rounded-lg shadow-xl p-5 text-center w-auto max-w-[90%] sm:max-w-xs animate-alert-pop-in-center flex flex-col items-center gap-3"
+                    onClick={(e) => e.stopPropagation()} // Prevent click on toast from closing if parent handles it broadly
+                  >
+                    <VolumeX className="h-8 w-8 text-primary" />
+                    <p className="text-sm leading-relaxed">
+                      Para ouvir desative o mudo do vídeo e aumente o volume do celular.
+                    </p>
+                     <button 
+                        onClick={() => setShowVolumeAlert(false)} 
+                        className="mt-2 px-4 py-2 text-xs bg-primary/80 hover:bg-primary text-primary-foreground rounded-md"
+                      >
+                        Entendido
+                      </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 w-max max-w-[90%] animate-alert-slide-in-bottom-center p-3 bg-black/70 text-white rounded-md shadow-lg flex items-center space-x-2 text-xs z-[60]">
+                  <ArrowLeft className="h-5 w-5 animate-arrow-vibrate text-primary" />
+                  <span>O vídeo iniciará sem som. Aumente o volume para ouvir.</span>
+                </div>
+              )
             )}
           </div>
         </DialogContent>
@@ -169,3 +199,5 @@ const TestimonialsSection = () => {
 };
 
 export default TestimonialsSection;
+
+    
