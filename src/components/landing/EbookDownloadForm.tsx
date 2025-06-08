@@ -41,8 +41,8 @@ const PDFDocument = dynamic(
   async () => {
     const mod = await import('react-pdf');
     if (typeof window !== 'undefined') {
-      // Use a versioned CDN link matching your pdfjs-dist version
-      mod.pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@4.8.69/build/pdf.worker.min.js`;
+      // Point to the local ES Module worker file in the public directory
+      mod.pdfjs.GlobalWorkerOptions.workerSrc = `/pdf.worker.min.mjs`;
     }
     return mod.Document;
   },
@@ -117,7 +117,7 @@ const EbookDownloadForm = () => {
   const initialFormState: FormState = { message: "", success: false, issues: [] };
   const [formState, formAction] = React.useActionState(submitEbookForm, initialFormState);
 
-  const { register, handleSubmit, formState: { errors: formErrors, isSubmitting }, reset, control, setValue } = useForm<EbookFormData>({
+  const { register, formState: { errors: formErrors, isSubmitting }, reset, control } = useForm<EbookFormData>({
     resolver: zodResolver(EbookFormSchema),
     defaultValues: {
       name: "",
@@ -150,19 +150,35 @@ const EbookDownloadForm = () => {
         const newWidth = pdfParentContainerRef.current.clientWidth;
         setPdfContainerWidth(newWidth);
         if (firstPageAspectRatio) {
-          setCalculatedPdfHeight(newWidth * firstPageAspectRatio);
+          // Recalculate height based on new width and aspect ratio, maintaining current zoom
+          setCalculatedPdfHeight(newWidth * firstPageAspectRatio * zoomLevel);
         }
       }
     };
 
     window.addEventListener('resize', updatePdfContainerWidth);
-    updatePdfContainerWidth(); 
+    // Call it once initially to set the width and potentially height
+    if (pdfParentContainerRef.current) {
+        const initialWidth = pdfParentContainerRef.current.clientWidth;
+        if (initialWidth > 0) { // Ensure clientWidth is available
+            setPdfContainerWidth(initialWidth);
+             if (firstPageAspectRatio) { // If aspect ratio is already known
+                setCalculatedPdfHeight(initialWidth * firstPageAspectRatio * zoomLevel);
+            }
+        } else {
+            // Fallback or retry if clientWidth is 0 initially (e.g. hidden element)
+            // This might require a more sophisticated approach if the element is initially display:none
+            setTimeout(updatePdfContainerWidth, 50); // Retry after a short delay
+        }
+    }
+
 
     return () => window.removeEventListener('resize', updatePdfContainerWidth);
-  }, [firstPageAspectRatio]);
+  }, [firstPageAspectRatio, zoomLevel]); // Add zoomLevel to dependencies
 
   useEffect(() => {
     if (pdfContainerWidth && firstPageAspectRatio) {
+      // When width or aspect ratio changes, calculate height based on zoom
       setCalculatedPdfHeight(pdfContainerWidth * firstPageAspectRatio * zoomLevel);
     }
   }, [pdfContainerWidth, firstPageAspectRatio, zoomLevel]);
@@ -172,13 +188,28 @@ const EbookDownloadForm = () => {
     setNumPages(pdf.numPages);
     if (pdf.numPages > 0) {
       const page1 = await pdf.getPage(1);
-      const viewport = page1.getViewport({ scale: 1 });
+      const viewport = page1.getViewport({ scale: 1 }); // Use scale 1 for pristine aspect ratio
       const aspectRatio = viewport.height / viewport.width;
       setFirstPageAspectRatio(aspectRatio);
-      if (pdfParentContainerRef.current) {
+      
+      // Set initial zoom level to fit page width
+      if (pdfParentContainerRef.current && pdfParentContainerRef.current.clientWidth > 0) {
         const currentWidth = pdfParentContainerRef.current.clientWidth;
-        setPdfContainerWidth(currentWidth);
-        setCalculatedPdfHeight(currentWidth * aspectRatio * zoomLevel); 
+        setPdfContainerWidth(currentWidth); // Ensure width is set
+        
+        // Calculate initial zoom to fit width
+        const initialZoomToFit = currentWidth / viewport.width;
+        setZoomLevel(initialZoomToFit); 
+        setCalculatedPdfHeight(currentWidth * aspectRatio * initialZoomToFit);
+      } else {
+         // Fallback if width isn't immediately available
+        if (pdfParentContainerRef.current) {
+          const currentWidth = pdfParentContainerRef.current.clientWidth;
+          setPdfContainerWidth(currentWidth);
+          setCalculatedPdfHeight(currentWidth * aspectRatio); // Default to zoom 1 if width is 0
+        } else {
+            setCalculatedPdfHeight(viewport.width * aspectRatio); // Default height if container is null
+        }
       }
     }
   };
@@ -201,11 +232,11 @@ const EbookDownloadForm = () => {
     if (downloadUrl) {
       const link = document.createElement('a');
       link.href = downloadUrl;
-      link.setAttribute('download', 'ebook-maestria-jurisprudencia.pdf'); // Or get filename from URL if dynamic
+      link.setAttribute('download', 'ebook-maestria-jurisprudencia.pdf'); 
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      setShowDownloadDialog(false); // Close dialog after initiating download
+      setShowDownloadDialog(false); 
     }
   };
 
@@ -308,10 +339,10 @@ const EbookDownloadForm = () => {
             <div className="flex flex-col justify-center items-center">
               <h3 className="text-lg font-semibold text-foreground mb-2">Amostra</h3>
               <div className="flex justify-center space-x-2 my-4">
-                <Button onClick={handleZoomIn} variant="outline" size="icon" aria-label="Aumentar zoom">
+                <Button onClick={handleZoomIn} variant="outline" size="icon" aria-label="Aumentar zoom" disabled={!firstPageAspectRatio}>
                   <ZoomIn className="h-5 w-5" />
                 </Button>
-                <Button onClick={handleZoomOut} variant="outline" size="icon" aria-label="Diminuir zoom">
+                <Button onClick={handleZoomOut} variant="outline" size="icon" aria-label="Diminuir zoom" disabled={!firstPageAspectRatio}>
                   <ZoomOut className="h-5 w-5" />
                 </Button>
               </div>
@@ -325,19 +356,30 @@ const EbookDownloadForm = () => {
                       file="/ebook-maestria-jurisp-pdf.pdf"
                       onLoadSuccess={onDocumentLoadSuccess}
                       className="flex flex-col items-center py-2"
-                      onLoadError={(error) => console.error('Failed to load PDF:', error.message)}
-                      onSourceError={(error) => console.error('Failed to load PDF source:', error.message)}
-                      loading={<div className="flex justify-center items-center w-full h-full"><p className="text-sm text-muted-foreground">Carregando PDF...</p></div>}
+                      onLoadError={(error) => {
+                        console.error('Failed to load PDF:', error.message);
+                        toast({ title: "Erro ao Carregar PDF", description: "Não foi possível carregar a amostra do PDF. Tente recarregar a página.", variant: "destructive" });
+                      }}
+                      onSourceError={(error) => {
+                         console.error('Failed to load PDF source:', error.message);
+                         toast({ title: "Erro na Fonte do PDF", description: "Não foi possível encontrar o arquivo PDF. Verifique o caminho.", variant: "destructive" });
+                      }}
+                      loading={
+                        <div className="flex justify-center items-center w-full" style={{ height: calculatedPdfHeight ? `${calculatedPdfHeight}px` : '488px' }}>
+                            <p className="text-sm text-muted-foreground">Carregando PDF...</p>
+                        </div>
+                      }
                     >
                       {Array.from(new Array(numPages ? Math.min(numPages, 3) : 0), (el, index) => (
                         <PDFPage
                           key={`page_${index + 1}`}
                           pageNumber={index + 1}
-                          width={pdfContainerWidth ? pdfContainerWidth * zoomLevel : undefined}
+                          scale={pdfContainerWidth && firstPageAspectRatio ? zoomLevel : 1} // Use scale for zooming
                           className="mb-2 shadow-md"
                           renderAnnotationLayer={false}
                           renderTextLayer={false}
                           loading=""
+                          width={pdfContainerWidth} // Keep width for layout, scale will adjust rendering size
                         />
                       ))}
                     </PDFDocument>
@@ -370,3 +412,4 @@ const EbookDownloadForm = () => {
 };
 
 export default EbookDownloadForm;
+
