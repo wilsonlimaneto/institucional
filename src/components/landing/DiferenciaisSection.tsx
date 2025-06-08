@@ -11,7 +11,7 @@ const diferenciais = [
 
 const DiferenciaisSection = () => {
   return (
-    <section id="diferenciais" className="py-16 md:py-24 lg:py-32 bg-secondary/10">
+    <section id="diferenciais" className="py-8 md:py-12 lg:py-16 bg-secondary/10">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12 md:mb-16">
           <h2 className="text-3xl sm:text-4xl font-bold text-primary">Nossos Diferenciais</h2>
