@@ -53,7 +53,6 @@ const MaestriaFlixSection = () => {
                   className="w-full h-full"
                   frameBorder="0"
                   allowFullScreen
-                  scrolling="no"
                   title={reel.title || 'Instagram Reel'}
                 ></iframe>
               </div>
