@@ -1,6 +1,6 @@
 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { FileText, Link2, MessageSquare, Rocket } from 'lucide-react';
+import { FileText, Link2, MessageSquare, Rocket, ScrollText } from 'lucide-react';
 
 const features = [
   {
@@ -12,6 +12,11 @@ const features = [
     icon: <FileText className="h-8 w-8 text-primary" />,
     title: 'Gerador nativo de minutas jurídicas',
     description: 'Nossa plataforma lê e interpreta os documentos do processo, garantindo que cada petição seja contextualmente informada e estrategicamente superior. Incorporamos seu ativo mais valioso: um estilo de escrita e persuasão único, forjado em anos de prática.\n\nPare de apenas gerar texto. Comece a construir teses vitoriosas com um clique.',
+  },
+  {
+    icon: <ScrollText className="h-8 w-8 text-primary" />,
+    title: 'Resuma Documentos Longos ou Processos',
+    description: 'Transforme horas de leitura em minutos de clareza. Analisamos documentos e processos extensos para extrair os fatos e argumentos essenciais, permitindo que você domine o caso em tempo recorde.',
   },
   {
     icon: <Link2 className="h-8 w-8 text-primary" />,
