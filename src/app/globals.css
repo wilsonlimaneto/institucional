@@ -148,6 +148,20 @@
     animation: alert-slide-in-bottom-left 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
   }
 
+  @keyframes alert-slide-in-bottom-center { /* New animation */
+    from {
+      transform: translateY(100%) scale(0.9);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0) scale(1);
+      opacity: 1;
+    }
+  }
+  .animate-alert-slide-in-bottom-center { /* New class for new animation */
+    animation: alert-slide-in-bottom-center 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  }
+
   @keyframes arrow-vibrate {
     0%, 100% { transform: translateY(0); }
     25% { transform: translateY(-2px); }
