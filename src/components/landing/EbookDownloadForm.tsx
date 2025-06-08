@@ -1,12 +1,11 @@
 
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef, useActionState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { EbookFormSchema, type EbookFormData } from '@/types';
 import { submitEbookForm, type FormState } from '@/lib/actions';
-import { useActionState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,19 +18,18 @@ import {
 } from '@/components/ui/select';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
+import { ZoomIn, ZoomOut, ArrowUp, ArrowDown } from 'lucide-react';
 
 // CSS imports for react-pdf styling
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
+import "pdfjs-dist/web/pdf_viewer.css";
 
 import dynamic from 'next/dynamic';
-// Note: pdfjs object will be accessed via the dynamic import's resolved module
 
 const PDFDocument = dynamic(
   async () => {
     const mod = await import('react-pdf');
-    // Configure workerSrc here, using the imported pdfjs object from react-pdf
-    // and the specific version from package.json
     if (typeof window !== 'undefined') {
       // Using the specific version from package.json (pdfjs-dist: "^4.8.69")
       // and a reliable CDN (unpkg) for the .mjs worker.
@@ -66,6 +64,8 @@ const BrazilFlagIcon = () => (
 const EbookDownloadForm = () => {
   const [numPages, setNumPages] = useState<number | null>(null);
   const { toast } = useToast();
+  const [scale, setScale] = useState(1.0);
+  const scrollViewportRef = useRef<HTMLDivElement | null>(null);
 
   const initialFormState: FormState = { message: "", success: false, issues: [] };
   const [formState, formAction] = useActionState(submitEbookForm, initialFormState);
@@ -109,10 +109,12 @@ const EbookDownloadForm = () => {
     const formData = new FormData();
     (Object.keys(data) as Array<keyof EbookFormData>).forEach((key) => {
       const value = data[key];
-      // Ensure phone includes the +55 prefix for submission if it was stripped for display
       if (key === 'phone' && value && !value.startsWith('+55')) {
-        formData.append(key, `+55${value}`);
-      } else {
+        formData.append(key, `+55${value.replace(/\D/g, '')}`);
+      } else if (key === 'phone' && value) {
+        formData.append(key, `+${value.replace(/\D/g, '')}`);
+      }
+      else {
         formData.append(key, String(value ?? ''));
       }
     });
@@ -126,21 +128,42 @@ const EbookDownloadForm = () => {
     let nationalNum = digitsOnlyWithDDI.substring(2);
 
     if (nationalNum.length === 0) {
-        return ""; // Return empty if only DDI is present after stripping +55
+        return ""; 
     }
 
-    nationalNum = nationalNum.slice(0, 11); // Limit to 11 national digits (DDD + Number)
+    nationalNum = nationalNum.slice(0, 11); 
 
-    let masked = `(${nationalNum.substring(0, Math.min(2, nationalNum.length))}`; // DDD
+    let masked = `(${nationalNum.substring(0, Math.min(2, nationalNum.length))}`; 
     if (nationalNum.length > 2) {
       masked += `) ${nationalNum.substring(2, Math.min(2 + 5, nationalNum.length))}`;
     }
-    if (nationalNum.length > 7) { // 2 for DDD + 5 for first part
+    if (nationalNum.length > 7) { 
       masked += `-${nationalNum.substring(7, Math.min(7 + 4, nationalNum.length))}`;
     }
     return masked;
   };
 
+  const handleZoomIn = () => {
+    setScale((prevScale) => Math.min(prevScale + 0.2, 3.0)); // Max zoom 3x, step 0.2
+  };
+
+  const handleZoomOut = () => {
+    setScale((prevScale) => Math.max(prevScale - 0.2, 0.5)); // Min zoom 0.5x, step 0.2
+  };
+
+  const handleScrollUp = () => {
+    const viewport = scrollViewportRef.current?.firstElementChild as HTMLElement | null;
+    if (viewport) {
+      viewport.scrollTop -= 200; // Scroll up by 200px
+    }
+  };
+
+  const handleScrollDown = () => {
+    const viewport = scrollViewportRef.current?.firstElementChild as HTMLElement | null;
+    if (viewport) {
+      viewport.scrollTop += 200; // Scroll down by 200px
+    }
+  };
 
   return (
     <section id="ebook" className="py-16 md:py-24 lg:py-32 bg-secondary/30">
@@ -185,38 +208,31 @@ const EbookDownloadForm = () => {
                       {...field}
                       type="tel"
                       placeholder="(XX) XXXXX-XXXX"
-                      className="pl-12 pr-3 py-2 w-full" // Increased paddingLeft for the flag
+                      className="pl-12 pr-3 py-2 w-full" 
                       onChange={(e) => {
                         const userInput = e.target.value;
-                        // Remove non-digits, but keep '+' if it's at the beginning for DDI
-                        let digitsOnly = userInput.replace(/[^\d+]/g, '');
+                        let digitsOnly = userInput.replace(/\D/g, '');
                         
-                        // Prepend +55 if not already there and if there are other digits
-                        if (!digitsOnly.startsWith('+55') && digitsOnly.length > 0) {
-                            if (digitsOnly.startsWith('+')) { // User might be typing a different DDI
-                                digitsOnly = digitsOnly.substring(1); // Remove the '+' to replace with +55
-                            }
-                            // Remove any existing DDI if it's not 55 before prepending
-                            if (digitsOnly.length > 2 && (digitsOnly.startsWith('55') || digitsOnly.startsWith('055'))) {
-                                // Handle cases where user might have typed 55 already
-                            } else {
-                                digitsOnly = '55' + digitsOnly.replace(/^0+/, ''); // Prepend 55 and remove leading zeros
-                            }
-                        } else if (digitsOnly.startsWith('+55')) {
-                            digitsOnly = digitsOnly.substring(1); // Keep 55 but remove + for masking logic
+                        // Always ensure the DDI is 55 if there are numbers
+                        if (digitsOnly.length > 0 && !digitsOnly.startsWith('55')) {
+                            digitsOnly = '55' + digitsOnly;
+                        } else if (digitsOnly.length === 0) {
+                             field.onChange(""); // Allow clearing the field
+                             return;
                         }
-
-
-                        if (digitsOnly === "55" || digitsOnly === "") {
-                            field.onChange(""); // If only "+55" or empty, show placeholder
+                        
+                        if (digitsOnly === "55") {
+                             field.onChange("");
                         } else {
                             const maskedValue = applyPhoneMask(digitsOnly);
-                            // Store the value without +55 for display, but the Zod schema expects +55
-                            // The handleFormSubmit will re-add +55 if needed.
-                            field.onChange(maskedValue); 
+                            // Store the full +55 number for validation/submission
+                            // but display the masked version without +55
+                            setValue('phone', `+${digitsOnly}`, { shouldValidate: true });
+                            field.onChange(maskedValue); // Update display with masked value
                         }
                       }}
-                      value={field.value ? field.value.replace(/^\+55\s*/, '').trimStart() : ""}
+                      // Display value without +55 for masking
+                      value={field.value ? applyPhoneMask(field.value.replace(/^\+/, '')) : ""}
                       aria-invalid={formErrors.phone ? "true" : "false"}
                     />
                   )}
@@ -258,8 +274,22 @@ const EbookDownloadForm = () => {
           </div>
           <div className="flex flex-col justify-center items-center">
             <h3 className="text-lg font-semibold text-foreground mb-2">Amostra</h3>
+            <div className="flex justify-center space-x-2 my-4">
+              <Button onClick={handleZoomIn} variant="outline" size="icon" aria-label="Aumentar zoom">
+                <ZoomIn className="h-5 w-5" />
+              </Button>
+              <Button onClick={handleZoomOut} variant="outline" size="icon" aria-label="Diminuir zoom">
+                <ZoomOut className="h-5 w-5" />
+              </Button>
+              <Button onClick={handleScrollUp} variant="outline" size="icon" aria-label="Rolar para cima">
+                <ArrowUp className="h-5 w-5" />
+              </Button>
+              <Button onClick={handleScrollDown} variant="outline" size="icon" aria-label="Rolar para baixo">
+                <ArrowDown className="h-5 w-5" />
+              </Button>
+            </div>
             <div className="w-full max-w-sm rounded-lg shadow-2xl">
-              <ScrollArea className="h-[488px] rounded-lg border bg-muted pdf-scroll-area">
+              <ScrollArea ref={scrollViewportRef} className="h-[488px] rounded-lg border bg-muted pdf-scroll-area">
                 <PDFDocument
                   file="/ebook-maestria-jurisp-pdf.pdf" 
                   onLoadSuccess={onDocumentLoadSuccess}
@@ -273,7 +303,7 @@ const EbookDownloadForm = () => {
                       <PDFPage
                         key={`page_${index + 1}`}
                         pageNumber={index + 1}
-                        width={300}
+                        scale={scale}
                         className="mb-2 shadow-md"
                         renderAnnotationLayer={false}
                         renderTextLayer={false}
