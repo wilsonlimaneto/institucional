@@ -3,18 +3,25 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import WhatsAppButton from '@/components/landing/WhatsAppButton';
-import { Noto_Sans } from 'next/font/google';
+import { Poppins, PT_Sans } from 'next/font/google';
 
-const noto_sans = Noto_Sans({
+const poppins = Poppins({
   subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
+  weight: ['400', '500', '600', '700', '800', '900'],
   display: 'swap',
-  variable: '--font-noto-sans', // Optional: if you prefer to use it as a CSS variable
+  variable: '--font-poppins',
+});
+
+const pt_sans = PT_Sans({
+  subsets: ['latin'],
+  weight: ['400', '700'],
+  display: 'swap',
+  variable: '--font-pt-sans',
 });
 
 export const metadata: Metadata = {
-  title: 'maestria.',
-  description: 'Encontre Jurisprudência verificada com assistente de IA.',
+  title: 'LandingVerse',
+  description: 'A modern landing page showcasing core features and offerings for LandingVerse.',
 };
 
 export default function RootLayout({
@@ -23,8 +30,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR">
-      <body className={`${noto_sans.className} antialiased`}>
+    <html lang="pt-BR" className={`${poppins.variable} ${pt_sans.variable}`}>
+      <body className="font-sans antialiased">
         {children}
         <Toaster />
         <WhatsAppButton />

@@ -1,3 +1,4 @@
+
 import type {Config} from 'tailwindcss';
 
 export default {
@@ -19,8 +20,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['var(--font-noto-sans)', 'sans-serif'], // Updated to use CSS variable
-        headline: ['var(--font-noto-sans)', 'sans-serif'], // Updated to use CSS variable
+        sans: ['var(--font-pt-sans)', 'sans-serif'],
+        headline: ['var(--font-poppins)', 'sans-serif'],
         code: ['monospace'],
       },
       colors: {
