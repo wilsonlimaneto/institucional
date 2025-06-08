@@ -52,13 +52,20 @@ const HeroSection = () => {
               </div>
             </div>
           </div>
-          <div className="relative aspect-[4/3] rounded-lg overflow-hidden shadow-2xl">
+          <div className="relative rounded-lg overflow-hidden shadow-2xl">
             <Image
               src="/fast_demo_maestria.webp"
               alt="Maestria logo"
-              layout="fill"
-              objectFit="contain"
+              width={1280} 
+              height={720}
+              sizes="(min-width: 768px) 50vw, 100vw"
+              style={{
+                width: '100%',
+                height: 'auto',
+                objectFit: 'contain',
+              }}
               data-ai-hint="legal tech demo"
+              priority
             />
           </div>
         </div>
