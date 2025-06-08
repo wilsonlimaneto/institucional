@@ -48,23 +48,23 @@ const applyPhoneMask = (digits: string): string => {
 
   const len = digits.length;
 
-  if (len <= 2) { 
+  if (len <= 2) {
     return `(${digits}`;
   }
-  
+
   const ddd = digits.substring(0, 2);
   let mainPart;
   let lastFour;
 
-  if (len <= 7) { 
+  if (len <= 7) {
     mainPart = digits.substring(2);
     return `(${ddd}) ${mainPart}`;
   }
-  
-  if (len === 11) { 
+
+  if (len === 11) {
     mainPart = digits.substring(2, 7);
     lastFour = digits.substring(7);
-  } else { 
+  } else {
     mainPart = digits.substring(2, 6);
     lastFour = digits.substring(6);
   }
@@ -84,7 +84,7 @@ const EbookDownloadForm = () => {
   const pdfParentContainerRef = useRef<HTMLDivElement | null>(null);
   const [pdfContainerWidth, setPdfContainerWidth] = useState<number | undefined>();
   const [firstPageAspectRatio, setFirstPageAspectRatio] = useState<number | null>(null);
-  const [calculatedPdfHeight, setCalculatedPdfHeight] = useState<string | number>('488px'); 
+  const [calculatedPdfHeight, setCalculatedPdfHeight] = useState<string | number>('488px');
   const [showDownloadDialog, setShowDownloadDialog] = useState(false);
   const [downloadUrl, setDownloadUrl] = useState<string | undefined>(undefined);
 
@@ -96,11 +96,11 @@ const EbookDownloadForm = () => {
     defaultValues: {
       name: "",
       email: "",
-      phone: "", 
+      phone: "",
       areaOfLaw: "",
     }
   });
-  
+
   const [reactPdfModule, setReactPdfModule] = useState<{ Document: any; Page: any; pdfjs: any } | null>(null);
   const [isLoadingPdfModule, setIsLoadingPdfModule] = useState(true);
 
@@ -137,7 +137,7 @@ const EbookDownloadForm = () => {
       if (formState.success && formState.downloadUrl) {
         setDownloadUrl(formState.downloadUrl);
         setShowDownloadDialog(true);
-        reset(); 
+        reset();
       }
     }
   }, [formState, reset, toast]);
@@ -159,16 +159,16 @@ const EbookDownloadForm = () => {
         const initialWidth = pdfParentContainerRef.current.clientWidth;
         if (initialWidth > 0) {
             setPdfContainerWidth(initialWidth);
-             if (firstPageAspectRatio) { 
+             if (firstPageAspectRatio) {
                 setCalculatedPdfHeight(initialWidth * firstPageAspectRatio * zoomLevel);
             }
         } else {
-            setTimeout(updatePdfContainerWidth, 50); 
+            setTimeout(updatePdfContainerWidth, 50);
         }
     }
 
     return () => window.removeEventListener('resize', updatePdfContainerWidth);
-  }, [firstPageAspectRatio, zoomLevel]); 
+  }, [firstPageAspectRatio, zoomLevel]);
 
   useEffect(() => {
     if (pdfContainerWidth && firstPageAspectRatio) {
@@ -181,24 +181,25 @@ const EbookDownloadForm = () => {
     setNumPages(pdf.numPages);
     if (pdf.numPages > 0) {
       const page1 = await pdf.getPage(1);
-      const viewport = page1.getViewport({ scale: 1 }); 
+      const viewport = page1.getViewport({ scale: 1 });
       const aspectRatio = viewport.height / viewport.width;
       setFirstPageAspectRatio(aspectRatio);
-      
+
       if (pdfParentContainerRef.current && pdfParentContainerRef.current.clientWidth > 0) {
         const currentWidth = pdfParentContainerRef.current.clientWidth;
-        setPdfContainerWidth(currentWidth); 
-        
+        setPdfContainerWidth(currentWidth);
+
         const initialZoomToFit = currentWidth / viewport.width;
-        setZoomLevel(initialZoomToFit); 
+        setZoomLevel(initialZoomToFit);
         setCalculatedPdfHeight(currentWidth * aspectRatio * initialZoomToFit);
       } else {
+        // Fallback if container width is not yet available
         if (pdfParentContainerRef.current) {
           const currentWidth = pdfParentContainerRef.current.clientWidth;
           setPdfContainerWidth(currentWidth);
-          setCalculatedPdfHeight(currentWidth * aspectRatio); 
+          setCalculatedPdfHeight(currentWidth * aspectRatio);
         } else {
-            setCalculatedPdfHeight(viewport.width * aspectRatio); 
+            setCalculatedPdfHeight(viewport.width * aspectRatio);
         }
       }
     }
@@ -217,21 +218,21 @@ const EbookDownloadForm = () => {
   const handleZoomOut = () => {
     setZoomLevel((prevZoom) => Math.max(prevZoom - 0.2, 0.5));
   };
-  
+
   const handleDownloadPdf = () => {
     if (downloadUrl) {
       const link = document.createElement('a');
       link.href = downloadUrl;
-      link.setAttribute('download', 'ebook-maestria-jurisprudencia.pdf'); 
+      link.setAttribute('download', 'ebook-maestria-jurisprudencia.pdf');
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      setShowDownloadDialog(false); 
+      setShowDownloadDialog(false);
     }
   };
 
   const PdfLoadingPlaceholder = () => (
-    <div 
+    <div
       className="flex justify-center items-center w-full bg-muted rounded-lg shadow-inner"
       style={{ height: typeof calculatedPdfHeight === 'string' ? calculatedPdfHeight : `${calculatedPdfHeight}px` }}
     >
@@ -240,7 +241,7 @@ const EbookDownloadForm = () => {
   );
 
   const PdfErrorPlaceholder = () => (
-     <div 
+     <div
       className="flex justify-center items-center w-full bg-muted rounded-lg shadow-inner"
       style={{ height: typeof calculatedPdfHeight === 'string' ? calculatedPdfHeight : `${calculatedPdfHeight}px` }}
     >
@@ -297,14 +298,14 @@ const EbookDownloadForm = () => {
                         onChange={(e) => {
                           let inputValue = e.target.value;
                           let digits = inputValue.replace(/\D/g, '');
-                          
+
                           if (digits.length > 11) {
                             digits = digits.substring(0, 11);
                           }
-                          
-                          field.onChange(digits); 
+
+                          field.onChange(digits);
                         }}
-                        value={applyPhoneMask(field.value || '')} 
+                        value={applyPhoneMask(field.value || '')}
                         aria-invalid={formErrors.phone ? "true" : "false"}
                       />
                     )}
@@ -357,7 +358,7 @@ const EbookDownloadForm = () => {
               <div ref={pdfParentContainerRef} className="w-full max-w-xl rounded-lg shadow-2xl">
                 <ScrollArea
                   className="rounded-lg border bg-muted pdf-scroll-area"
-                  style={{ height: typeof calculatedPdfHeight === 'string' ? calculatedPdfHeight : `${calculatedPdfHeight}px` }} 
+                  style={{ height: typeof calculatedPdfHeight === 'string' ? calculatedPdfHeight : `${calculatedPdfHeight}px` }}
                 >
                   {isLoadingPdfModule ? (
                     <PdfLoadingPlaceholder />
@@ -374,7 +375,7 @@ const EbookDownloadForm = () => {
                          console.error('Failed to load PDF source:', error.message);
                          toast({ title: "Erro na Fonte do PDF", description: "Não foi possível encontrar o arquivo PDF. Verifique o caminho.", variant: "destructive" });
                       }}
-                      loading={ 
+                      loading={
                         <div className="flex justify-center items-center w-full" style={{ height: typeof calculatedPdfHeight === 'string' ? calculatedPdfHeight : `${calculatedPdfHeight}px` }}>
                             <p className="text-sm text-muted-foreground">Carregando PDF...</p>
                         </div>
@@ -384,12 +385,11 @@ const EbookDownloadForm = () => {
                         <reactPdfModule.Page
                           key={`page_${index + 1}`}
                           pageNumber={index + 1}
-                          scale={pdfContainerWidth && firstPageAspectRatio ? zoomLevel : 1} 
+                          scale={zoomLevel}
                           className="mb-2 shadow-md"
                           renderAnnotationLayer={false}
                           renderTextLayer={false}
-                          loading="" 
-                          width={pdfContainerWidth} 
+                          loading=""
                         />
                       ))}
                     </reactPdfModule.Document>
@@ -424,3 +424,4 @@ const EbookDownloadForm = () => {
 };
 
 export default EbookDownloadForm;
+
