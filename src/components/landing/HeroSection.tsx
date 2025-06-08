@@ -12,7 +12,7 @@ const HeroSection = () => {
           {/* Left Column: Text content */}
           <div className="space-y-8 text-center md:text-left md:col-span-2">
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-foreground">
-              Gere minutas de <span className="text-primary">documentos jurídicos</span> com <span className="text-primary">Jurisprudência real</span> com qualidade insuperável.
+              Alavanque sua produtividade criando <span className="text-primary">minutas</span> automáticas com <span className="text-primary">jurisprudência real</span> que o <span className="text-primary">ChatGPT</span> não consegue encontrar.
             </h1>
             
             <p className="text-lg md:text-xl text-foreground/80">
