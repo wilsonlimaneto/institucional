@@ -1,11 +1,12 @@
 
+
 'use client';
 
 import React, { useState, useCallback, useEffect } from 'react';
 import Image from 'next/image';
 import { Card } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
-import { PlayCircle, ArrowUp } from 'lucide-react';
+import { PlayCircle, ArrowLeft } from 'lucide-react'; // Changed ArrowUp to ArrowLeft
 
 const testimonials = [
   {
@@ -43,7 +44,6 @@ function extractYouTubeVideoId(url: string): string | null {
     }
   } catch (error) {
     console.error('Error parsing YouTube URL:', error);
-    // Fallback for cases where a raw ID might be passed (less ideal)
     if (typeof url === 'string' && !url.includes('/') && !url.includes('.')) {
         videoId = url;
     }
@@ -62,13 +62,12 @@ const TestimonialsSection = () => {
     setSelectedVideoUrl(videoUrl);
     setSelectedVideoName(name);
     setIsModalOpen(true);
-    setShowVolumeAlert(true); // Show custom alert when modal opens
+    setShowVolumeAlert(true);
   }, []);
 
   const closeModal = useCallback(() => {
     setIsModalOpen(false);
-    setShowVolumeAlert(false); // Hide custom alert when modal closes
-    // Delay resetting video URL to allow for closing animation of DialogContent
+    setShowVolumeAlert(false); 
     setTimeout(() => {
       setSelectedVideoUrl(null);
       setSelectedVideoName(null);
@@ -80,7 +79,7 @@ const TestimonialsSection = () => {
     if (showVolumeAlert) {
       timer = setTimeout(() => {
         setShowVolumeAlert(false);
-      }, 5000); // Hide alert after 5 seconds
+      }, 5000); 
     }
     return () => clearTimeout(timer);
   }, [showVolumeAlert]);
@@ -102,7 +101,7 @@ const TestimonialsSection = () => {
               const videoId = extractYouTubeVideoId(testimonial.videoUrl);
               const thumbnailUrl = videoId
                 ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`
-                : 'https://placehold.co/600x400.png'; // Fallback thumbnail
+                : 'https://placehold.co/600x400.png'; 
 
               return (
                 <Card
@@ -140,10 +139,8 @@ const TestimonialsSection = () => {
 
       <Dialog open={isModalOpen} onOpenChange={(open) => { if (!open) closeModal(); else setIsModalOpen(true); }}>
         <DialogContent className="sm:max-w-2xl md:max-w-3xl lg:max-w-4xl !p-0 border-0 bg-transparent shadow-none overflow-hidden">
-          {/* DialogTitle for accessibility, visually hidden */}
           <DialogTitle className="sr-only">{selectedVideoName || "Video Testimonial"}</DialogTitle>
           
-          {/* Main video container: this div defines the modal's appearance */}
           <div className="relative w-full aspect-video bg-black rounded-lg overflow-hidden">
             {currentVideoIdForModal ? (
               <iframe
@@ -160,10 +157,9 @@ const TestimonialsSection = () => {
               </div>
             )}
 
-            {/* Custom Volume Alert - positioned relative to this black container */}
             {showVolumeAlert && (
-              <div className="animate-alert-slide-in-bottom-left absolute bottom-4 left-4 p-3 bg-black/70 text-white rounded-md shadow-lg flex items-center space-x-2 text-xs z-[60]">
-                <ArrowUp className="h-5 w-5 animate-arrow-vibrate text-primary" />
+              <div className="animate-alert-slide-in-bottom-left absolute bottom-4 left-[46px] p-3 bg-black/70 text-white rounded-md shadow-lg flex items-center space-x-2 text-xs z-[60]"> {/* Changed left-4 to left-[46px] */}
+                <ArrowLeft className="h-5 w-5 animate-arrow-vibrate text-primary" /> {/* Changed ArrowUp to ArrowLeft */}
                 <span>O vídeo iniciará sem som. Aumente o volume para ouvir.</span>
               </div>
             )}
@@ -175,3 +171,4 @@ const TestimonialsSection = () => {
 };
 
 export default TestimonialsSection;
+
