@@ -40,8 +40,11 @@ const Header = () => {
           <Link href="#blog" className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors whitespace-nowrap" prefetch={false}>
             Blog
           </Link>
+          <Link href="https://wa.me/5511930991110" target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors whitespace-nowrap" prefetch={false}>
+            Contato
+          </Link>
           <Button asChild size="sm">
-            <Link href="#use-gratuitamente" className="whitespace-nowrap">Use Gratuitamente</Link>
+            <Link href="https://www.maestrialaw.com.br" target="_blank" rel="noopener noreferrer" className="whitespace-nowrap">Cadastre-se Grátis</Link>
           </Button>
         </nav>
 
@@ -82,8 +85,13 @@ const Header = () => {
                   </Link>
                 </SheetClose>
                 <SheetClose asChild>
+                  <Link href="https://wa.me/5511930991110" target="_blank" rel="noopener noreferrer" className="text-lg font-medium hover:text-primary transition-colors" prefetch={false}>
+                    Contato
+                  </Link>
+                </SheetClose>
+                <SheetClose asChild>
                     <Button asChild className="w-full mt-4">
-                        <Link href="#use-gratuitamente">Use Gratuitamente</Link>
+                        <Link href="https://www.maestrialaw.com.br" target="_blank" rel="noopener noreferrer">Cadastre-se Grátis</Link>
                     </Button>
                 </SheetClose>
               </div>
