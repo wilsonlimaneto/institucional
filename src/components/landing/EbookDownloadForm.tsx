@@ -30,11 +30,12 @@ import {
 } from "@/components/ui/alert-dialog";
 
 // Import types from react-pdf
-import type { PDFDocumentProxy } from 'react-pdf';
+import type { PDFDocumentProxy, DocumentProps as ReactPdfDocumentProps, PageProps as ReactPdfPageProps } from 'react-pdf';
 
-// CSS for react-pdf layers (ensure these are necessary and correctly imported)
+// CSS for react-pdf layers
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
+
 
 const BrazilFlagIcon = () => (
     <svg width="28" height="20" viewBox="0 0 28 20" fill="none" xmlns="http://www.w3.org/2000/svg" className="rounded-sm">
@@ -63,9 +64,10 @@ const applyPhoneMask = (digits: string): string => {
   return masked;
 };
 
-interface PdfComponents {
-  Document: typeof import('react-pdf').Document;
-  Page: typeof import('react-pdf').Page;
+interface PdfModuleType {
+  Document: React.ComponentType<ReactPdfDocumentProps>;
+  Page: React.ComponentType<ReactPdfPageProps>;
+  pdfjs: any; // Access to pdfjs-dist
 }
 
 const EbookDownloadForm = () => {
@@ -73,9 +75,9 @@ const EbookDownloadForm = () => {
   
   const pdfParentContainerRef = useRef<HTMLDivElement | null>(null);
   const [pdfContainerWidth, setPdfContainerWidth] = useState<number | undefined>();
-  const [originalPdfPageSize, setOriginalPdfPageSize] = useState<{width: number, height: number} | null>(null);
+  const originalPageDimensionsRef = useRef<{width: number, height: number} | null>(null);
   const [zoomLevel, setZoomLevel] = useState(1.0); 
-  const [calculatedPdfHeight, setCalculatedPdfHeight] = useState<string | number>('488px'); // Default fixed height
+  const [calculatedPdfHeight, setCalculatedPdfHeight] = useState<string | number>('488px'); 
   
   const [showDownloadDialog, setShowDownloadDialog] = useState(false);
   const [downloadUrl, setDownloadUrl] = useState<string | undefined>(undefined);
@@ -88,7 +90,7 @@ const EbookDownloadForm = () => {
     defaultValues: { name: "", email: "", phone: "", areaOfLaw: "" }
   });
 
-  const [pdfModule, setPdfModule] = useState<PdfComponents | null>(null);
+  const [pdfModule, setPdfModule] = useState<PdfModuleType | null>(null);
   const [isLoadingPdfModule, setIsLoadingPdfModule] = useState(true);
   const [pdfLoadError, setPdfLoadError] = useState<string | null>(null);
   const [numPages, setNumPages] = useState<number | null>(null);
@@ -98,13 +100,23 @@ const EbookDownloadForm = () => {
       setIsLoadingPdfModule(true);
       setPdfLoadError(null);
       try {
+        // Dynamically import react-pdf
         const RPDF = await import('react-pdf');
-        // IMPORTANT: Ensure pdf.worker.min.js is in your /public directory
-        RPDF.pdfjs.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js';
-        // Alternative for troubleshooting: CDN link (match version with your pdfjs-dist)
-        // RPDF.pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${RPDF.pdfjs.version}/pdf.worker.min.js`;
-        
-        setPdfModule({ Document: RPDF.Document, Page: RPDF.Page });
+
+        // Configure pdf.js worker
+        // IMPORTANT: Using CDN worker that matches the pdfjs-dist version (4.8.69)
+        // This helps troubleshoot if local serving is the issue.
+        RPDF.pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@4.8.69/build/pdf.worker.min.mjs`;
+        // If the above .mjs worker fails, you can try the .js version from CDN:
+        // RPDF.pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@4.8.69/build/pdf.worker.min.js`;
+        // Or, if you want to try local again (ensure pdf.worker.min.js or .mjs is in /public):
+        // RPDF.pdfjs.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs'; // or '/pdf.worker.min.js'
+
+        setPdfModule({ 
+          Document: RPDF.Document, 
+          Page: RPDF.Page,
+          pdfjs: RPDF.pdfjs // Store pdfjs for other uses if needed
+        });
       } catch (error) {
         console.error("Failed to load react-pdf module or set worker:", error);
         const errorMessage = error instanceof Error ? error.message : "Unknown error loading PDF module.";
@@ -137,25 +149,24 @@ const EbookDownloadForm = () => {
     }
   }, [formState, reset, toast]);
 
-  useEffect(() => {
+ useEffect(() => {
     const calculateAndSetPdfSizing = () => {
-      if (pdfParentContainerRef.current && originalPdfPageSize) {
+      if (pdfParentContainerRef.current && originalPageDimensionsRef.current) {
         const containerWidth = pdfParentContainerRef.current.clientWidth;
         if (containerWidth > 0) {
-          setPdfContainerWidth(containerWidth); // Store current width
+          setPdfContainerWidth(containerWidth); 
 
-          const { width: pageWidth, height: pageHeight } = originalPdfPageSize;
-          if (pageWidth > 0 && pageHeight > 0) {
-            const newZoomLevel = containerWidth / pageWidth; // Scale to fit width
+          const { width: originalPageWidth, height: originalPageHeight } = originalPageDimensionsRef.current;
+          
+          if (originalPageWidth > 0 && originalPageHeight > 0) {
+            const newZoomLevel = containerWidth / originalPageWidth;
             setZoomLevel(newZoomLevel);
-            setCalculatedPdfHeight(pageHeight * newZoomLevel); // Height based on new zoom and aspect ratio
+            setCalculatedPdfHeight(newZoomLevel * originalPageHeight);
           }
         }
-      } else if (pdfParentContainerRef.current && !originalPdfPageSize) {
-        // If container is rendered but PDF dimensions aren't loaded yet,
-        // ensure pdfContainerWidth is set so the loading placeholder can use it.
+      } else if (pdfParentContainerRef.current && !originalPageDimensionsRef.current) {
         const containerWidth = pdfParentContainerRef.current.clientWidth;
-        if (containerWidth > 0 && pdfContainerWidth !== containerWidth) {
+         if (containerWidth > 0 && pdfContainerWidth !== containerWidth) {
             setPdfContainerWidth(containerWidth);
         }
       }
@@ -175,16 +186,29 @@ const EbookDownloadForm = () => {
       }
       resizeObserver.disconnect();
     };
-  }, [originalPdfPageSize, pdfParentContainerRef, pdfContainerWidth]); 
+  }, [pdfParentContainerRef, pdfContainerWidth]); // Re-run on pdfContainerWidth to catch initial width
+
 
   const onDocumentLoadSuccess = (pdf: PDFDocumentProxy) => {
-    setPdfLoadError(null); // Clear any previous document load errors
+    setPdfLoadError(null);
     const nextNumPages = pdf.numPages;
     setNumPages(nextNumPages);
     if (nextNumPages > 0) {
       pdf.getPage(1).then(page1 => {
         const viewport = page1.getViewport({ scale: 1 });
-        setOriginalPdfPageSize({ width: viewport.width, height: viewport.height });
+        originalPageDimensionsRef.current = { width: viewport.width, height: viewport.height };
+        
+        // Trigger recalculation of sizing now that we have dimensions
+        if (pdfParentContainerRef.current) {
+            const containerWidth = pdfParentContainerRef.current.clientWidth;
+            if (containerWidth > 0) {
+                setPdfContainerWidth(containerWidth); // This will trigger the sizing useEffect
+                const newZoomLevel = containerWidth / viewport.width;
+                setZoomLevel(newZoomLevel);
+                setCalculatedPdfHeight(newZoomLevel * viewport.height);
+            }
+        }
+
       }).catch(error => {
         console.error("Error getting page 1 dimensions:", error);
         const errorMessage = error instanceof Error ? error.message : "Unknown error fetching page 1.";
@@ -200,8 +224,14 @@ const EbookDownloadForm = () => {
   
   const onDocumentLoadError = (error: Error) => {
     console.error('Failed to load PDF Document:', error.message);
-    setPdfLoadError(`Erro ao carregar o documento PDF: ${error.message}. Verifique se o arquivo está em /public.`);
-    toast({ title: "Erro ao Carregar PDF", description: `Não foi possível carregar a amostra do PDF: ${error.message}`, variant: "destructive" });
+    let friendlyMessage = `Erro ao carregar o documento PDF: ${error.message}.`;
+    if (error.message.includes('Invalid PDF structure') || error.message.includes('Network API failed')) {
+        friendlyMessage += " Verifique se o arquivo '/ebook-maestria-jurisp-pdf.pdf' está na pasta 'public' e é um PDF válido."
+    } else if (error.message.includes('Missing PDF')) {
+        friendlyMessage = "Arquivo PDF não encontrado. Verifique se '/ebook-maestria-jurisp-pdf.pdf' existe na pasta 'public'."
+    }
+    setPdfLoadError(friendlyMessage);
+    toast({ title: "Erro ao Carregar PDF", description: friendlyMessage, variant: "destructive" });
   };
 
 
@@ -227,7 +257,7 @@ const EbookDownloadForm = () => {
     <div
       className="flex justify-center items-center w-full bg-muted rounded-lg shadow-inner"
       style={{ 
-        height: typeof calculatedPdfHeight === 'number' && calculatedPdfHeight > 50 ? `${calculatedPdfHeight}px` : '488px',
+        height: typeof calculatedPdfHeight === 'number' && calculatedPdfHeight > 50 ? `${calculatedPdfHeight}px` : '488px', // Ensure placeholder has a reasonable min height
         width: pdfContainerWidth ? `${pdfContainerWidth}px` : '100%' 
       }}
     >
@@ -342,7 +372,7 @@ const EbookDownloadForm = () => {
                     <PdfDynamicSizedPlaceholder text="Carregando visualizador de PDF..." />
                   ) : pdfLoadError ? (
                     <PdfDynamicSizedPlaceholder text={pdfLoadError} />
-                  ) : pdfModule && pdfContainerWidth ? (
+                  ) : pdfModule && pdfContainerWidth && originalPageDimensionsRef.current ? (
                     <pdfModule.Document
                       file="/ebook-maestria-jurisp-pdf.pdf"
                       onLoadSuccess={onDocumentLoadSuccess}
@@ -350,18 +380,19 @@ const EbookDownloadForm = () => {
                       className="flex flex-col items-center py-2"
                       loading={<PdfDynamicSizedPlaceholder text="Carregando PDF..." />}
                     >
-                      {originalPdfPageSize && numPages && numPages > 0 && (
+                      {numPages && numPages > 0 && (
                         <pdfModule.Page
-                          pageNumber={1} // Display only the first page
+                          pageNumber={1} 
                           scale={zoomLevel}
                           className="mb-2 shadow-md"
                           renderAnnotationLayer={false}
                           renderTextLayer={false}
                           loading="" 
                           onLoadError={(error: any) => {
-                            console.error(`Failed to load page 1:`, error.message);
-                            setPdfLoadError(`Erro ao carregar página 1: ${error.message}`);
-                            toast({ title: `Erro ao Carregar Página 1`, description: `Não foi possível carregar a página do PDF. Detalhes: ${error.message}`, variant: "destructive" });
+                            const pageLoadErrorMessage = `Erro ao carregar página 1: ${error?.message || 'desconhecido'}`;
+                            console.error(pageLoadErrorMessage, error);
+                            setPdfLoadError(pageLoadErrorMessage);
+                            toast({ title: `Erro ao Carregar Página 1`, description: `Não foi possível carregar a página do PDF. Detalhes: ${pageLoadErrorMessage}`, variant: "destructive" });
                           }}
                         />
                       )}
