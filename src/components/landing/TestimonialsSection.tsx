@@ -72,7 +72,7 @@ const TestimonialsSection = () => {
         </div>
       ),
       variant: "default",
-      duration: 7000, // 7 seconds
+      duration: 1000, // Alterado para 1 segundo
     });
   }, [toast]);
 
@@ -166,3 +166,4 @@ const TestimonialsSection = () => {
 };
 
 export default TestimonialsSection;
+
