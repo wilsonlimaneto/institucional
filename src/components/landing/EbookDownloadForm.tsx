@@ -218,7 +218,11 @@ const EbookDownloadForm = () => {
                   </p>
                 )}
 
-                <Button type="submit" size="lg" className="w-full font-semibold" disabled={isFormProcessing || isSubmittingToServer}>
+                <Button 
+                  type="submit" 
+                  className="w-full font-semibold h-11 px-4 sm:px-6 text-base" 
+                  disabled={isFormProcessing || isSubmittingToServer}
+                >
                   {isFormProcessing || isSubmittingToServer ? "Processando..." : "Clique para receber GRATUITAMENTE o E-Book"}
                 </Button>
               </form>
