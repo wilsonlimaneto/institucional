@@ -1,30 +1,30 @@
 
 'use client';
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import Image from 'next/image';
 import { Card } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { PlayCircle, Volume2 } from 'lucide-react';
-import { useToast } from "@/hooks/use-toast";
+import { PlayCircle, ArrowUp } from 'lucide-react';
+// Removed useToast as it's no longer used here
 
 const testimonials = [
   {
     name: 'Sarah L.',
     title: 'Marketing Manager, Tech Solutions Inc.',
-    videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', // Example YouTube video URL
+    videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
     aiHint: 'video thumbnail',
   },
   {
     name: 'John B.',
     title: 'Founder, Creative Startup Co.',
-    videoUrl: 'https://www.youtube.com/watch?v=ZyDbq-lEKBQ', // Example YouTube video URL (different ID)
+    videoUrl: 'https://www.youtube.com/watch?v=ZyDbq-lEKBQ',
     aiHint: 'video thumbnail',
   },
   {
     name: 'Alice M.',
     title: 'Digital Strategist, Alpha Agency',
-    videoUrl: 'https://www.youtube.com/watch?v=3JZ_D3ELwOQ', // Example YouTube video URL (another different ID)
+    videoUrl: 'https://www.youtube.com/watch?v=3JZ_D3ELwOQ',
     aiHint: 'video thumbnail',
   },
 ];
@@ -44,7 +44,6 @@ function extractYouTubeVideoId(url: string): string | null {
     }
   } catch (error) {
     console.error('Error parsing YouTube URL:', error);
-    // Fallback for simple ID strings if no domain is present (less likely for full URLs)
     if (!url.includes('/') && !url.includes('.')) {
         videoId = url;
     }
@@ -57,33 +56,33 @@ const TestimonialsSection = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedVideoUrl, setSelectedVideoUrl] = useState<string | null>(null);
   const [selectedVideoName, setSelectedVideoName] = useState<string | null>(null);
-  const { toast } = useToast();
+  const [showVolumeAlert, setShowVolumeAlert] = useState(false);
 
   const openModal = useCallback((videoUrl: string, name: string) => {
     setSelectedVideoUrl(videoUrl);
     setSelectedVideoName(name);
     setIsModalOpen(true);
-    toast({
-      title: "Lembrete de Áudio",
-      description: (
-        <div className="flex items-center">
-          <Volume2 className="h-5 w-5 mr-2 text-foreground/80" />
-          <span>O vídeo iniciará sem som. Aumente o volume para ouvir.</span>
-        </div>
-      ),
-      variant: "default",
-      duration: 1000, // Alterado para 1 segundo
-    });
-  }, [toast]);
+    setShowVolumeAlert(true);
+  }, []);
 
   const closeModal = useCallback(() => {
     setIsModalOpen(false);
-    // Delay clearing URL to allow fade-out animation of dialog before iframe disappears
+    setShowVolumeAlert(false); 
     setTimeout(() => {
       setSelectedVideoUrl(null);
       setSelectedVideoName(null);
-    }, 300); // Corresponds to ShadCN Dialog animation duration
+    }, 300);
   }, []);
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (showVolumeAlert) {
+      timer = setTimeout(() => {
+        setShowVolumeAlert(false);
+      }, 5000); // Alert visible for 5 seconds
+    }
+    return () => clearTimeout(timer);
+  }, [showVolumeAlert]);
 
   const currentVideoIdForModal = selectedVideoUrl ? extractYouTubeVideoId(selectedVideoUrl) : null;
 
@@ -102,7 +101,7 @@ const TestimonialsSection = () => {
               const videoId = extractYouTubeVideoId(testimonial.videoUrl);
               const thumbnailUrl = videoId 
                 ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` 
-                : 'https://placehold.co/600x400.png'; // Fallback placeholder
+                : 'https://placehold.co/600x400.png';
 
               return (
                 <Card
@@ -139,7 +138,7 @@ const TestimonialsSection = () => {
       </section>
 
       <Dialog open={isModalOpen} onOpenChange={(open) => { if (!open) closeModal(); else setIsModalOpen(true); }}>
-        <DialogContent className="sm:max-w-2xl md:max-w-3xl lg:max-w-4xl !p-0 overflow-hidden border-0 bg-transparent shadow-none">
+        <DialogContent className="sm:max-w-2xl md:max-w-3xl lg:max-w-4xl !p-0 overflow-hidden border-0 bg-transparent shadow-none relative">
           <DialogHeader className="sr-only">
             <DialogTitle>{selectedVideoName || "Video Testimonial"}</DialogTitle>
           </DialogHeader>
@@ -159,6 +158,12 @@ const TestimonialsSection = () => {
               <p className="text-white">Loading video...</p>
             </div>
           )}
+          {showVolumeAlert && (
+            <div className="animate-alert-slide-in-bottom-left absolute bottom-4 left-4 p-3 bg-black/70 text-white rounded-md shadow-lg flex items-center space-x-2 text-xs z-[60]">
+              <ArrowUp className="h-5 w-5 animate-arrow-vibrate text-primary" />
+              <span>O vídeo iniciará sem som. Aumente o volume para ouvir.</span>
+            </div>
+          )}
         </DialogContent>
       </Dialog>
     </>
@@ -166,4 +171,3 @@ const TestimonialsSection = () => {
 };
 
 export default TestimonialsSection;
-

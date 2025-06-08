@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -127,5 +128,29 @@
   }
   .pdf-scroll-area > div > [data-orientation="horizontal"]:hover > div[data-radix-scroll-area-thumb] {
     background-color: hsl(var(--foreground)) !important; /* Thumb color on hover - solid white */
+  }
+
+  /* Custom alert animations */
+  @keyframes alert-slide-in-bottom-left {
+    from {
+      transform: translateY(100%) translateX(-100%) scale(0.9);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0) translateX(0) scale(1);
+      opacity: 1;
+    }
+  }
+  .animate-alert-slide-in-bottom-left {
+    animation: alert-slide-in-bottom-left 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  }
+
+  @keyframes arrow-vibrate {
+    0%, 100% { transform: translateY(0); }
+    25% { transform: translateY(-2px); }
+    75% { transform: translateY(2px); }
+  }
+  .animate-arrow-vibrate {
+    animation: arrow-vibrate 0.6s ease-in-out infinite;
   }
 }
