@@ -66,12 +66,11 @@ const TestimonialsSection = () => {
 
   const closeModal = useCallback(() => {
     setIsModalOpen(false);
-    // Alert will hide on its own timeout, but ensure it's reset if modal is closed early by other means
     setShowVolumeAlert(false);
     setTimeout(() => {
       setSelectedVideoUrl(null);
       setSelectedVideoName(null);
-    }, 300); // Delay to allow modal close animation
+    }, 300); 
   }, []);
 
   useEffect(() => {
@@ -79,7 +78,7 @@ const TestimonialsSection = () => {
     if (showVolumeAlert) {
       timer = setTimeout(() => {
         setShowVolumeAlert(false);
-      }, 1000); // Show alert for 1 second
+      }, 5000); 
     }
     return () => clearTimeout(timer);
   }, [showVolumeAlert]);
@@ -139,7 +138,7 @@ const TestimonialsSection = () => {
 
       <Dialog open={isModalOpen} onOpenChange={(open) => { if (!open) closeModal(); else setIsModalOpen(true); }}>
         <DialogContent className="sm:max-w-2xl md:max-w-3xl lg:max-w-4xl !p-0 overflow-hidden border-0 bg-transparent shadow-none relative flex items-center justify-center">
-           {selectedVideoName && <DialogTitle className="sr-only">{selectedVideoName || "Video Testimonial"}</DialogTitle>}
+           <DialogTitle className="sr-only">{selectedVideoName || "Video Testimonial"}</DialogTitle>
           {currentVideoIdForModal ? (
             <div className="aspect-video w-full bg-black rounded-lg overflow-hidden relative">
               <iframe
