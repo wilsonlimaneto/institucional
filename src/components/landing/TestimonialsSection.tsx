@@ -4,7 +4,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import Image from 'next/image';
 import { Card } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'; // Added DialogTitle
 import { PlayCircle, ArrowUp } from 'lucide-react';
 
 const testimonials = [
@@ -61,16 +61,16 @@ const TestimonialsSection = () => {
     setSelectedVideoUrl(videoUrl);
     setSelectedVideoName(name);
     setIsModalOpen(true);
-    setShowVolumeAlert(true);
+    setShowVolumeAlert(true); 
   }, []);
 
   const closeModal = useCallback(() => {
     setIsModalOpen(false);
-    setShowVolumeAlert(false); 
+    // setShowVolumeAlert(false); // Alert will hide on its own timeout
     setTimeout(() => {
       setSelectedVideoUrl(null);
       setSelectedVideoName(null);
-    }, 300);
+    }, 300); // Delay to allow modal close animation
   }, []);
 
   useEffect(() => {
@@ -78,7 +78,7 @@ const TestimonialsSection = () => {
     if (showVolumeAlert) {
       timer = setTimeout(() => {
         setShowVolumeAlert(false);
-      }, 5000); 
+      }, 5000); // Show alert for 5 seconds
     }
     return () => clearTimeout(timer);
   }, [showVolumeAlert]);
@@ -137,10 +137,9 @@ const TestimonialsSection = () => {
       </section>
 
       <Dialog open={isModalOpen} onOpenChange={(open) => { if (!open) closeModal(); else setIsModalOpen(true); }}>
-        <DialogContent className="sm:max-w-2xl md:max-w-3xl lg:max-w-4xl !p-0 overflow-hidden border-0 bg-transparent shadow-none relative block">
-          <DialogHeader className="sr-only">
-            <DialogTitle>{selectedVideoName || "Video Testimonial"}</DialogTitle>
-          </DialogHeader>
+        <DialogContent className="sm:max-w-2xl md:max-w-3xl lg:max-w-4xl !p-0 overflow-hidden border-0 bg-transparent shadow-none relative">
+          <DialogTitle className="sr-only">{selectedVideoName || "Video Testimonial"}</DialogTitle>
+          
           {currentVideoIdForModal ? (
             <div className="aspect-video w-full bg-black rounded-lg overflow-hidden relative">
               <iframe
