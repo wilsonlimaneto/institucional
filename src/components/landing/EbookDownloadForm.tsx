@@ -6,7 +6,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { EbookFormSchema, type EbookFormData } from '@/types';
 import { submitEbookForm, type FormState } from '@/lib/actions';
-import { useActionState } from 'react';
+import { useActionState } from 'react'; // Corrected from useFormState
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,7 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
 
-// CSS imports for react-pdf styling (these are fine at the top level)
+// CSS imports for react-pdf styling
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
 
@@ -27,8 +27,8 @@ const PdfDocument = dynamic<DocumentProps>(
     import('react-pdf').then((mod) => {
       // Configure pdfjs worker here, only on the client
       if (typeof window !== 'undefined') {
-        const pdfjsVersion = mod.pdfjs.version;
-        mod.pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjsVersion}/build/pdf.worker.min.mjs`;
+        // Use the hardcoded version matching your package.json for pdfjs-dist
+        mod.pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@4.8.69/build/pdf.worker.min.mjs`;
       }
       return mod.Document; // Return the component
     }),
@@ -47,14 +47,12 @@ const PdfPage = dynamic<PageProps>(
     import('react-pdf').then((mod) => {
       // Fallback configuration if not already set by PdfDocument, though ideally one set is enough
       if (typeof window !== 'undefined' && !mod.pdfjs.GlobalWorkerOptions.workerSrc) {
-         const pdfjsVersion = mod.pdfjs.version;
-         mod.pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjsVersion}/build/pdf.worker.min.mjs`;
+         mod.pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@4.8.69/build/pdf.worker.min.mjs`;
       }
       return mod.Page;
     }),
   {
     ssr: false,
-    // PdfPage typically doesn't need its own loading spinner if rendered within a PdfDocument
   }
 );
 
@@ -107,7 +105,6 @@ const EbookDownloadForm = () => {
     const formData = new FormData();
     (Object.keys(data) as Array<keyof EbookFormData>).forEach((key) => {
       const value = data[key];
-      // Ensure all fields are appended, even if empty, to let server-side validation handle them
       formData.append(key, String(value ?? ''));
     });
     formAction(formData);
@@ -123,10 +120,10 @@ const EbookDownloadForm = () => {
 
 
     if (digits.length > 0 && !value.startsWith('+') ) {
-        digits = '55' + digits; // Default to Brazil DDI if not starting with +
+        digits = '55' + digits; 
     }
     
-    digits = digits.slice(0, 13); // Max length for DDI + DDD + Number (e.g., 55XX9XXXXXXXX)
+    digits = digits.slice(0, 13); 
     
     let masked = "+";
     const len = digits.length;
@@ -192,13 +189,13 @@ const EbookDownloadForm = () => {
                   <Input
                     {...field}
                     type="tel"
-                    placeholder="+55 (XX) XXXXX-XXXX"
+                    placeholder="+XX (XX) XXXXX-XXXX"
                     onChange={(e) => {
                       const maskedValue = applyPhoneMask(e.target.value);
                       setValue("phone", maskedValue, { shouldValidate: true });
-                      field.onChange(maskedValue); // Ensure Controller's field.onChange is also called
+                      field.onChange(maskedValue); 
                     }}
-                    value={currentPhoneValue || ""} // Use watched value for direct control
+                    value={currentPhoneValue || ""} 
                     aria-invalid={formErrors.phone ? "true" : "false"}
                   />
                 )}
@@ -269,4 +266,3 @@ const EbookDownloadForm = () => {
 };
 
 export default EbookDownloadForm;
-
