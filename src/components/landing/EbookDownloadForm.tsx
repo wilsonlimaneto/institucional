@@ -17,33 +17,23 @@ import { useToast } from '@/hooks/use-toast';
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
 
+import { pdfjs } from 'react-pdf';
 import dynamic from 'next/dynamic';
 
-// Dynamically import react-pdf and configure pdfjs worker source client-side
-const PdfDocument = dynamic(
-  async () => {
-    // Dynamically import react-pdf and its pdfjs object
-    const { pdfjs, Document } = await import('react-pdf');
+// Configure workerSrc using a CDN that matches the pdfjs-dist version used by react-pdf
+if (typeof window !== 'undefined') {
+  (pdfjs.GlobalWorkerOptions as any).workerSrc = `https://unpkg.com/pdfjs-dist@4.8.69/build/pdf.worker.min.mjs`;
+}
 
-    // Configure workerSrc here, strictly on the client-side.
-    // Use a CDN link that matches the version of pdfjs-dist specified in package.json (^4.8.69)
-    if (typeof window !== 'undefined') {
-      (pdfjs.GlobalWorkerOptions as any).workerSrc = `https://unpkg.com/pdfjs-dist@4.8.69/build/pdf.worker.min.mjs`;
-    }
-    
-    return Document; // Return the Document component
-  },
-  {
-    ssr: false, // Ensure this component is not server-side rendered
-    loading: () => (
-      <div className="flex justify-center items-center w-full max-w-sm h-[424px] bg-muted rounded-lg shadow-inner">
-        <p className="text-sm text-muted-foreground">Carregando prévia do PDF...</p>
-      </div>
-    ),
-  }
-);
+const PdfDocument = dynamic(() => import('react-pdf').then(mod => mod.Document), {
+  ssr: false,
+  loading: () => (
+    <div className="flex justify-center items-center w-full max-w-sm h-[424px] bg-muted rounded-lg shadow-inner">
+      <p className="text-sm text-muted-foreground">Carregando prévia do PDF...</p>
+    </div>
+  ),
+});
 
-// Dynamically import PdfPage. It will use the worker configured by PdfDocument's dynamic import
 const PdfPage = dynamic(() => import('react-pdf').then(mod => mod.Page), {
   ssr: false,
 });
@@ -53,7 +43,7 @@ const EbookDownloadForm = () => {
   const [numPages, setNumPages] = useState<number | null>(null);
   const { toast } = useToast();
 
-  const initialFormState: FormState = { message: "", success: false };
+  const initialFormState: FormState = { message: "", success: false, issues: [] };
   const [formState, formAction] = useActionState(submitEbookForm, initialFormState);
 
   const { register, handleSubmit, formState: { errors }, reset, control, setValue } = useForm<EbookFormData>({
@@ -61,20 +51,20 @@ const EbookDownloadForm = () => {
     defaultValues: {
       name: "",
       email: "",
-      phone: undefined,
-      areaOfLaw: undefined,
+      phone: "", // Agora obrigatório, inicia como string vazia
+      areaOfLaw: "", // Inicia como string vazia, placeholder do Select cuida da exibição
     }
   });
 
   useEffect(() => {
-    if (formState.message) {
+    if (formState.message && formState.message !== "") { // Verifica se a mensagem não está vazia
       toast({
-        title: formState.success ? "Sucesso!" : "Erro",
+        title: formState.success ? "Sucesso!" : "Erro na Submissão",
         description: formState.message,
         variant: formState.success ? "default" : "destructive",
       });
       if (formState.success) {
-        reset();
+        reset(); // Limpa o formulário em caso de sucesso
       }
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -103,22 +93,28 @@ const EbookDownloadForm = () => {
   };
 
   const applyPhoneMask = (value: string): string => {
-    if (!value) return "";
+    if (!value) return "+"; // Inicia com + se o campo estiver vazio, pois é obrigatório
     let digits = value.replace(/\D/g, "");
 
+    // Assegura que o DDI comece com o "+" mantido, se já não estiver lá pelos dígitos
+    if (digits.length > 0 && !value.startsWith('+')) {
+      digits = digits; // O usuário já digitou o DDI sem +, a máscara adicionará
+    }
+    
     // Max 14 digits: DDI (1-3) + DDD(2) + P1(5) + P2(4)
-    digits = digits.slice(0, 14); 
+    digits = digits.slice(0, 14);
 
     let masked = "+";
     const len = digits.length;
 
-    if (len === 0) return ""; 
+    if (len === 0) return "+"; // Retorna apenas "+" se todos os dígitos foram apagados
 
+    // Determina o fim do DDI (1 a 3 dígitos)
     let ddiEnd = 0;
-    if (len <= 2) ddiEnd = len; // Up to 2 for DDI e.g. +55
-    else if (len > 2 && (digits.startsWith('1') || digits.startsWith('7'))) ddiEnd = 1; // DDI like +1, +7
-    else if (len > 2 && digits.startsWith('55')) ddiEnd = 2; // DDI like +55 (Brazil)
-    else ddiEnd = Math.min(len, 3); // Default to max 3 for other DDIs
+    if (digits.startsWith('55')) ddiEnd = 2; // Brasil
+    else if (digits.startsWith('1')) ddiEnd = 1; // EUA/Canadá
+    else if (len <=3 ) ddiEnd = len; // Outros DDIs curtos
+    else ddiEnd = Math.min(len, 3); // Default max 3 para outros DDIs mais longos
 
     masked += digits.substring(0, ddiEnd);
     
@@ -172,11 +168,11 @@ const EbookDownloadForm = () => {
                   <Input
                     {...field}
                     type="tel"
-                    placeholder="+55 (XX) XXXXX-XXXX (Opcional)"
+                    placeholder="+XX (XX) XXXXX-XXXX"
                     onChange={(e) => {
                       const maskedValue = applyPhoneMask(e.target.value);
-                      field.onChange(maskedValue); // Update RHF state
-                      setValue("phone", maskedValue, { shouldValidate: true }); // Also explicitly set and validate
+                      field.onChange(maskedValue); 
+                      setValue("phone", maskedValue, { shouldValidate: true }); 
                     }}
                     value={field.value || ""}
                     aria-invalid={errors.phone ? "true" : "false"}
@@ -191,7 +187,7 @@ const EbookDownloadForm = () => {
                 render={({ field }) => (
                   <Select
                     onValueChange={field.onChange}
-                    value={field.value || ""} // Allows placeholder to show when field.value is undefined
+                    value={field.value || ""} 
                   >
                     <SelectTrigger aria-invalid={errors.areaOfLaw ? "true" : "false"}>
                       <SelectValue placeholder="Selecione seu principal ramo de atuação..." />
@@ -205,6 +201,12 @@ const EbookDownloadForm = () => {
                 )}
               />
               {errors.areaOfLaw && <p className="text-sm text-destructive">{errors.areaOfLaw.message}</p>}
+
+              {formState.issues && formState.issues.length > 0 && !formState.success && (
+                <p className="text-sm text-destructive text-center py-2">
+                  Por favor, preencha todos os campos obrigatórios corretamente.
+                </p>
+              )}
 
               <Button type="submit" size="lg" className="w-full font-semibold">
                 Download Gratuito
