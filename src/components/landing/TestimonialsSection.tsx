@@ -6,7 +6,6 @@ import Image from 'next/image';
 import { Card } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { PlayCircle, ArrowUp } from 'lucide-react';
-// Removed useToast as it's no longer used here
 
 const testimonials = [
   {
@@ -44,7 +43,7 @@ function extractYouTubeVideoId(url: string): string | null {
     }
   } catch (error) {
     console.error('Error parsing YouTube URL:', error);
-    if (!url.includes('/') && !url.includes('.')) {
+    if (typeof url === 'string' && !url.includes('/') && !url.includes('.')) {
         videoId = url;
     }
   }
@@ -79,7 +78,7 @@ const TestimonialsSection = () => {
     if (showVolumeAlert) {
       timer = setTimeout(() => {
         setShowVolumeAlert(false);
-      }, 5000); // Alert visible for 5 seconds
+      }, 5000); 
     }
     return () => clearTimeout(timer);
   }, [showVolumeAlert]);
@@ -138,7 +137,7 @@ const TestimonialsSection = () => {
       </section>
 
       <Dialog open={isModalOpen} onOpenChange={(open) => { if (!open) closeModal(); else setIsModalOpen(true); }}>
-        <DialogContent className="sm:max-w-2xl md:max-w-3xl lg:max-w-4xl !p-0 overflow-hidden border-0 bg-transparent shadow-none relative">
+        <DialogContent className="sm:max-w-2xl md:max-w-3xl lg:max-w-4xl !p-0 overflow-hidden border-0 bg-transparent shadow-none relative block">
           <DialogHeader className="sr-only">
             <DialogTitle>{selectedVideoName || "Video Testimonial"}</DialogTitle>
           </DialogHeader>
