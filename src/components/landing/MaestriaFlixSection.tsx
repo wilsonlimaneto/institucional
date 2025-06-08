@@ -24,8 +24,9 @@ const reels: Reel[] = [
   {
     id: 2,
     title: 'Reel Destaque 2',
-    isEmbedded: false,
-    instagramLink: 'https://www.instagram.com/maestria.ai',
+    isEmbedded: true,
+    embedUrl: 'https://www.instagram.com/reel/DKhQabcgbBJ/embed/',
+    instagramLink: 'https://www.instagram.com/reel/DKhQabcgbBJ/',
     aiHint: 'instagram reel marketing',
   },
 ];
@@ -38,7 +39,7 @@ const MaestriaFlixSection = () => {
           Maestria Reels
         </h2>
         <p className="text-lg text-foreground/80 max-w-2xl mx-auto mb-12 md:mb-16 text-center">
-          Acompanhe nossos últimos reels com dicas, insights e novidades diretamente do Instagram. Em breve, você poderá assistir os vídeos aqui mesmo!
+          Acompanhe nossos últimos reels com dicas, insights e novidades diretamente do Instagram.
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 max-w-3xl mx-auto">
           {reels.map((reel) =>
