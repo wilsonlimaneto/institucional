@@ -3,7 +3,11 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 
-const HeroSection = () => {
+interface HeroSectionProps {
+  onOpenContactModal: () => void;
+}
+
+const HeroSection: React.FC<HeroSectionProps> = ({ onOpenContactModal }) => {
   return (
     <section className="py-16 md:py-24 lg:py-32">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -12,7 +16,7 @@ const HeroSection = () => {
           {/* Left Column: Text content */}
           <div className="space-y-8 text-center md:text-left md:col-span-2 md:-translate-y-8">
             <h1 className="text-[1.65rem] sm:text-[2.0625rem] lg:text-[2.475rem] font-bold tracking-tight text-foreground">
-              Alavanque sua produtividade criando <span className="text-primary">minutas</span> automáticas com <span className="text-primary">jurisprudência real</span> que o <u><span className="text-primary">ChatGPT</span> não consegue encontrar</u>.
+              Alavanque sua produtividade criando <span className="text-primary">minutas</span> automáticas com <span className="text-primary">jurisprudência real</span> que o <u><span className="text-primary">ChatGPT não consegue encontrar</span></u>.
             </h1>
             
             <p className="text-lg md:text-xl text-foreground/80">
@@ -47,8 +51,8 @@ const HeroSection = () => {
                   Cadastre-se Grátis
                 </Link>
               </Button>
-              <Button asChild size="lg" variant="outline" className="font-semibold">
-                <Link href="#ebook">Saiba Mais</Link>
+              <Button size="lg" variant="outline" className="font-semibold" onClick={onOpenContactModal}>
+                Saiba Mais
               </Button>
             </div>
           </div>

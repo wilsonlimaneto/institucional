@@ -7,7 +7,11 @@ import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetClose, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Menu } from 'lucide-react';
 
-const Header = () => {
+interface HeaderProps {
+  onOpenContactModal: () => void;
+}
+
+const Header: React.FC<HeaderProps> = ({ onOpenContactModal }) => {
   return (
     <header className="sticky top-0 z-50 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
       <div className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
@@ -40,9 +44,9 @@ const Header = () => {
           {/* <Link href="#blog" className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors whitespace-nowrap" prefetch={false}>
             Blog
           </Link> */}
-          <Link href="https://wa.me/5511930991110" target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors whitespace-nowrap" prefetch={false}>
+          <Button variant="link" onClick={onOpenContactModal} className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors whitespace-nowrap p-0 h-auto">
             Contato
-          </Link>
+          </Button>
           <Button asChild size="sm">
             <Link href="https://www.maestrialaw.com.br" target="_blank" rel="noopener noreferrer" className="whitespace-nowrap">Cadastre-se Grátis</Link>
           </Button>
@@ -88,9 +92,9 @@ const Header = () => {
                   </Link>
                 </SheetClose> */}
                 <SheetClose asChild>
-                  <Link href="https://wa.me/5511930991110" target="_blank" rel="noopener noreferrer" className="text-lg font-medium hover:text-primary transition-colors" prefetch={false}>
+                  <Button variant="link" onClick={onOpenContactModal} className="text-lg font-medium hover:text-primary transition-colors justify-start p-0 h-auto">
                     Contato
-                  </Link>
+                  </Button>
                 </SheetClose>
                 <SheetClose asChild>
                     <Button asChild className="w-full mt-4">

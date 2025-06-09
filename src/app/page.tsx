@@ -1,4 +1,7 @@
 
+'use client';
+
+import React, { useState } from 'react';
 import Header from '@/components/landing/Header';
 import HeroSection from '@/components/landing/HeroSection';
 import DiferenciaisSection from '@/components/landing/DiferenciaisSection';
@@ -10,26 +13,32 @@ import MaestriaFlixSection from '@/components/landing/MaestriaFlixSection';
 // import BlogReferralSection from '@/components/landing/BlogReferralSection';
 import EbookDownloadForm from '@/components/landing/EbookDownloadForm';
 import FooterSection from '@/components/landing/FooterSection';
-import CallToActionSection from '@/components/landing/CallToActionSection'; // Importando a nova seção CTA
+import CallToActionSection from '@/components/landing/CallToActionSection';
+import ContactModal from '@/components/landing/ContactModal'; // Importando o novo modal
 
 export default function LandingPage() {
+  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+
+  const openContactModal = () => setIsContactModalOpen(true);
+
   return (
     <div className="flex min-h-screen flex-col">
-      <Header />
+      <Header onOpenContactModal={openContactModal} />
       <main className="flex-grow">
-        <HeroSection />
+        <HeroSection onOpenContactModal={openContactModal} />
         <DiferenciaisSection />
         <GoogleCloudSuccessSection />
-        <CallToActionSection /> {/* Primeira seção CTA */}
+        <CallToActionSection /> 
         <ReasonsToChooseUsSection />
         <TestimonialsSection />
         <FeaturesSection />
-        <CallToActionSection /> {/* Segunda seção CTA */}
+        <CallToActionSection /> 
         <MaestriaFlixSection />
         <EbookDownloadForm />
         {/* <BlogReferralSection /> */}
       </main>
       <FooterSection />
+      <ContactModal isOpen={isContactModalOpen} onOpenChange={setIsContactModalOpen} />
     </div>
   );
 }
