@@ -10,8 +10,8 @@ const reasons = [
   },
   {
     icon: <Bot className="h-10 w-10 text-primary" />,
-    title: 'IA Especializada para Advogados',
-    description: 'Nossa IA especializada substitui o ChatGPT em contextos jurídicos, entregando resultados extremamente mais precisos e relevantes para o Brasil.',
+    title: 'Substitua o ChatGPT por resultados surpreendentes',
+    description: 'Nossa IA especializada supera o ChatGPT em contextos jurídicos, entregando resultados extremamente mais precisos e uma pesquisa de Jurisprudência sem risco de ser inventada.',
   },
   {
     icon: <BadgeCheck className="h-10 w-10 text-primary" />,
