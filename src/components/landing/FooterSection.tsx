@@ -1,10 +1,33 @@
 
+'use client';
+
 import Link from 'next/link';
 import Image from 'next/image';
-import { Youtube, Linkedin, Instagram, MessageSquare } from 'lucide-react'; // Changed Facebook, Twitter to Youtube, Instagram
+import { Youtube, Linkedin, Instagram, Mail } from 'lucide-react'; // Changed MessageSquare to Mail
+import { useToast } from '@/hooks/use-toast'; // Import useToast
 
 const FooterSection = () => {
   const currentYear = new Date().getFullYear();
+  const { toast } = useToast(); // Initialize toast
+
+  const handleEmailCopy = async (event: React.MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault(); // Prevent default link behavior
+    const emailToCopy = 'contato@maestrialaw.com.br';
+    try {
+      await navigator.clipboard.writeText(emailToCopy);
+      toast({
+        title: 'E-mail Copiado!',
+        description: `${emailToCopy} foi copiado para a área de transferência.`,
+      });
+    } catch (err) {
+      toast({
+        title: 'Falha ao Copiar',
+        description: 'Não foi possível copiar o e-mail. Tente manualmente.',
+        variant: 'destructive',
+      });
+      console.error('Failed to copy email: ', err);
+    }
+  };
 
   return (
     <footer className="py-12 md:py-16 bg-background border-t border-border/40">
@@ -23,7 +46,7 @@ const FooterSection = () => {
               </div>
             </Link>
             <p className="text-sm text-foreground/70 text-center md:text-left">
-              Tecnologia Jurídica Eficaz.
+              Tecnologia Jurídica Eficaz e Confiável.
             </p>
           </div>
           
@@ -40,10 +63,16 @@ const FooterSection = () => {
                 <Linkedin className="h-6 w-6" />
               </Link>
             </div>
-            <Link href="mailto:feedback@maestria.ai" className="flex items-center gap-2 mt-4 text-sm text-foreground/70 hover:text-primary transition-colors">
-              <MessageSquare className="h-5 w-5" />
-              Send Feedback
-            </Link>
+            <a 
+              href="#" 
+              onClick={handleEmailCopy} 
+              className="flex items-center gap-2 mt-4 text-sm text-foreground/70 hover:text-primary transition-colors"
+              role="button"
+              aria-label="Copiar e-mail de contato"
+            >
+              <Mail className="h-5 w-5" />
+              E-Mail
+            </a>
           </div>
 
           <div className="flex flex-col items-center md:items-end">
