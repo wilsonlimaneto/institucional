@@ -1,7 +1,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { Facebook, Linkedin, Twitter, MessageSquare } from 'lucide-react';
+import { Youtube, Linkedin, Instagram, MessageSquare } from 'lucide-react'; // Changed Facebook, Twitter to Youtube, Instagram
 
 const FooterSection = () => {
   const currentYear = new Date().getFullYear();
@@ -23,18 +23,18 @@ const FooterSection = () => {
               </div>
             </Link>
             <p className="text-sm text-foreground/70 text-center md:text-left">
-              Crafting exceptional digital experiences.
+              Tecnologia Jurídica Eficaz.
             </p>
           </div>
           
           <div className="flex flex-col items-center">
-             <h3 className="font-headline text-lg font-semibold mb-3 text-foreground">Connect With Us</h3>
+             <h3 className="font-headline text-lg font-semibold mb-3 text-foreground">Siga nossas redes</h3>
             <div className="flex space-x-4">
-              <Link href="#" target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="text-foreground/70 hover:text-primary transition-colors">
-                <Facebook className="h-6 w-6" />
+              <Link href="#" target="_blank" rel="noopener noreferrer" aria-label="YouTube" className="text-foreground/70 hover:text-primary transition-colors">
+                <Youtube className="h-6 w-6" />
               </Link>
-              <Link href="#" target="_blank" rel="noopener noreferrer" aria-label="Twitter" className="text-foreground/70 hover:text-primary transition-colors">
-                <Twitter className="h-6 w-6" />
+              <Link href="#" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="text-foreground/70 hover:text-primary transition-colors">
+                <Instagram className="h-6 w-6" />
               </Link>
               <Link href="#" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="text-foreground/70 hover:text-primary transition-colors">
                 <Linkedin className="h-6 w-6" />
