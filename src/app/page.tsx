@@ -10,6 +10,7 @@ import MaestriaFlixSection from '@/components/landing/MaestriaFlixSection';
 // import BlogReferralSection from '@/components/landing/BlogReferralSection';
 import EbookDownloadForm from '@/components/landing/EbookDownloadForm';
 import FooterSection from '@/components/landing/FooterSection';
+import CallToActionSection from '@/components/landing/CallToActionSection'; // Importando a nova seção CTA
 
 export default function LandingPage() {
   return (
@@ -19,9 +20,11 @@ export default function LandingPage() {
         <HeroSection />
         <DiferenciaisSection />
         <GoogleCloudSuccessSection />
+        <CallToActionSection /> {/* Primeira seção CTA */}
         <ReasonsToChooseUsSection />
         <TestimonialsSection />
         <FeaturesSection />
+        <CallToActionSection /> {/* Segunda seção CTA */}
         <MaestriaFlixSection />
         <EbookDownloadForm />
         {/* <BlogReferralSection /> */}
