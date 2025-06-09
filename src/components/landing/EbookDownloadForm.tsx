@@ -57,6 +57,28 @@ const applyPhoneMask = (digits: string): string => {
   return masked;
 };
 
+const submitToWebhook = async (data: EbookFormData) => {
+  try {
+    const response = await fetch('https://hook.us2.make.com/35z45k3eq3trtzdkhtv4qal7722dwjix', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        nome: data.name,
+        phone: data.phone,
+        email: data.email,
+        ramo: data.areaOfLaw,
+      }),
+    });
+    if (!response.ok) {
+      console.error('Webhook submission failed:', response.statusText);
+    }
+  } catch (error) {
+    console.error('Error submitting to webhook:', error);
+  }
+};
+
 const EbookDownloadForm = () => {
   const { toast } = useToast();
   
@@ -78,6 +100,7 @@ const EbookDownloadForm = () => {
   });
 
   const onClientValid = (data: EbookFormData) => {
+    submitToWebhook(data);
     setShowDownloadDialog(true); 
 
     const formDataForAction = new FormData();
