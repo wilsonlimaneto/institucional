@@ -53,13 +53,13 @@ const FooterSection = () => {
           <div className="flex flex-col items-center">
              <h3 className="font-headline text-lg font-semibold mb-3 text-foreground">Siga nossas redes</h3>
             <div className="flex space-x-4">
-              <Link href="#" target="_blank" rel="noopener noreferrer" aria-label="YouTube" className="text-foreground/70 hover:text-primary transition-colors">
+              <Link href="https://www.youtube.com/@Maestrialaw" target="_blank" rel="noopener noreferrer" aria-label="YouTube" className="text-foreground/70 hover:text-primary transition-colors">
                 <Youtube className="h-6 w-6" />
               </Link>
-              <Link href="#" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="text-foreground/70 hover:text-primary transition-colors">
+              <Link href="https://www.instagram.com/maestrialaw/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="text-foreground/70 hover:text-primary transition-colors">
                 <Instagram className="h-6 w-6" />
               </Link>
-              <Link href="#" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="text-foreground/70 hover:text-primary transition-colors">
+              <Link href="https://www.linkedin.com/company/maestrialaw/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="text-foreground/70 hover:text-primary transition-colors">
                 <Linkedin className="h-6 w-6" />
               </Link>
             </div>
