@@ -1,6 +1,6 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Bot, Clock, BadgeCheck, PiggyBank, Users, MousePointerClick } from 'lucide-react';
+import { Bot, Clock, BadgeCheck, CreditCard, Users, MousePointerClick } from 'lucide-react';
 
 const reasons = [
   {
@@ -9,19 +9,19 @@ const reasons = [
     description: 'Automatize a pesquisa de jurisprudência e a elaboração de petições, liberando horas para você focar em estratégias e clientes.',
   },
   {
-    icon: <BadgeCheck className="h-10 w-10 text-primary" />, // Changed from Bot to BadgeCheck
+    icon: <BadgeCheck className="h-10 w-10 text-primary" />,
     title: 'Substitua o ChatGPT por resultados surpreendentes',
     description: 'Nossa IA especializada supera o ChatGPT em contextos jurídicos, entregando resultados extremamente mais precisos e uma pesquisa de Jurisprudência sem risco de ser inventada.',
   },
   {
-    icon: <Bot className="h-10 w-10 text-primary" />, // Changed from BadgeCheck to Bot
+    icon: <Bot className="h-10 w-10 text-primary" />,
     title: 'Sem necessidade de aprender prompts',
     description: 'Entendemos os desafios da sua rotina e criamos uma ferramenta que entende seu contexto de atuação e trabalha fácil e naturalmente, sem precisar aprender prompts',
   },
   {
-    icon: <PiggyBank className="h-10 w-10 text-primary" />,
-    title: 'Custo-Benefício em Reais',
-    description: 'Diferente de plataformas internacionais como o ChatGPT, nossos custos são em moeda local, sem surpresas com a variação cambial do dólar.',
+    icon: <CreditCard className="h-10 w-10 text-primary" />,
+    title: 'Sem necessidade de cartão de crédito',
+    description: 'Plataformas internacionais como o ChatGPT, cobram em dólar.',
   },
   {
     icon: <Users className="h-10 w-10 text-primary" />,
