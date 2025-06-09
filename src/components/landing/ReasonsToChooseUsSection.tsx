@@ -4,9 +4,9 @@ import { Bot, Clock, BadgeCheck, CreditCard, Users, MousePointerClick } from 'lu
 
 const reasons = [
   {
-    icon: <Clock className="h-10 w-10 text-primary" />,
-    title: 'Economize Tempo Precioso',
-    description: 'Automatize a pesquisa de jurisprudência e a elaboração de petições, liberando horas para você ganhar mais causas.',
+    icon: <CreditCard className="h-10 w-10 text-primary" />,
+    title: 'Sem necessidade de cartão de crédito',
+    description: 'Plataformas internacionais como o ChatGPT, cobram em dólar.',
   },
   {
     icon: <BadgeCheck className="h-10 w-10 text-primary" />,
@@ -19,9 +19,9 @@ const reasons = [
     description: 'Entendemos os desafios da sua rotina e criamos uma ferramenta que entende seu contexto de atuação e trabalha fácil e naturalmente, sem precisar aprender prompts',
   },
   {
-    icon: <CreditCard className="h-10 w-10 text-primary" />,
-    title: 'Sem necessidade de cartão de crédito',
-    description: 'Plataformas internacionais como o ChatGPT, cobram em dólar.',
+    icon: <Clock className="h-10 w-10 text-primary" />,
+    title: 'Economize Tempo Precioso',
+    description: 'Automatize a pesquisa de jurisprudência e a elaboração de petições, liberando horas para você ganhar mais causas.',
   },
   {
     icon: <Users className="h-10 w-10 text-primary" />,
