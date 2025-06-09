@@ -47,7 +47,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onOpenContactModal }) => {
             {/* Action Buttons - MOVED HERE & CENTERED */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4 md:pt-6">
               <Button asChild size="lg" className="font-semibold">
-                <Link href="https://www.maestrialaw.com.br" target="_blank" rel="noopener noreferrer">
+                <Link href="#ebook">
                   Cadastre-se Grátis
                 </Link>
               </Button>

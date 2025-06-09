@@ -18,7 +18,7 @@ const CallToActionSection: React.FC<CallToActionSectionProps> = ({ onOpenContact
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Button asChild size="lg" className="font-semibold">
-            <Link href="https://www.maestrialaw.com.br" target="_blank" rel="noopener noreferrer">
+            <Link href="#ebook">
               Cadastre-se Grátis
             </Link>
           </Button>

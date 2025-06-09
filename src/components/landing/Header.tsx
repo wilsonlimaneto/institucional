@@ -48,7 +48,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenContactModal }) => {
             Contato
           </Button>
           <Button asChild size="sm">
-            <Link href="https://www.maestrialaw.com.br" target="_blank" rel="noopener noreferrer" className="whitespace-nowrap">Cadastre-se Grátis</Link>
+            <Link href="#ebook" className="whitespace-nowrap">Cadastre-se Grátis</Link>
           </Button>
         </nav>
 
@@ -98,7 +98,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenContactModal }) => {
                 </SheetClose>
                 <SheetClose asChild>
                     <Button asChild className="w-full mt-4">
-                        <Link href="https://www.maestrialaw.com.br" target="_blank" rel="noopener noreferrer">Cadastre-se Grátis</Link>
+                        <Link href="#ebook">Cadastre-se Grátis</Link>
                     </Button>
                 </SheetClose>
               </div>
