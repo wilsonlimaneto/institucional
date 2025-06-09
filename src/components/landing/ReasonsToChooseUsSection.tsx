@@ -15,8 +15,8 @@ const reasons = [
   },
   {
     icon: <BadgeCheck className="h-10 w-10 text-primary" />,
-    title: 'Feito por Advogados, para Advogados',
-    description: 'Entendemos os desafios da sua rotina e criamos uma ferramenta que realmente atende às suas necessidades diárias.',
+    title: 'Sem necessidade de aprender prompts',
+    description: 'Entendemos os desafios da sua rotina e criamos uma ferramenta que entende seu contexto de atuação e trabalha fácil e naturalmente, sem precisar aprender prompts',
   },
   {
     icon: <PiggyBank className="h-10 w-10 text-primary" />,
