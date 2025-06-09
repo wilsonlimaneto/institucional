@@ -26,7 +26,7 @@ const reasons = [
   {
     icon: <Users className="h-10 w-10 text-primary" />,
     title: 'Tecnologia Confiável',
-    description: 'Construído sobre uma infraestrutura robusta e moderna, garantindo performance, segurança e disponibilidade para sua prática jurídica.',
+    description: 'Construído com parcerias de renome sobre uma infraestrutura robusta e moderna, garantindo performance, segurança e disponibilidade para sua prática jurídica.',
   },
   {
     icon: <MousePointerClick className="h-10 w-10 text-primary" />,
