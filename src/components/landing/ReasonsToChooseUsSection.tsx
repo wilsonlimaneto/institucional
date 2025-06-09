@@ -6,7 +6,7 @@ const reasons = [
   {
     icon: <Clock className="h-10 w-10 text-primary" />,
     title: 'Economize Tempo Precioso',
-    description: 'Automatize a pesquisa de jurisprudência e a elaboração de petições, liberando horas para você focar em estratégias e clientes.',
+    description: 'Automatize a pesquisa de jurisprudência e a elaboração de petições, liberando horas para você ganhar mais causas.',
   },
   {
     icon: <BadgeCheck className="h-10 w-10 text-primary" />,
