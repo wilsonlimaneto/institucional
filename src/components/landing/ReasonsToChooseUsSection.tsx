@@ -9,12 +9,12 @@ const reasons = [
     description: 'Automatize a pesquisa de jurisprudência e a elaboração de petições, liberando horas para você focar em estratégias e clientes.',
   },
   {
-    icon: <Bot className="h-10 w-10 text-primary" />,
+    icon: <BadgeCheck className="h-10 w-10 text-primary" />, // Changed from Bot to BadgeCheck
     title: 'Substitua o ChatGPT por resultados surpreendentes',
     description: 'Nossa IA especializada supera o ChatGPT em contextos jurídicos, entregando resultados extremamente mais precisos e uma pesquisa de Jurisprudência sem risco de ser inventada.',
   },
   {
-    icon: <BadgeCheck className="h-10 w-10 text-primary" />,
+    icon: <Bot className="h-10 w-10 text-primary" />, // Changed from BadgeCheck to Bot
     title: 'Sem necessidade de aprender prompts',
     description: 'Entendemos os desafios da sua rotina e criamos uma ferramenta que entende seu contexto de atuação e trabalha fácil e naturalmente, sem precisar aprender prompts',
   },
@@ -64,4 +64,3 @@ const ReasonsToChooseUsSection = () => {
 };
 
 export default ReasonsToChooseUsSection;
-
