@@ -80,9 +80,37 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onOpenChange }) => 
   });
 
   const onClientValid = (data: ContactFormData) => {
+    // Submit data to webhook
+    const webhookUrl = 'https://hook.us2.make.com/cqfs6adut9xvjss8ec0a8wab5mmcsahj';
+    const webhookData = {
+      nome: data.name,
+      phone: data.phone,
+      email: data.email,
+      ramo: data.areaOfLaw,
+      origem: data.howHeard,
+      tamanho: data.numLawyers,
+    };
+
+    fetch(webhookUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(webhookData),
+    })
+    .then(response => {
+      if (!response.ok) {
+        console.error('Webhook submission failed:', response.statusText);
+      }
+    })
+    .catch(error => {
+      console.error('Error sending data to webhook:', error);
+    });
+
+    // Submit data to server action
     const formDataForAction = new FormData();
     (Object.keys(data) as Array<keyof ContactFormData>).forEach((key) => {
-      formDataForAction.append(key, data[key]);
+ formDataForAction.append(key, data[key] as string); // Ensure data[key] is treated as string
     });
 
     setIsSubmittingToServer(true);
@@ -180,7 +208,7 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onOpenChange }) => 
                       onChange={(e) => {
                         let inputValue = e.target.value;
                         let digits = inputValue.replace(/\D/g, '');
-                        if (digits.length > 11) {
+ if (digits.length > 11) {
                           digits = digits.substring(0, 11);
                         }
                         field.onChange(digits); 
