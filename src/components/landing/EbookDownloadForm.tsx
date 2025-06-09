@@ -131,8 +131,8 @@ const EbookDownloadForm = () => {
                 <Image src="/Slide2.PNG" alt="Slide 2 do E-book Maestria Jurisp" width={800} height={600} layout="responsive" />
                 <Image src="/Slide3.PNG" alt="Slide 3 do E-book Maestria Jurisp" width={800} height={600} layout="responsive" />
               </div>
-              <h3 className="text-xl font-bold tracking-tight text-foreground text-center mt-2">
-                Amostra do E-Book
+              <h3 className="text-lg font-semibold tracking-tight text-foreground text-center mt-1">
+                (Amostra do E-Book)
               </h3>
             </div>
 
@@ -204,7 +204,7 @@ const EbookDownloadForm = () => {
                           value={field.value}
                       >
                           <SelectTrigger aria-invalid={formErrors.areaOfLaw ? "true" : "false"} className="text-base">
-                          <SelectValue placeholder="Selecione seu principal ramo de atuação..." />
+                          <SelectValue placeholder="Qual seu ramo de atuação" />
                           </SelectTrigger>
                           <SelectContent>
                           {ramosDeAtuacao.map(ramo => (
@@ -227,7 +227,7 @@ const EbookDownloadForm = () => {
                   className="w-full font-semibold h-11 px-4 sm:px-6 text-base" 
                   disabled={isFormProcessing || isSubmittingToServer}
                 >
-                  {isFormProcessing || isSubmittingToServer ? "Processando..." : "Clique para receber GRATUITAMENTE o E-Book"}
+                  {isFormProcessing || isSubmittingToServer ? "Processando..." : "Receba GRATUITAMENTE"}
                 </Button>
               </form>
             </div>
