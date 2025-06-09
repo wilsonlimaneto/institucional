@@ -10,7 +10,7 @@ const reasons = [
   },
   {
     icon: <BadgeCheck className="h-10 w-10 text-primary" />,
-    title: 'Substitua o ChatGPT por resultados surpreendentes',
+    title: 'Substitua o ChatGPT e encontre jurisprudência certificada',
     description: 'Nossa IA especializada supera o ChatGPT em contextos jurídicos, entregando resultados extremamente mais precisos e uma pesquisa de Jurisprudência sem risco de ser inventada.',
   },
   {
