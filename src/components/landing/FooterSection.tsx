@@ -16,8 +16,7 @@ const FooterSection = () => {
     try {
       await navigator.clipboard.writeText(emailToCopy);
       toast({
-        title: 'E-mail Copiado!',
-        description: `${emailToCopy} foi copiado para a área de transferência.`,
+        title: 'E-Mail Copiado!', // Updated toast message
       });
     } catch (err) {
       toast({
@@ -96,3 +95,4 @@ const FooterSection = () => {
 };
 
 export default FooterSection;
+
