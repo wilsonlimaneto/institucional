@@ -16,7 +16,12 @@ const GoogleCloudSuccessSection = () => {
               Por meio da cloud Google, possibilitamos uma infraestrutura robusta e tecnologias em rápido avanço para atender aos mais exigentes requisitos de qualidade do mercado jurídico.
             </p>
             <div className="pt-4 text-center md:text-left">
-              <Button asChild variant="outline" size="lg" className="bg-transparent border-primary-foreground/50 hover:bg-primary-foreground/10 text-primary-foreground font-semibold w-full sm:w-auto">
+              <Button 
+                asChild 
+                variant="outline" 
+                size="md" 
+                className="bg-transparent border-primary-foreground/50 hover:bg-primary-foreground/10 text-primary-foreground font-semibold w-full sm:w-auto sm:size-lg"
+              >
                 <Link href="#">
                   Clique aqui para conhecer o Caso de Sucesso
                 </Link>
