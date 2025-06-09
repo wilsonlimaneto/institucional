@@ -16,7 +16,7 @@ const HeroSection = () => {
             </h1>
             
             <p className="text-lg md:text-xl text-foreground/80">
-              <span style={{ fontSize: '115%' }}>Automatize GRATUITAMENTE a sua rotina de edição de documentos, resumos de processos e pesquisa de jurisprudência.</span>
+              <span style={{ fontSize: '115%' }}>Automatize GRATUITAMENTE a sua rotina de edição de documentos, resumos de processos e pesquisa de <u>jurisprudência verdadeira</u>.</span>
             </p>
           </div>
 
