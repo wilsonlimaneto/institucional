@@ -20,6 +20,7 @@ export default function LandingPage() {
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
 
   const openContactModal = () => setIsContactModalOpen(true);
+  const closeContactModal = () => setIsContactModalOpen(false);
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -28,11 +29,11 @@ export default function LandingPage() {
         <HeroSection onOpenContactModal={openContactModal} />
         <DiferenciaisSection />
         <GoogleCloudSuccessSection />
-        <CallToActionSection /> 
+        <CallToActionSection onOpenContactModal={openContactModal} /> 
         <ReasonsToChooseUsSection />
         <TestimonialsSection />
         <FeaturesSection />
-        <CallToActionSection /> 
+        <CallToActionSection onOpenContactModal={openContactModal} /> 
         <MaestriaFlixSection />
         <EbookDownloadForm />
         {/* <BlogReferralSection /> */}

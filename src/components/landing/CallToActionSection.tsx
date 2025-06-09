@@ -2,7 +2,11 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 
-const CallToActionSection = () => {
+interface CallToActionSectionProps {
+  onOpenContactModal?: () => void; // Optional prop for now, if not all instances use it
+}
+
+const CallToActionSection: React.FC<CallToActionSectionProps> = ({ onOpenContactModal }) => {
   return (
     <section className="py-10 md:py-14 bg-secondary/20"> {/* Padding reduzido para menor altura */}
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -18,11 +22,17 @@ const CallToActionSection = () => {
               Cadastre-se Grátis
             </Link>
           </Button>
-          <Button asChild size="lg" variant="outline" className="font-semibold">
-            <Link href="https://wa.me/5511930991110" target="_blank" rel="noopener noreferrer">
+          {onOpenContactModal ? (
+            <Button size="lg" variant="outline" className="font-semibold" onClick={onOpenContactModal}>
               Fale Conosco
-            </Link>
-          </Button>
+            </Button>
+          ) : (
+            <Button asChild size="lg" variant="outline" className="font-semibold">
+              <Link href="https://wa.me/5511930991110" target="_blank" rel="noopener noreferrer">
+                Fale Conosco
+              </Link>
+            </Button>
+          )}
         </div>
       </div>
     </section>
