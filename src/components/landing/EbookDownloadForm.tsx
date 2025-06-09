@@ -126,14 +126,14 @@ const EbookDownloadForm = () => {
           <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
             {/* Coluna da Amostra do Ebook */}
             <div className="flex flex-col justify-center items-center space-y-4 w-full mx-auto sm:max-w-md md:max-w-none md:mx-0">
-              <h3 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground text-center">
-                Amostra do E-Book
-              </h3>
               <div className="w-[280px] h-[396px] sm:w-[320px] sm:h-[452px] md:w-[378px] md:h-[535px] border-2 border-border overflow-y-scroll overflow-x-hidden shadow-lg bg-background">
                 <Image src="/Slide1.PNG" alt="Slide 1 do E-book Maestria Jurisp" width={800} height={600} layout="responsive" />
                 <Image src="/Slide2.PNG" alt="Slide 2 do E-book Maestria Jurisp" width={800} height={600} layout="responsive" />
                 <Image src="/Slide3.PNG" alt="Slide 3 do E-book Maestria Jurisp" width={800} height={600} layout="responsive" />
               </div>
+              <h3 className="text-xl font-bold tracking-tight text-foreground text-center mt-2">
+                Amostra do E-Book
+              </h3>
             </div>
 
             {/* Coluna do Formulário */}
@@ -259,3 +259,4 @@ const EbookDownloadForm = () => {
 };
 
 export default EbookDownloadForm;
+
