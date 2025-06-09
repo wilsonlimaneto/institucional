@@ -137,9 +137,10 @@ const EbookDownloadForm = () => {
     link.setAttribute('download', 'ebook-maestria-jurisp-pdf.pdf');
     document.body.appendChild(link);
     link.click();
+    // Cleanup moved from the misplaced finally block
     document.body.removeChild(link);
     setShowDownloadDialog(false);
-    reset(); 
+    reset();
   };
   
   return (
@@ -282,4 +283,3 @@ const EbookDownloadForm = () => {
 };
 
 export default EbookDownloadForm;
-
