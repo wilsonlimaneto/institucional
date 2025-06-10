@@ -7,7 +7,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { EbookFormSchema, type EbookFormData } from '@/types';
 import { submitEbookForm, type FormState } from '@/lib/actions';
-import { useRouter } from 'next/navigation'; // Import useRouter
+import { useRouter } from 'next/navigation'; 
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -82,7 +82,7 @@ const submitToWebhook = async (data: EbookFormData) => {
 
 const EbookDownloadForm = () => {
   const { toast } = useToast();
-  const router = useRouter(); // Initialize useRouter
+  const router = useRouter(); 
 
   const [showDownloadDialog, setShowDownloadDialog] = useState(false);
   const [isSubmittingToServer, setIsSubmittingToServer] = useState(false);
@@ -102,9 +102,8 @@ const EbookDownloadForm = () => {
   });
 
   const onClientValid = (data: EbookFormData) => {
-    submitToWebhook(data); // Submit to webhook first
+    submitToWebhook(data); 
 
-    // Then, prepare for server action and potentially showing download dialog
     const formDataForAction = new FormData();
     (Object.keys(data) as Array<keyof EbookFormData>).forEach((key) => {
       formDataForAction.append(key, data[key]);
@@ -113,23 +112,20 @@ const EbookDownloadForm = () => {
     setIsSubmittingToServer(true);
     startTransition(async () => {
       await formAction(formDataForAction);
-      // Server action is complete, now check its state in useEffect
       setIsSubmittingToServer(false);
     });
   };
 
   useEffect(() => {
-    if (serverFormState.message && !isSubmittingToServer) { // Ensure action has completed
+    if (serverFormState.message && !isSubmittingToServer) { 
       if (serverFormState.success) {
-        // If server action was successful, show the download dialog
         setShowDownloadDialog(true);
-        toast({ // Toast for server logging confirmation (optional)
+        toast({ 
           title: "Submissão Registrada!",
-          description: serverFormState.message, // Or a generic success message
+          description: serverFormState.message, 
           variant: "default",
         });
       } else {
-        // If server action failed, show an error toast
         toast({
           title: "Erro no Servidor",
           description: serverFormState.message,
@@ -153,8 +149,11 @@ const EbookDownloadForm = () => {
     link.click();
     document.body.removeChild(link);
 
+    // Navigate to 'obrigado' page directly
+    router.push('/obrigado');
+
+    // Then handle dialog and form reset, wrapped in a transition if needed for UI smoothness
     startTransition(() => {
-      router.push('/obrigado');
       setShowDownloadDialog(false);
       reset();
     });
@@ -291,7 +290,7 @@ const EbookDownloadForm = () => {
             </AlertDialogAction>
             <AlertDialogCancel onClick={() => {
               setShowDownloadDialog(false);
-              reset(); // Reset form if download is cancelled
+              reset(); 
             }}>Fechar</AlertDialogCancel>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -301,3 +300,5 @@ const EbookDownloadForm = () => {
 };
 
 export default EbookDownloadForm;
+
+    
