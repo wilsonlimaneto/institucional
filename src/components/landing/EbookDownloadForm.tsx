@@ -90,7 +90,7 @@ const EbookDownloadForm = () => {
   });
 
   const onClientValid = (data: EbookFormData) => {
-    submitToWebhook(data);
+    submitToWebhook(data); // Fire-and-forget webhook submission
 
     const formDataForAction = new FormData();
     (Object.keys(data) as Array<keyof EbookFormData>).forEach((key) => {
@@ -100,11 +100,12 @@ const EbookDownloadForm = () => {
     setIsSubmittingToServer(true);
     startTransition(async () => {
       await formAction(formDataForAction);
-      setIsSubmittingToServer(false);
+      setIsSubmittingToServer(false); // Ensure this is set after action completes
     });
   };
 
   useEffect(() => {
+    // Only run when serverFormState has a message and we are not in the middle of server submission
     if (serverFormState.message && !isSubmittingToServer) {
       if (serverFormState.success) {
         toast({
@@ -114,33 +115,36 @@ const EbookDownloadForm = () => {
         });
 
         const link = document.createElement('a');
+        let downloadAttemptedWithoutError = false;
         try {
           link.href = 'https://www.dropbox.com/scl/fi/2332tgss2fp87nxepw86m/ebook-maestria-jurisp-pdf.pdf?rlkey=w7s28864lw8omiolua5l61f3b&dl=1';
           link.setAttribute('download', 'ebook-maestria-jurisp-pdf.pdf');
           document.body.appendChild(link);
-          link.click();
-
-          startTransition(() => {
-            router.push('/obrigado');
-            reset();
-          });
-
+          link.click(); // Attempt to trigger download
+          downloadAttemptedWithoutError = true; // If click() doesn't throw a JS error
         } catch (error) {
-          console.error("Error during download attempt:", error);
+          console.error("Error during download link click:", error);
           toast({
             title: "Erro no Download",
             description: "Não foi possível iniciar o download do e-book. Verifique seu bloqueador de pop-ups ou tente manualmente.",
             variant: "destructive",
           });
         } finally {
-          // Delay removal to give the browser time to process the download
-          setTimeout(() => {
-            if (document.body.contains(link)) {
-              document.body.removeChild(link);
-            }
-          }, 100);
+          // Ensure the link is removed from the DOM
+          if (document.body.contains(link)) {
+            document.body.removeChild(link);
+          }
         }
-      } else {
+
+        // Proceed with navigation and form reset if the download click itself didn't throw an error.
+        // The browser might still silently block the actual download.
+        if (downloadAttemptedWithoutError) {
+          startTransition(() => {
+            router.push('/obrigado');
+            reset();
+          });
+        }
+      } else { // Server form submission failed
         toast({
           title: "Erro no Servidor",
           description: serverFormState.message,
