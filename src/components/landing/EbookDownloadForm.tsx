@@ -113,31 +113,21 @@ const EbookDownloadForm = () => {
           variant: "default",
         });
 
-        const link = document.createElement('a');
-        let downloadAttemptedWithoutError = false;
+        const pdfUrl = 'https://www.dropbox.com/scl/fi/2332tgss2fp87nxepw86m/ebook-maestria-jurisp-pdf.pdf?rlkey=w7s28864lw8omiolua5l61f3b&dl=1';
+        let openedNewTab = false;
         try {
-          link.href = 'https://www.dropbox.com/scl/fi/2332tgss2fp87nxepw86m/ebook-maestria-jurisp-pdf.pdf?rlkey=w7s28864lw8omiolua5l61f3b&dl=1';
-          link.setAttribute('download', 'ebook-maestria-jurisp-pdf.pdf');
-          document.body.appendChild(link);
-          link.click(); 
-          downloadAttemptedWithoutError = true; 
+          window.open(pdfUrl, '_blank');
+          openedNewTab = true; 
         } catch (error) {
-          console.error("Error during download link click:", error);
+          console.error("Error opening PDF in new tab:", error);
           toast({
-            title: "Erro no Download",
-            description: "Não foi possível iniciar o download do e-book. Verifique seu bloqueador de pop-ups ou tente manualmente.",
+            title: "Erro ao Abrir PDF",
+            description: "Não foi possível abrir o e-book em uma nova aba. Verifique seu bloqueador de pop-ups ou tente manualmente.",
             variant: "destructive",
           });
-        } finally {
-          // Delay removal slightly to give the browser time to initiate the download
-          setTimeout(() => {
-            if (document.body.contains(link)) {
-              document.body.removeChild(link);
-            }
-          }, 100);
         }
 
-        if (downloadAttemptedWithoutError) {
+        if (openedNewTab) {
           startTransition(() => {
             router.push('/obrigado');
             reset(); 
