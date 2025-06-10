@@ -130,9 +130,9 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onOpenChange }) => 
         variant: serverFormState.success ? "default" : "destructive",
       });
       if (serverFormState.success) {
+        router.push('/obrigado'); // Redirect on success FIRST
         reset();
         onOpenChange(false); 
-        router.push('/obrigado'); // Redirect on success
       }
     }
   }, [serverFormState, toast, isSubmittingToServer, reset, onOpenChange, router]);
@@ -305,3 +305,5 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onOpenChange }) => 
 };
 
 export default ContactModal;
+
+    

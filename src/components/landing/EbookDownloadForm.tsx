@@ -152,9 +152,10 @@ const EbookDownloadForm = () => {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    
+    router.push('/obrigado'); // Redirect FIRST
     setShowDownloadDialog(false);
     reset();
-    router.push('/obrigado'); // Redirect after download and reset
   };
   
   return (
@@ -298,3 +299,5 @@ const EbookDownloadForm = () => {
 };
 
 export default EbookDownloadForm;
+
+    
