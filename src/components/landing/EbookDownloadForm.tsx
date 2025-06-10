@@ -7,7 +7,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { EbookFormSchema, type EbookFormData } from '@/types';
 import { submitEbookForm, type FormState } from '@/lib/actions';
-import { useRouter } from 'next/navigation'; 
+import { useRouter } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,7 +19,6 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-// AlertDialog related imports and FileText are removed as they are no longer needed.
 
 const BrazilFlagIcon = () => (
     <svg width="28" height="20" viewBox="0 0 28 20" fill="none" xmlns="http://www.w3.org/2000/svg" className="rounded-sm">
@@ -72,9 +71,8 @@ const submitToWebhook = async (data: EbookFormData) => {
 
 const EbookDownloadForm = () => {
   const { toast } = useToast();
-  const router = useRouter(); 
+  const router = useRouter();
 
-  // Removed showDownloadDialog state
   const [isSubmittingToServer, setIsSubmittingToServer] = useState(false);
 
   const initialServerFormState: FormState = { message: "", success: false, issues: [] };
@@ -92,7 +90,7 @@ const EbookDownloadForm = () => {
   });
 
   const onClientValid = (data: EbookFormData) => {
-    submitToWebhook(data); 
+    submitToWebhook(data);
 
     const formDataForAction = new FormData();
     (Object.keys(data) as Array<keyof EbookFormData>).forEach((key) => {
@@ -107,26 +105,24 @@ const EbookDownloadForm = () => {
   };
 
   useEffect(() => {
-    if (serverFormState.message && !isSubmittingToServer) { 
+    if (serverFormState.message && !isSubmittingToServer) {
       if (serverFormState.success) {
-        toast({ 
+        toast({
           title: "Submissão Registrada!",
-          description: serverFormState.message, 
+          description: serverFormState.message,
           variant: "default",
         });
 
-        // Attempt direct download
+        const link = document.createElement('a');
         try {
-          const link = document.createElement('a');
           link.href = 'https://www.dropbox.com/scl/fi/2332tgss2fp87nxepw86m/ebook-maestria-jurisp-pdf.pdf?rlkey=w7s28864lw8omiolua5l61f3b&dl=1';
           link.setAttribute('download', 'ebook-maestria-jurisp-pdf.pdf');
           document.body.appendChild(link);
           link.click();
-          document.body.removeChild(link);
-          
+
           startTransition(() => {
             router.push('/obrigado');
-            reset(); 
+            reset();
           });
 
         } catch (error) {
@@ -136,6 +132,13 @@ const EbookDownloadForm = () => {
             description: "Não foi possível iniciar o download do e-book. Verifique seu bloqueador de pop-ups ou tente manualmente.",
             variant: "destructive",
           });
+        } finally {
+          // Delay removal to give the browser time to process the download
+          setTimeout(() => {
+            if (document.body.contains(link)) {
+              document.body.removeChild(link);
+            }
+          }, 100);
         }
       } else {
         toast({
@@ -153,14 +156,11 @@ const EbookDownloadForm = () => {
     "Promotoria", "Sucessões", "Trabalhista", "Tributário"
   ].sort();
 
-  // Removed handleDirectDownload function as its logic is now in useEffect
-
   return (
     <>
       <section id="ebook" className="py-16 md:py-24 lg:py-32 bg-secondary/30">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
-            {/* Coluna da Amostra do Ebook */}
             <div className="flex flex-col justify-center items-center space-y-4 w-full mx-auto sm:max-w-md md:max-w-none md:mx-0">
               <div className="w-[280px] h-[396px] sm:w-[320px] sm:h-[452px] md:w-[378px] md:h-[535px] border-2 border-border overflow-y-scroll overflow-x-hidden shadow-lg bg-background">
                 <Image src="/Slide1.PNG" alt="Slide 1 do E-book Maestria Jurisp" width={800} height={600} layout="responsive" />
@@ -172,7 +172,6 @@ const EbookDownloadForm = () => {
               </h3>
             </div>
 
-            {/* Coluna do Formulário */}
             <div className="space-y-6 text-center md:text-left w-full mx-auto sm:max-w-md md:max-w-2xl md:mx-0">
               <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-foreground">
                 Baixe nosso E-book Exclusivo
@@ -270,11 +269,10 @@ const EbookDownloadForm = () => {
           </div>
         </div>
       </section>
-
-      {/* AlertDialog has been removed */}
     </>
   );
 };
 
 export default EbookDownloadForm;
+    
     
