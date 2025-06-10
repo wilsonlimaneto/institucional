@@ -142,21 +142,28 @@ const EbookDownloadForm = () => {
   ].sort();
 
   const handleDirectDownload = () => {
-    const link = document.createElement('a');
-    link.href = 'https://www.dropbox.com/scl/fi/2332tgss2fp87nxepw86m/ebook-maestria-jurisp-pdf.pdf?rlkey=w7s28864lw8omiolua5l61f3b&dl=1';
-    link.setAttribute('download', 'ebook-maestria-jurisp-pdf.pdf');
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-    // Navigate to 'obrigado' page directly
+    try {
+      const link = document.createElement('a');
+      link.href = 'https://www.dropbox.com/scl/fi/2332tgss2fp87nxepw86m/ebook-maestria-jurisp-pdf.pdf?rlkey=w7s28864lw8omiolua5l61f3b&dl=1';
+      link.setAttribute('download', 'ebook-maestria-jurisp-pdf.pdf');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error("Error during download attempt:", error);
+      toast({
+        title: "Erro no Download",
+        description: "Não foi possível iniciar o download do e-book. Tente novamente.",
+        variant: "destructive",
+      });
+      return; // Stop execution if download fails
+    }
+  
+    // Proceed with navigation and UI updates if download was successful
     router.push('/obrigado');
-
-    // Then handle dialog and form reset, wrapped in a transition if needed for UI smoothness
-    startTransition(() => {
-      setShowDownloadDialog(false);
-      reset();
-    });
+    
+    setShowDownloadDialog(false);
+    reset();
   };
 
   return (
@@ -300,5 +307,4 @@ const EbookDownloadForm = () => {
 };
 
 export default EbookDownloadForm;
-
     
