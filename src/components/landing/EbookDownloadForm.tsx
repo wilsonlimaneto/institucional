@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useEffect, useState, startTransition } from 'react';
-import Image from 'next/image'; 
+import Image from 'next/image';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { EbookFormSchema, type EbookFormData } from '@/types';
@@ -83,19 +83,19 @@ const submitToWebhook = async (data: EbookFormData) => {
 const EbookDownloadForm = () => {
   const { toast } = useToast();
   const router = useRouter(); // Initialize useRouter
-  
+
   const [showDownloadDialog, setShowDownloadDialog] = useState(false);
   const [isSubmittingToServer, setIsSubmittingToServer] = useState(false);
 
   const initialServerFormState: FormState = { message: "", success: false, issues: [] };
   const [serverFormState, formAction] = React.useActionState(submitEbookForm, initialServerFormState);
 
-  const { 
-    register, 
-    handleSubmit, 
-    formState: { errors: formErrors, isSubmitting: isFormProcessing }, 
-    reset, 
-    control 
+  const {
+    register,
+    handleSubmit,
+    formState: { errors: formErrors, isSubmitting: isFormProcessing },
+    reset,
+    control
   } = useForm<EbookFormData>({
     resolver: zodResolver(EbookFormSchema),
     defaultValues: { name: "", email: "", phone: "", areaOfLaw: "" }
@@ -103,18 +103,18 @@ const EbookDownloadForm = () => {
 
   const onClientValid = (data: EbookFormData) => {
     submitToWebhook(data); // Submit to webhook first
-    
+
     // Then, prepare for server action and potentially showing download dialog
     const formDataForAction = new FormData();
     (Object.keys(data) as Array<keyof EbookFormData>).forEach((key) => {
       formDataForAction.append(key, data[key]);
     });
-    
+
     setIsSubmittingToServer(true);
     startTransition(async () => {
-      await formAction(formDataForAction); 
+      await formAction(formDataForAction);
       // Server action is complete, now check its state in useEffect
-      setIsSubmittingToServer(false); 
+      setIsSubmittingToServer(false);
     });
   };
 
@@ -152,12 +152,14 @@ const EbookDownloadForm = () => {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    
-    router.push('/obrigado'); // Redirect FIRST
-    setShowDownloadDialog(false);
-    reset();
+
+    startTransition(() => {
+      router.push('/obrigado');
+      setShowDownloadDialog(false);
+      reset();
+    });
   };
-  
+
   return (
     <>
       <section id="ebook" className="py-16 md:py-24 lg:py-32 bg-secondary/30">
@@ -185,7 +187,7 @@ const EbookDownloadForm = () => {
               </p>
               <form
                 onSubmit={handleSubmit(onClientValid)}
-                className="space-y-4" 
+                className="space-y-4"
               >
                 <Input
                   {...register("name")}
@@ -224,9 +226,9 @@ const EbookDownloadForm = () => {
                           if (digits.length > 11) {
                             digits = digits.substring(0, 11);
                           }
-                          field.onChange(digits); 
+                          field.onChange(digits);
                         }}
-                        value={applyPhoneMask(field.value || '')} 
+                        value={applyPhoneMask(field.value || '')}
                         aria-invalid={formErrors.phone ? "true" : "false"}
                       />
                     )}
@@ -261,9 +263,9 @@ const EbookDownloadForm = () => {
                   </p>
                 )}
 
-                <Button 
-                  type="submit" 
-                  className="w-full font-semibold h-11 px-4 sm:px-6 text-base" 
+                <Button
+                  type="submit"
+                  className="w-full font-semibold h-11 px-4 sm:px-6 text-base"
                   disabled={isFormProcessing || isSubmittingToServer}
                 >
                   {isFormProcessing || isSubmittingToServer ? "Processando..." : "Receba GRATUITAMENTE"}
@@ -299,5 +301,3 @@ const EbookDownloadForm = () => {
 };
 
 export default EbookDownloadForm;
-
-    

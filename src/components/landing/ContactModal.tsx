@@ -112,7 +112,7 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onOpenChange }) => 
     // Submit data to server action
     const formDataForAction = new FormData();
     (Object.keys(data) as Array<keyof ContactFormData>).forEach((key) => {
- formDataForAction.append(key, data[key] as string); 
+ formDataForAction.append(key, data[key] as string);
     });
 
     setIsSubmittingToServer(true);
@@ -130,16 +130,18 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onOpenChange }) => 
         variant: serverFormState.success ? "default" : "destructive",
       });
       if (serverFormState.success) {
-        router.push('/obrigado'); // Redirect on success FIRST
-        reset();
-        onOpenChange(false); 
+        startTransition(() => {
+          router.push('/obrigado'); 
+          reset();
+          onOpenChange(false);
+        });
       }
     }
   }, [serverFormState, toast, isSubmittingToServer, reset, onOpenChange, router]);
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-3xl md:max-w-4xl lg:max-w-5xl p-0"> 
+      <DialogContent className="sm:max-w-3xl md:max-w-4xl lg:max-w-5xl p-0">
         <div className="flex flex-col md:flex-row">
           {/* Left Side - WhatsApp Info */}
           <div className="w-full md:w-2/5 bg-secondary/20 p-8 flex flex-col justify-center items-center text-center md:rounded-l-lg">
@@ -159,7 +161,7 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onOpenChange }) => 
               <Image
                 src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/240px-WhatsApp.svg.png"
                 alt="WhatsApp Icon"
-                width={48} 
+                width={48}
                 height={48}
               />
             </Link>
@@ -194,7 +196,7 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onOpenChange }) => 
                 className="text-base"
               />
               {formErrors.email && <p className="text-sm text-destructive">{formErrors.email.message}</p>}
-              
+
               <div className="relative flex items-center">
                 <div className="absolute left-3 top-1/2 -translate-y-1/2 z-10 pointer-events-none">
                   <BrazilFlagIcon />
@@ -214,7 +216,7 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onOpenChange }) => 
  if (digits.length > 11) {
                           digits = digits.substring(0, 11);
                         }
-                        field.onChange(digits); 
+                        field.onChange(digits);
                       }}
                       value={applyPhoneMask(field.value || '')}
                       aria-invalid={formErrors.phone ? "true" : "false"}
@@ -259,7 +261,7 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onOpenChange }) => 
                 )}
               />
               {formErrors.howHeard && <p className="text-sm text-destructive">{formErrors.howHeard.message}</p>}
-              
+
               <Controller
                 name="numLawyers"
                 control={control}
@@ -288,8 +290,8 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onOpenChange }) => 
                 <DialogClose asChild>
                   <Button type="button" variant="outline">Cancelar</Button>
                 </DialogClose>
-                <Button 
-                  type="submit" 
+                <Button
+                  type="submit"
                   className="font-semibold"
                   disabled={isFormProcessing || isSubmittingToServer}
                 >
@@ -305,5 +307,3 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onOpenChange }) => 
 };
 
 export default ContactModal;
-
-    
