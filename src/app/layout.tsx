@@ -14,7 +14,7 @@ const notoSans = Noto_Sans({
 
 export const metadata: Metadata = {
   title: 'Maestria Law - Tecnologia Jurídica Eficaz e Confiável',
-  description: 'IA Jurídica para quem não acredita em hype',
+  description: 'IA Jurídica para quem não acredita em hype...',
   viewport: 'width=device-width, initial-scale=1, maximum-scale=1',
 };
 
