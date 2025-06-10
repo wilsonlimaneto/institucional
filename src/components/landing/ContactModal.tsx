@@ -7,6 +7,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ContactFormSchema, type ContactFormData, ramosDeAtuacaoList, comoNosConheceuOptions, numAdvogadosOptions } from '@/types';
 import { submitContactForm, type FormState } from '@/lib/actions';
+import { useRouter } from 'next/navigation'; // Import useRouter
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -63,6 +64,7 @@ interface ContactModalProps {
 
 const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onOpenChange }) => {
   const { toast } = useToast();
+  const router = useRouter(); // Initialize useRouter
   const [isSubmittingToServer, setIsSubmittingToServer] = useState(false);
 
   const initialServerFormState: FormState = { message: "", success: false, issues: [] };
@@ -110,7 +112,7 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onOpenChange }) => 
     // Submit data to server action
     const formDataForAction = new FormData();
     (Object.keys(data) as Array<keyof ContactFormData>).forEach((key) => {
- formDataForAction.append(key, data[key] as string); // Ensure data[key] is treated as string
+ formDataForAction.append(key, data[key] as string); 
     });
 
     setIsSubmittingToServer(true);
@@ -130,13 +132,14 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onOpenChange }) => 
       if (serverFormState.success) {
         reset();
         onOpenChange(false); 
+        router.push('/obrigado'); // Redirect on success
       }
     }
-  }, [serverFormState, toast, isSubmittingToServer, reset, onOpenChange]);
+  }, [serverFormState, toast, isSubmittingToServer, reset, onOpenChange, router]);
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-3xl md:max-w-4xl lg:max-w-5xl p-0"> {/* Increased width and removed padding */}
+      <DialogContent className="sm:max-w-3xl md:max-w-4xl lg:max-w-5xl p-0"> 
         <div className="flex flex-col md:flex-row">
           {/* Left Side - WhatsApp Info */}
           <div className="w-full md:w-2/5 bg-secondary/20 p-8 flex flex-col justify-center items-center text-center md:rounded-l-lg">
@@ -302,5 +305,3 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onOpenChange }) => 
 };
 
 export default ContactModal;
-
-    

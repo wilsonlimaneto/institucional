@@ -8,7 +8,7 @@ import { Sheet, SheetContent, SheetTrigger, SheetClose, SheetHeader, SheetTitle 
 import { Menu } from 'lucide-react';
 
 interface HeaderProps {
-  onOpenContactModal: () => void;
+  onOpenContactModal?: () => void; // Made optional
 }
 
 const Header: React.FC<HeaderProps> = ({ onOpenContactModal }) => {
@@ -29,26 +29,32 @@ const Header: React.FC<HeaderProps> = ({ onOpenContactModal }) => {
         
         {/* Desktop Navigation */}
         <nav className="hidden lg:flex items-center gap-4">
-          <Link href="#diferenciais" className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors whitespace-nowrap" prefetch={false}>
+          <Link href="/#diferenciais" className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors whitespace-nowrap" prefetch={false}>
             Diferenciais Exclusivos
           </Link>
-          <Link href="#features" className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors whitespace-nowrap" prefetch={false}>
+          <Link href="/#features" className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors whitespace-nowrap" prefetch={false}>
             Funcionalidades
           </Link>
-          <Link href="#depoimentos" className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors whitespace-nowrap" prefetch={false}>
+          <Link href="/#depoimentos" className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors whitespace-nowrap" prefetch={false}>
             Depoimentos
           </Link>
-          <Link href="#ebook" className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors whitespace-nowrap" prefetch={false}>
+          <Link href="/#ebook" className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors whitespace-nowrap" prefetch={false}>
             E-Book
           </Link>
           {/* <Link href="#blog" className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors whitespace-nowrap" prefetch={false}>
             Blog
           </Link> */}
-          <Button variant="link" onClick={onOpenContactModal} className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors whitespace-nowrap p-0 h-auto">
-            Contato
-          </Button>
+          {onOpenContactModal ? (
+            <Button variant="link" onClick={onOpenContactModal} className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors whitespace-nowrap p-0 h-auto">
+              Contato
+            </Button>
+          ) : (
+            <Link href="/#ebook" className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors whitespace-nowrap" prefetch={false}>
+              Contato
+            </Link>
+          )}
           <Button asChild size="sm">
-            <Link href="#ebook" className="whitespace-nowrap">Cadastre-se Grátis</Link>
+            <Link href="/#ebook" className="whitespace-nowrap">Cadastre-se Grátis</Link>
           </Button>
         </nav>
 
@@ -67,22 +73,22 @@ const Header: React.FC<HeaderProps> = ({ onOpenContactModal }) => {
               </SheetHeader>
               <div className="grid gap-4 py-6">
                 <SheetClose asChild>
-                  <Link href="#diferenciais" className="text-lg font-medium hover:text-primary transition-colors" prefetch={false}>
+                  <Link href="/#diferenciais" className="text-lg font-medium hover:text-primary transition-colors" prefetch={false}>
                     Diferenciais Exclusivos
                   </Link>
                 </SheetClose>
                 <SheetClose asChild>
-                  <Link href="#features" className="text-lg font-medium hover:text-primary transition-colors" prefetch={false}>
+                  <Link href="/#features" className="text-lg font-medium hover:text-primary transition-colors" prefetch={false}>
                     Funcionalidades
                   </Link>
                 </SheetClose>
                 <SheetClose asChild>
-                  <Link href="#depoimentos" className="text-lg font-medium hover:text-primary transition-colors" prefetch={false}>
+                  <Link href="/#depoimentos" className="text-lg font-medium hover:text-primary transition-colors" prefetch={false}>
                     Depoimentos
                   </Link>
                 </SheetClose>
                 <SheetClose asChild>
-                  <Link href="#ebook" className="text-lg font-medium hover:text-primary transition-colors" prefetch={false}>
+                  <Link href="/#ebook" className="text-lg font-medium hover:text-primary transition-colors" prefetch={false}>
                     E-Book
                   </Link>
                 </SheetClose>
@@ -92,13 +98,19 @@ const Header: React.FC<HeaderProps> = ({ onOpenContactModal }) => {
                   </Link>
                 </SheetClose> */}
                 <SheetClose asChild>
-                  <Button variant="link" onClick={onOpenContactModal} className="text-lg font-medium hover:text-primary transition-colors justify-start p-0 h-auto">
-                    Contato
-                  </Button>
+                  {onOpenContactModal ? (
+                    <Button variant="link" onClick={onOpenContactModal} className="text-lg font-medium hover:text-primary transition-colors justify-start p-0 h-auto">
+                      Contato
+                    </Button>
+                  ) : (
+                    <Link href="/#ebook" className="text-lg font-medium hover:text-primary transition-colors" prefetch={false}>
+                      Contato
+                    </Link>
+                  )}
                 </SheetClose>
                 <SheetClose asChild>
                     <Button asChild className="w-full mt-4">
-                        <Link href="#ebook">Cadastre-se Grátis</Link>
+                        <Link href="/#ebook">Cadastre-se Grátis</Link>
                     </Button>
                 </SheetClose>
               </div>

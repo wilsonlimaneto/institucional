@@ -7,6 +7,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { EbookFormSchema, type EbookFormData } from '@/types';
 import { submitEbookForm, type FormState } from '@/lib/actions';
+import { useRouter } from 'next/navigation'; // Import useRouter
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -81,6 +82,7 @@ const submitToWebhook = async (data: EbookFormData) => {
 
 const EbookDownloadForm = () => {
   const { toast } = useToast();
+  const router = useRouter(); // Initialize useRouter
   
   const [showDownloadDialog, setShowDownloadDialog] = useState(false);
   const [isSubmittingToServer, setIsSubmittingToServer] = useState(false);
@@ -100,9 +102,9 @@ const EbookDownloadForm = () => {
   });
 
   const onClientValid = (data: EbookFormData) => {
-    submitToWebhook(data);
-    setShowDownloadDialog(true); 
-
+    submitToWebhook(data); // Submit to webhook first
+    
+    // Then, prepare for server action and potentially showing download dialog
     const formDataForAction = new FormData();
     (Object.keys(data) as Array<keyof EbookFormData>).forEach((key) => {
       formDataForAction.append(key, data[key]);
@@ -111,17 +113,29 @@ const EbookDownloadForm = () => {
     setIsSubmittingToServer(true);
     startTransition(async () => {
       await formAction(formDataForAction); 
-      setIsSubmittingToServer(false);
+      // Server action is complete, now check its state in useEffect
+      setIsSubmittingToServer(false); 
     });
   };
 
   useEffect(() => {
-    if (serverFormState.message && serverFormState.message !== "" && !isSubmittingToServer) {
-      toast({
-        title: serverFormState.success ? "Submissão Registrada!" : "Erro no Servidor",
-        description: serverFormState.message,
-        variant: serverFormState.success ? "default" : "destructive",
-      });
+    if (serverFormState.message && !isSubmittingToServer) { // Ensure action has completed
+      if (serverFormState.success) {
+        // If server action was successful, show the download dialog
+        setShowDownloadDialog(true);
+        toast({ // Toast for server logging confirmation (optional)
+          title: "Submissão Registrada!",
+          description: serverFormState.message, // Or a generic success message
+          variant: "default",
+        });
+      } else {
+        // If server action failed, show an error toast
+        toast({
+          title: "Erro no Servidor",
+          description: serverFormState.message,
+          variant: "destructive",
+        });
+      }
     }
   }, [serverFormState, toast, isSubmittingToServer]);
 
@@ -137,10 +151,10 @@ const EbookDownloadForm = () => {
     link.setAttribute('download', 'ebook-maestria-jurisp-pdf.pdf');
     document.body.appendChild(link);
     link.click();
-    // Cleanup moved from the misplaced finally block
     document.body.removeChild(link);
     setShowDownloadDialog(false);
     reset();
+    router.push('/obrigado'); // Redirect after download and reset
   };
   
   return (
@@ -274,6 +288,7 @@ const EbookDownloadForm = () => {
             </AlertDialogAction>
             <AlertDialogCancel onClick={() => {
               setShowDownloadDialog(false);
+              reset(); // Reset form if download is cancelled
             }}>Fechar</AlertDialogCancel>
           </AlertDialogFooter>
         </AlertDialogContent>
