@@ -100,12 +100,11 @@ const EbookDownloadForm = () => {
     setIsSubmittingToServer(true);
     startTransition(async () => {
       await formAction(formDataForAction);
-      setIsSubmittingToServer(false); // Ensure this is set after action completes
+      setIsSubmittingToServer(false); 
     });
   };
 
   useEffect(() => {
-    // Only run when serverFormState has a message and we are not in the middle of server submission
     if (serverFormState.message && !isSubmittingToServer) {
       if (serverFormState.success) {
         toast({
@@ -120,8 +119,8 @@ const EbookDownloadForm = () => {
           link.href = 'https://www.dropbox.com/scl/fi/2332tgss2fp87nxepw86m/ebook-maestria-jurisp-pdf.pdf?rlkey=w7s28864lw8omiolua5l61f3b&dl=1';
           link.setAttribute('download', 'ebook-maestria-jurisp-pdf.pdf');
           document.body.appendChild(link);
-          link.click(); // Attempt to trigger download
-          downloadAttemptedWithoutError = true; // If click() doesn't throw a JS error
+          link.click(); 
+          downloadAttemptedWithoutError = true; 
         } catch (error) {
           console.error("Error during download link click:", error);
           toast({
@@ -130,24 +129,24 @@ const EbookDownloadForm = () => {
             variant: "destructive",
           });
         } finally {
-          // Ensure the link is removed from the DOM
-          if (document.body.contains(link)) {
-            document.body.removeChild(link);
-          }
+          // Delay removal slightly to give the browser time to initiate the download
+          setTimeout(() => {
+            if (document.body.contains(link)) {
+              document.body.removeChild(link);
+            }
+          }, 100);
         }
 
-        // Proceed with navigation and form reset if the download click itself didn't throw an error.
-        // The browser might still silently block the actual download.
         if (downloadAttemptedWithoutError) {
           startTransition(() => {
             router.push('/obrigado');
-            reset();
+            reset(); 
           });
         }
-      } else { // Server form submission failed
+      } else { 
         toast({
           title: "Erro no Servidor",
-          description: serverFormState.message,
+          description: serverFormState.message || "Não foi possível processar sua solicitação.",
           variant: "destructive",
         });
       }
