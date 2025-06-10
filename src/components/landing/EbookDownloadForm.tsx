@@ -19,17 +19,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { FileText } from 'lucide-react';
+// AlertDialog related imports and FileText are removed as they are no longer needed.
 
 const BrazilFlagIcon = () => (
     <svg width="28" height="20" viewBox="0 0 28 20" fill="none" xmlns="http://www.w3.org/2000/svg" className="rounded-sm">
@@ -84,7 +74,7 @@ const EbookDownloadForm = () => {
   const { toast } = useToast();
   const router = useRouter(); 
 
-  const [showDownloadDialog, setShowDownloadDialog] = useState(false);
+  // Removed showDownloadDialog state
   const [isSubmittingToServer, setIsSubmittingToServer] = useState(false);
 
   const initialServerFormState: FormState = { message: "", success: false, issues: [] };
@@ -119,12 +109,34 @@ const EbookDownloadForm = () => {
   useEffect(() => {
     if (serverFormState.message && !isSubmittingToServer) { 
       if (serverFormState.success) {
-        setShowDownloadDialog(true);
         toast({ 
           title: "Submissão Registrada!",
           description: serverFormState.message, 
           variant: "default",
         });
+
+        // Attempt direct download
+        try {
+          const link = document.createElement('a');
+          link.href = 'https://www.dropbox.com/scl/fi/2332tgss2fp87nxepw86m/ebook-maestria-jurisp-pdf.pdf?rlkey=w7s28864lw8omiolua5l61f3b&dl=1';
+          link.setAttribute('download', 'ebook-maestria-jurisp-pdf.pdf');
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          
+          startTransition(() => {
+            router.push('/obrigado');
+            reset(); 
+          });
+
+        } catch (error) {
+          console.error("Error during download attempt:", error);
+          toast({
+            title: "Erro no Download",
+            description: "Não foi possível iniciar o download do e-book. Verifique seu bloqueador de pop-ups ou tente manualmente.",
+            variant: "destructive",
+          });
+        }
       } else {
         toast({
           title: "Erro no Servidor",
@@ -133,7 +145,7 @@ const EbookDownloadForm = () => {
         });
       }
     }
-  }, [serverFormState, toast, isSubmittingToServer]);
+  }, [serverFormState, toast, isSubmittingToServer, router, reset]);
 
   const ramosDeAtuacao = [
     "Administrativo", "Adv. Pública", "Civil", "Digital", "Empresarial", "Família",
@@ -141,30 +153,7 @@ const EbookDownloadForm = () => {
     "Promotoria", "Sucessões", "Trabalhista", "Tributário"
   ].sort();
 
-  const handleDirectDownload = () => {
-    try {
-      const link = document.createElement('a');
-      link.href = 'https://www.dropbox.com/scl/fi/2332tgss2fp87nxepw86m/ebook-maestria-jurisp-pdf.pdf?rlkey=w7s28864lw8omiolua5l61f3b&dl=1';
-      link.setAttribute('download', 'ebook-maestria-jurisp-pdf.pdf');
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    } catch (error) {
-      console.error("Error during download attempt:", error);
-      toast({
-        title: "Erro no Download",
-        description: "Não foi possível iniciar o download do e-book. Tente novamente.",
-        variant: "destructive",
-      });
-      return; // Stop execution if download fails
-    }
-  
-    // Proceed with navigation and UI updates if download was successful
-    router.push('/obrigado');
-    
-    setShowDownloadDialog(false);
-    reset();
-  };
+  // Removed handleDirectDownload function as its logic is now in useEffect
 
   return (
     <>
@@ -282,26 +271,7 @@ const EbookDownloadForm = () => {
         </div>
       </section>
 
-      <AlertDialog open={showDownloadDialog} onOpenChange={setShowDownloadDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Download Pronto!</AlertDialogTitle>
-            <AlertDialogDescription>
-              Seu e-book está pronto. Clique no botão abaixo para baixar o arquivo (.pdf).
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogAction onClick={handleDirectDownload} className="flex items-center">
-              <FileText className="mr-2 h-5 w-5" />
-              Baixar E-book (.pdf)
-            </AlertDialogAction>
-            <AlertDialogCancel onClick={() => {
-              setShowDownloadDialog(false);
-              reset(); 
-            }}>Fechar</AlertDialogCancel>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      {/* AlertDialog has been removed */}
     </>
   );
 };
